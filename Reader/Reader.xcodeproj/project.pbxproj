@@ -230,6 +230,8 @@
 		212DEB982769C690009A6F86 /* Reader */ = {
 			isa = PBXGroup;
 			children = (
+				21B065F927E4983E0066EF63 /* Resource */,
+				21B065F527E497C10066EF63 /* SDZReader */,
 				21D076AF2778EE0E00AED4A3 /* SwiftOC-Header.h */,
 				212DEBA72769C690009A6F86 /* Info.plist */,
 				212DEB992769C690009A6F86 /* AppDelegate.swift */,
@@ -239,7 +241,6 @@
 				212DEBA42769C690009A6F86 /* LaunchScreen.storyboard */,
 				212DEB9F2769C690009A6F86 /* Main.storyboard */,
 				21D076B327791C0700AED4A3 /* Resource */,
-				2189A02827767F5A004BE562 /* SDZReader */,
 				21899FDD27767623004BE562 /* snp */,
 				21D0767E2778EDB100AED4A3 /* ssziparchive */,
 				21D076B92779A3A700AED4A3 /* TouchXML */,
@@ -291,14 +292,46 @@
 			path = snp;
 			sourceTree = "<group>";
 		};
-		2189A02827767F5A004BE562 /* SDZReader */ = {
+		21B065F527E497C10066EF63 /* SDZReader */ = {
 			isa = PBXGroup;
 			children = (
-				21D075AB2778CED700AED4A3 /* Core */,
-				21D075AA2778CEC600AED4A3 /* View */,
+				21B065F727E497FB0066EF63 /* View */,
+				21B065F627E497DD0066EF63 /* Core */,
 				21D075A92778CEAC00AED4A3 /* ViewController */,
 			);
-			name = SDZReader;
+			path = SDZReader;
+			sourceTree = "<group>";
+		};
+		21B065F627E497DD0066EF63 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				217745B72769DCF00073C111 /* Core.swift */,
+				217745DD2773BB700073C111 /* Models.swift */,
+				21E9B519277C9CF4007D0272 /* Extension.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		21B065F727E497FB0066EF63 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				217745E1277665410073C111 /* CellView.swift */,
+				2189A0292776A205004BE562 /* MenuView.swift */,
+				217745B52769CD6F0073C111 /* ReadView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		21B065F927E4983E0066EF63 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				21E9B51B277D3D56007D0272 /* ios.epub */,
+				21E9B51E277D589B007D0272 /* c++.epub */,
+				21E9B520277D5ACF007D0272 /* async.epub */,
+				21D076B02778F15E00AED4A3 /* 01.epub */,
+				21D076B127791B0000AED4A3 /* 雪中悍刀行.txt */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 		21D075A92778CEAC00AED4A3 /* ViewController */ = {
@@ -310,26 +343,6 @@
 				217745DF277661BC0073C111 /* BookShelfViewController.swift */,
 			);
 			path = ViewController;
-			sourceTree = "<group>";
-		};
-		21D075AA2778CEC600AED4A3 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				217745E1277665410073C111 /* CellView.swift */,
-				2189A0292776A205004BE562 /* MenuView.swift */,
-				217745B52769CD6F0073C111 /* ReadView.swift */,
-			);
-			name = View;
-			sourceTree = "<group>";
-		};
-		21D075AB2778CED700AED4A3 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				217745B72769DCF00073C111 /* Core.swift */,
-				217745DD2773BB700073C111 /* Models.swift */,
-				21E9B519277C9CF4007D0272 /* Extension.swift */,
-			);
-			name = Core;
 			sourceTree = "<group>";
 		};
 		21D0767E2778EDB100AED4A3 /* ssziparchive */ = {
@@ -366,11 +379,6 @@
 		21D076B327791C0700AED4A3 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				21E9B51B277D3D56007D0272 /* ios.epub */,
-				21E9B51E277D589B007D0272 /* c++.epub */,
-				21E9B520277D5ACF007D0272 /* async.epub */,
-				21D076B02778F15E00AED4A3 /* 01.epub */,
-				21D076B127791B0000AED4A3 /* 雪中悍刀行.txt */,
 			);
 			name = Resource;
 			sourceTree = "<group>";
