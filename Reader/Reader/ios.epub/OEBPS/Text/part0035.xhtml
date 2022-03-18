@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">3.6 深入学习：属性合成</h2>
+
+  <p class="calibre1">　　本章介绍过，属性会自动生成存取方法，也会自动声明和创建实例变量。实际上，我们还可以自定义生成过程，得到符合实际需要的实例变量和存取方法。</p>
+
+  <p class="calibre1">　　在头文件中声明属性时，只会生成存取方法的声明。为了让属性生成实例变量并实现存取方法，该属性必须被合成（synthesized）。通常情况下，编译器会自动合成属性并生成默认的实例变量和存取方法。如果需要自定义属性的合成方式，可以在实现文件中使用@synthesize指令：</p>
+
+  <p class="calibre1">　　@implementation Person</p>
+
+  <p class="calibre1">　　// 创建存取方法，方法名是age和setAge:，</p>
+
+  <p class="calibre1">　　// 同时创建实例变量_age</p>
+
+  <p class="calibre1">　　@synthesize age = _age;</p>
+
+  <p class="calibre1">　　// 其他方法</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　以上代码与编译器自动合成的效果相同。赋值号左边的age表示需要创建存取方法，方法名是age和setAge:。右边的_age表示需要创建实例变量，变量名为_age。</p>
+
+  <p class="calibre1">　　也可以不写变量名，这样实例变量的变量名会和方法名相同：</p>
+
+  <p class="calibre1">　　@synthesize age;</p>
+
+  <p class="calibre1">　　// 和以下语句效果相同：</p>
+
+  <p class="calibre1">　　@synthesize age = age;</p>
+
+  <p class="calibre1">　　有时我们不希望属性自动生成实例变量和存取方法。例如，有一个Person类，类中有三个属性：spouse（配偶）、lastName（姓氏）和lastNameOfSpouse（配偶的姓氏）。</p>
+
+  <p class="calibre1">　　@interface Person : NSObject</p>
+
+  <p class="calibre1">　　@property (nonatomic, strong) Person *spouse;</p>
+
+  <p class="calibre1">　　@property (nonatomic, copy) NSString *lastName;</p>
+
+  <p class="calibre1">　　@property (nonatomic, copy) NSString *lastNameOfSpouse;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　在这个例子中，spouse和lastName属性需要生成实例变量，因为配偶和姓氏是个人基本信息。而lastNameOfSpouse属性则不用生成实例变量，因为可以通过spouse的lastName属性知道配偶的姓氏，所以不需要在两个Person对象中都生成实例变量，既浪费内存也容易出错。我们可以为lastNameOfSpouse属性自定义存取方法：</p>
+
+  <p class="calibre1">　　@implementation Person</p>
+
+  <p class="calibre1">　　- (void)setLastNameOfSpouse:(NSString *)lastNameOfSpouse</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.spouse.lastName = lastNameOfSpouse;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　- (NSString *)lastNameOfSpouse</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　return self.spouse.lastName;</p>
+
+  <p class="calibre1">　　}　</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　由于同时覆盖了存方法和取方法，编译器不会再为lastNameOfSpouse自动生成实例变量，和期望效果一致。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

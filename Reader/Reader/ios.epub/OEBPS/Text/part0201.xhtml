@@ -1,0 +1,911 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">23.2 用Core Data重写BNRItemStore的数据保存功能</h2>
+
+  <p class="calibre1">　　目前，Homepwner是通过固化存取数据的。当模型对象的数量较少时（比如少于1000个），使用固化不会有问题。但是随着模型对象的增多，固化的整存整取特性会产生效率问题，所以需要改用一种能够增量存取、增量更新数据的机制。Core Data可以胜任这项任务。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">模型文件</h3>
+
+  <p class="calibre1">　　关系数据库有一个名为表格（table）的概念。一张表格代表一种类型的事物，可以是人、信用卡购物记录或房地产列表。每张表格可以有很多列，用于保存相应事物的特定信息。例如，代表人的表格可以有不同的列，分别代表姓名、生日和身高。此外，表中的一行代表一个人。</p>
+
+  <p class="calibre1">　　关系数据库的这种组织关系可以很好地“翻译”至Objective-C。表格对应Objective-C类；表格的列对应类的属性；表格的行对应类的对象。Core Data的作用就是在关系模型和对象模型之间来回移动数据（见图23-1）。</p>
+
+  <p class="calibre7"><img alt="tu23-1" src="../Images/image00650.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-1 Core Data的作用</p>
+
+  <p class="calibre1">　　针对上述概念，Core Data使用的是另一套术语。在Core Data中，表格/类称为实体（entity），列/属性称为实体属性（attribute）。使用Core Data的模型文件可以描述特定的实体和相应的实体属性。下面用模型文件来描述BNRItem实体，以及相应的实体属性，例如itemName、serialNumber和valueInDollars。</p>
+
+  <p class="calibre1">　　打开Homepwner.xcodeproj。选择File菜单中的New菜单项，然后选择New File…选中窗口左侧iOS部分的Core Data，然后选中窗口右侧的Data Model并单击Next按钮，最后将文件命名为Homepwner（后缀名使用默认的），如图23-2所示。</p>
+
+  <p class="calibre7"><img alt="tu23-2" src="../Images/image00651.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-2 创建模型文件</p>
+
+  <p class="calibre1">　　Xcode会将新创建的Homepwner.xcdatamodeld文件加入项目。在项目导航面板中选中该文件，Xcode会在编辑器区域显示相应的用户界面，通过该界面可编辑Core Data模型文件。</p>
+
+  <p class="calibre1">　　单击位于编辑器区域左下角的Add Entity（增加实体）按钮，Xcode会为模型文件增加一个新的实体，并将该实体加入左侧列表的ENTITIES区域。双击新增加的实体，将实体名改为BNRItem（见图23-3）。</p>
+
+  <p class="calibre7"><img alt="tu23-3" src="../Images/image00652.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-3 创建BNRItem实体</p>
+
+  <p class="calibre1">　　下面为BNRItem实体增加实体属性，这些实体属性将成为BNRItem类的属性。单击Attributes区域下方的＋按钮可以加入新的实体属性。根据以下列表，增加实体属性并设置相应的Attribute（实体属性名）和Type（实体属性类型）。</p>
+
+  <p class="calibre1">　　•itemName, String（字符串）。</p>
+
+  <p class="calibre1">　　•serialNumber, String（字符串）。</p>
+
+  <p class="calibre1">　　•valueInDollars, Integer 32（32位整数）。</p>
+
+  <p class="calibre1">　　•dateCreated, Date（日期）。</p>
+
+  <p class="calibre1">　　•itemKey, String（字符串）。</p>
+
+  <p class="calibre1">　　•thumbnail, Transformable（可变类型）。thumbnail的类型是UIImage，实体属性没有与之对应的类型。稍后就会介绍Transformable。</p>
+
+  <p class="calibre1">　　下面为BNRItem实体再增加一个实体属性。在Homepwner中，用户可以通过移动UITableView对象中的UITableViewCell对象，重新排列相应BNRItem对象的顺序。使用固化保存包含BNRItem对象的数组时，默认就能保留排列顺序。但是在使用Core Data时，因为关系数据库的表格默认不会保留行的排列位置，所以要针对每个BNRItem对象保存一个额外的位置信息。然后在获取某一组行时，根据这个实体属性（表格列）来排序。此外，也可以根据其他实体属性来排序（例如，获取所有的BNREmployee对象时可以根据lastName排序）。</p>
+
+  <p class="calibre1">　　为了保留BNRItem对象在UITableView对象中的位置，下面创建一个名为orderingValue的实体属性，用来记录BNRItem对象在UITableView对象中的位置。当要获取一组BNRItem对象时，可以要求Core Data（数据库）按实体属性orderingValue进行排序；当BNRItem对象在UITableView对象中的位置发生变化时，需要更新相应对象的orderingValue。下面创建该实体属性：名称是orderingValue，类型是Double。</p>
+
+  <p class="calibre1">　　Core Data只能存储有限的几种数据类型，并不能存储UIImage对象。因此只能将thumbnail声明为Core Data可以存储的transformable类型，Core Data会在存储或恢复transformable类型的实体属性时首先将其转换为NSData，然后再存入文件系统或恢复为Objective-C对象。为了向Core Data描述转换过程，需要创建NSValueTransformer的子类。</p>
+
+  <p class="calibre1">　　创建一个NSValueTransformer的子类BNRImageTransformer，打开BNRImage- Transformer.m，覆盖以下方法，实现UIImage和NSData对象之间的转换：</p>
+
+  <p class="calibre1">　　@implementation BNRImageTransformer</p>
+
+  <p class="calibre1"><span class="calibre10">　　+ （Class）transformedValueClass</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [NSData class];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （id）transformedValue:（id）value</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre12">　　if （！value） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[value isKindOfClass:[NSData class]]） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return value;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return UIImagePNGRepresentation（value）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （id）reverseTransformedValue:（id）value</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [UIImage imageWithData:value];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　BNRImageTransformer的实现代码很容易理解。transformedValueClass是类方法，用于声明transformedValue:方法的返回类型（BNRImageTransformer的转换结果类型）；Core Data在存储transformable类型的实体属性时会调用transformedValue:方法，将其转换为可以存储的类型。对于thumbnail，transformedValue:的参数类型是UIImage，返回值类型是NSData；Core Data在恢复thumbnail时会调用reverseTransformedValue:，根据文件系统中存储的NSData创建UIImage对象。有了BNRImageTransformer后，Core Data还要知道如何使用BNRImageTransformer来处理thumbnail。</p>
+
+  <p class="calibre1">　　打开Homepwner.xcdatamodeld，选择BNRItem实体。选中Attributes区域中的thumbnail，单击检视选择面板中的按钮，打开数据模型检视面板（data model inspector），在第二个标题为Name的文本框中填入BNRImageTransformer（见图23-4）。</p>
+
+  <p class="calibre7"><img alt="tu23-4" src="../Images/image00653.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-4 为BNRItem实体增加并设置实体属性</p>
+
+  <p class="calibre1">　　完成上述操作后，就可以通过新创建的模型文件存取BNRItem对象了，但这还不够。使用Core Data的另一个好处是能够在实体之间建立关联。下面要增加一个名为BNRAssetType的实体，用来描述BNRItem对象的分类。例如，可以将一幅画归在艺术类。BNRAssetType和BNRItem一样，应该在同一个模型文件中创建，和BNRAssetType相对应的表格行也会在运行时被映射为相应的Objective-C对象。</p>
+
+  <p class="calibre1">　　在Homepwner.xcdatamodeld中增加一个名为BNRAssetType的实体，然后为这个新增加的实体创建一个名为label的实体属性，类型为String，用来代表分类的名称（见图23-5）。</p>
+
+  <p class="calibre7"><img alt="tu23-5" src="../Images/image00654.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-5 创建BNRAssetType实体</p>
+
+  <p class="calibre1">　　下面为BNRAssetType和BNRItem建立关系（relationship）（Core Data会将实体间的关系表示为对象之间的指针）。Core Data支持两类关系：一对一（to-one）关系和一对多（to-many）关系。当某个实体拥有某种一对一关系时，该实体的对象会有一个指针指向位于相应关系另一端的实体对象。以BNRItem为例，它会有一个指向BNRAssetType实体的一对一关系，因此BNRItem对象会拥有一个指向BNRAssetType对象的指针。</p>
+
+  <p class="calibre1">　　当某个实体拥有某种一对多关系时，该实体的对象会拥有一个指向NSSet对象的指针，该对象会包含和相应一对多关系有关的实体对象。以BNRAssetType为例，因为可以有多个BNRItem对象属于同一个类型（BNRAssetType），所以BNRAssetType实体应该有一个指向BNRItem实体的一对多关系。</p>
+
+  <p class="calibre1">　　为BNRItem实体和BNRAssetType实体创建上述关系后，就可以向某个BNRAssetType对象查询并返回一组属于该类型的BNRItem对象。此外，也可以向某个BNRItem对象查询其所属的类型（见图23-6）。</p>
+
+  <p class="calibre7"><img alt="tu23-6" src="../Images/image00655.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-6 Homepwner中的实体关系</p>
+
+  <p class="calibre1">　　下面要在模型文件中增加上述关系。选中BNRAssetType实体，单击Relationships（关系）列表下方的＋按钮。在Relationship列中，将关系命名为items。然后在Destination（目标）列中选择BNRItem。最后在数据模型检视面板中点击标题为Type的下拉菜单，由To One改为To Many（见图23-7）。</p>
+
+  <p class="calibre7"><img alt="tu23-7" src="../Images/image00656.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-7 创建items关系</p>
+
+  <p class="calibre1">　　选中BNRItem实体，增加一个名为assetType的关系，然后在Destination列中选择BNRAssetType。在Inverse（反向）列中选择items（见图23-8）。</p>
+
+  <p class="calibre7"><img alt="tu23-8" src="../Images/image00657.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-8 创建assetType关系</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">NSManagedObject与NSManagedObject子类</h3>
+
+  <p class="calibre1">　　通过Core Data取回（fetch）的对象，默认情况下都是NSManagedObject对象。NSManagedObject是NSObject的子类，也是Core Data的重要组成部分。NSManagedObject对象的工作模式有点类似字典对象：它会根据相应实体的每一个property（属性或关系），保存一个键-值对。</p>
+
+  <p class="calibre1">　　NSManagedObject对象不仅仅是数据容器。除了保存数据，还可以通过创建NSManagedObject子类让自定义的NSManagedObject对象完成其他任务。当对应某个实体的NSManagedObject对象要执行自定义的任务时，必须先创建相应的NSManagedObject子类，然后在模型文件中修改这个实体，将代表该实体的类从默认的NSManagedObject改为新创建的NSManagedObject子类。</p>
+
+  <p class="calibre1">　　选中BNRItem实体，打开数据模型检视面板，将Class文本框的内容修改为BNRItem，如图23-9所示。这样，当Homepwner通过Core Data取回BNRItem实体时，相应的对象类型将是BNRItem（BNRAssetType实体的类型仍是NSManagedObject）。</p>
+
+  <p class="calibre7"><img alt="tu23-9" src="../Images/image00658.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-9 修改实体的类</p>
+
+  <p class="calibre1">　　在为BNRItem实体创建NSManagedObject子类时，需要先解决一个问题：Homepwner项目已经有了一个名为BNRItem的类，并且这个类不是继承自NSManagedObject。如果直接修改现有的BNRItem类，则需要做很多改动才能将其父类改为NSManagedObject。最简单的解决方案是移除现有的BNRItem类，然后通过Xcode自动生成针对BNRItem实体的BNRItem类，最后将之前在BNRItem类中实现的方法拷贝至新的BNRItem类。</p>
+
+  <p class="calibre1">　　在Finder中，将BNRItem.h和BNRItem.m拖曳至桌面留作备份。然后在项目导航面板中移除这两个文件（在Finder中移动这两个文件后，Xcode会因为找不到相应的文件而在项目导航面板中将这两个文件显示为红色）。</p>
+
+  <p class="calibre1">　　选中Homepwner.xcdatamodeld，选中BNRItem实体。选择File菜单中的New菜单项，然后选择New File…选中窗口左侧iOS部分的Core Data，然后选中窗口右侧的NSManagedObject subclass，单击Next按钮。Homepwner数据模型文件之前的选择框应该已经选中，如果没有选中，请选中并单击Next按钮。在下一个窗口，确保选中了BNRItem实体并再次单击Next按钮，最后单击Save按钮创建NSManagedObject子类。</p>
+
+  <p class="calibre1">　　Xcode会生成两个新文件：BNRItem.h和BNRItem.m。在BNRItem.h中，将thumbnail属性的类型改为UIImage指针，并加入两个曾在BNRItem类中实现过的方法。默认情况下，Xcode会将属性声明为对象，因此int类型的属性被声明为NSNumber。将orderingValue改为double，valueInDollars改为int。代码如下：</p>
+
+  <p class="calibre1">　　#import &lt;Foundation/Foundation.h&gt;</p>
+
+  <p class="calibre1">　　@import CoreData;</p>
+
+  <p class="calibre1">　　@interface BNRItem : NSManagedObject</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSDate * dateCreated;</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSString * itemKey;</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSString * itemName;</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@property （nonatomic, strong） NSNumber * orderingValue;</span></del></p>
+
+  <p class="calibre1">　　@property （nonatomic） double orderingValue;</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSString * serialNumber;</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@property （nonatomic, strong） id thumbnail;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） UIImage *thumbnail;</span></p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSData * thumbnailData;</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@property （nonatomic, strong） NSNumber * valueInDollars;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic） int valueInDollars;</span></p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSManagedObject *assetType;</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）setThumbnailFromImage:（UIImage *）image;</span></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　（Xcode可能会将strong属性生成为retain。两者的含义是相同的，在引入ARC之前，强引用属性使用retain表示，引入之后才改为使用strong。Xcode中用于生成NSManagedObject subclass的工具可能没有同步更新，因此在生成的代码中仍然使用旧的表示方法）。</p>
+
+  <p class="calibre1">　　将setThumbnailFromImage:从之前的BNRItem.m拷贝至新的BNRItem.m，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）setThumbnailFromImage:（UIImage *）image</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGSize origImageSize = image.size;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect newRect = CGRectMake（0, 0, 40, 40）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　float ratio = MAX（newRect.size.width / origImageSize.width,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　newRect.size.height / origImageSize.height）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIGraphicsBeginImageContextWithOptions（newRect.size, NO, 0.0）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:newRect</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cornerRadius:5.0];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[path addClip];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect projectRect;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.size.width = ratio * origImageSize.width;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.size.height = ratio * origImageSize.height;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.origin.x = （newRect.size.width - projectRect.size.width） / 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.origin.y = （newRect.size.height - projectRect.size.height） / 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[image drawInRect:projectRect];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext（）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.thumbnail = smallImage;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIGraphicsEndImageContext（）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　首次启动Homepwner时，肯定不会有已存的BNRItem对象和BNRAssetType对象。当用户创建新的BNRItem对象时，Homepwner会将新增加的对象加入数据库。当这些对象被加入数据库时，都会收到awakeFromInsert消息。所以，应该在BNRItem对象的awakeFromInsert方法中设置dateCreated和itemKey属性。在BNRItem.m中实现awakeFromInsert方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）awakeFromInsert</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super awakeFromInsert];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.dateCreated = [NSDate date];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建NSUUID对象，获取其UUID字符串</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSUUID *uuid = [[NSUUID alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *key = [uuid UUIDString];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.itemKey = key;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　这段代码的功能和前面BNRItem的指定初始化方法相同。构建应用，检查语法错误，先不要运行。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">更新BNRItemStore</h3>
+
+  <p class="calibre1">　　Core Data框架中的NSManagedObjectContext负责应用和数据库之间的交互工作。通过NSManagedObjectContext对象所使用的NSPersistentStoreCoordinator对象，可以指定文件路径并打开相应的SQLite数据库。NSPersistentStoreCoordinator对象需要配合某个模型文件才能工作（NSManagedObjectModel对象可以代表模型文件）。在Homepwner中，需要由BNRItemStore对象来使用上述的多个Core Data对象，以完成数据的存取工作。这些对象之间的关系如图23-10所示。</p>
+
+  <p class="calibre7"><img alt="tu23-10" src="../Images/image00659.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-10 BNRItemStore与NSManagedObjectContext</p>
+
+  <p class="calibre1">　　在BNRItemStore.m中导入Core Data框架并在类扩展中声明三个属性，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　@import CoreData;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@interface BNRItemStore （）</p>
+
+  <p class="calibre1">　　@property （nonatomic） NSMutableArray *privateItems;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） NSMutableArray *allAssetTypes;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） NSManagedObjectContext *context;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） NSManagedObjectModel *model;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　然后修改itemArchivePath方法，返回不同的路径，Core Data能够将数据保存至另一个文件，代码如下：</p>
+
+  <p class="calibre1">　　- （NSString *）itemArchivePath</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSArray *documentDirectories =</p>
+
+  <p class="calibre1">　　NSSearchPathForDirectoriesInDomains（NSDocumentDirectory,</p>
+
+  <p class="calibre1">　　NSUserDomainMask,</p>
+
+  <p class="calibre1">　　YES）；</p>
+
+  <p class="calibre1">　　// 从documentDirectories数组获取文档目录路径（该数组只包含一个对象）</p>
+
+  <p class="calibre1">　　NSString *documentDirectory = [documentDirectories firstObject];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">return [documentDirectory stringByAppendingPathComponent:@“items.archive”];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [documentDirectory stringByAppendingPathComponent:@“store.data”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　初始化BNRItemStore对象时，需要创建并设置相应的NSManagedObjectContext对象和NSPersistentStoreCoordinator对象。NSPersistentStoreCoordinator对象需要知道两件事情：实体信息（包括实体属性和关系）和存取数据的路径。为此，要先创建一个NSManagedObjectModel对象，保存源自Homepwner.xcdatamodeld的实体信息。然后用新创建的NSManagedObjectModel对象初始化NSPersistentStoreCoordinator对象。创建并设置NSPersistentStoreCoordinator对象后，就可以创建一个NSManagedObject- Context对象，并传入之前创建的NSPersistentStoreCoordinator对象（由该对象负责文件的存取）。</p>
+
+  <p class="calibre1">　　更新BNRItemStore.m中的initPrivate方法，代码如下：</p>
+
+  <p class="calibre1">　　- （instancetype）initPrivate</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super init];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">NSString *path = self.itemArchivePath;</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">_privateItems = [NSKeyedUnarchiver unarchiveObjectWithFile:path];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">if （！_privateItems） {</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">_privateItems = [[NSMutableArray alloc] init];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 读取Homepwner.xcdatamodeld</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_model = [NSManagedObjectModel mergedModelFromBundles:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSPersistentStoreCoordinator *psc =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_model];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 设置SQLite文件路径</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *path = self.itemArchivePath;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSURL *storeURL = [NSURL fileURLWithPath:path];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSError *error = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！[psc addPersistentStoreWithType:NSSQLiteStoreType</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　configuration:nil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　URL:storeURL</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　options:nil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　error:&amp;error]） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@throw [NSException exceptionWithName:@“OpenFailure”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　reason:[error localizedDescription]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　userInfo:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建NSManagedObjectContext对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_context = [[NSManagedObjectContext alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_context.persistentStoreCoordinator = psc;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　修改前的BNRItemStore对象会通过固化将整个BNRItem数组写入文件，而修改后的BNRItemStore对象可以向NSManagedObjectContext对象发送save:消息，NSManagedObjectContext对象会根据上次保存后发生的变化更新store.data中的相应记录。修改BNRItemStore.m中的saveChanges方法，代码如下：</p>
+
+  <p class="calibre1">　　- （BOOL）saveChanges</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">NSString *path = [self itemArchivePath];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">return [NSKeyedArchiver archiveRootObject:allItems</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">toFile:[self itemArchivePath]];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSError *error;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BOOL successful = [self.context save:&amp;error];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！successful） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Error saving: %@”, [error localizedDescription]）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return successful;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　saveChanges方法会在应用进入后台运行状态时被调用。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">NSFetchRequest与NSPredicate</h3>
+
+  <p class="calibre1">　　当Homepwner第一次使用BNRItem对象时，会一次性地取出store.data中的所有BNRItem对象。要通过NSManagedObjectContext对象得到这些BNRItem对象，就必须先设置一个NSFetchRequest对象，然后执行该对象。执行NSFetchRequest对象后，可以得到一组与指定的参数相匹配的对象。</p>
+
+  <p class="calibre1">　　执行NSFetchRequest对象前，需要先设置相应的实体描述。实体描述的作用是定义所要获取的对象的实体。以Homepwner为例，要取回BNRItem对象，就要将实体描述定义为BNRItem实体。此外，还可以为NSFetchRequest对象设置排序描述对象（sort descriptors），用于指定返回对象的排列次序。排序描述对象拥有一个键（和某个实体属性对应）和一个布尔值（代表次序是升序还是降序）。下面让Core Data根据BNRItem实体的orderingValue属性，按升序排列返回的BNRItem对象。在BNRItemStore.m中，定义一个新方法loadAllItems，创建并设置NSFetchRequest对象，然后执行该NSFetchRequest对象，最后将返回的结果存入privateItems，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）loadAllItems</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！self.privateItems） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSFetchRequest *request = [[NSFetchRequest alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSEntityDescription *e = [NSEntityDescription entityForName:@“BNRItem”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inManagedObjectContext:self.context];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　request.entity = e;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSSortDescriptor *sd = [NSSortDescriptor</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　sortDescriptorWithKey:@“orderingValue”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　ascending:YES];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　request.sortDescriptors = @[sd];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSError *error;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *result = [self.context executeFetchRequest:request</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　error:&amp;error];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！result） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[NSException raise:@“Fetch failed”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　format:@“Reason: %@”, [error localizedDescription]];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.privateItems = [[NSMutableArray alloc] initWithArray:result];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　同时，在BNRItemStore.m的initPrivate方法末端，向BNRItemStore对象发送loadAllItems消息，代码如下：</p>
+
+  <p class="calibre1">　　_context.persistentStoreCoordinator = psc;</p>
+
+  <p class="calibre1"><span class="calibre10">　　[self loadAllItems];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建应用，检查是否有语法错误。</p>
+
+  <p class="calibre1">　　这样，Homepwner会一次性地取回所有的BNRItem实体对象。这是相对简单的情况，如果某个应用的数据庞大，就应该只获取需要使用的实体对象。为NSFetchRequest对象设置特定的NSPredicate对象，可以使Core Data只返回符合条件的对象。</p>
+
+  <p class="calibre1">　　一个NSPredicate对象可以包含一个“条件”，其结果可以是真或假。例如，如果只要获取价值大于50元的BNRItem对象，就可以创建一个NSPredicate对象并将该对象加入相应的NSFetchRequest对象，代码如下：</p>
+
+  <p class="calibre1">　　NSPredicate *p = [NSPredicate predicateWithFormat:@“valueInDollars &gt; 50”];</p>
+
+  <p class="calibre1">　　[request setPredicate:p];</p>
+
+  <p class="calibre1">　　NSPredicate对象的格式字符串可以很长、很复杂。Apple的开发文档《Predicate Programming Guide》对此有详细的介绍。</p>
+
+  <p class="calibre1">　　此外，还可以用NSPredicate对象过滤数组中的对象。因此，即使是通过Core Data获取的allItems数组，一样可以使用NSPredicate对象再次过滤，代码如下：</p>
+
+  <p class="calibre1">　　NSArray *expensiveStuff = [allItems filteredArrayUsingPredicate:p];</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">添加和删除BNRItem对象</h3>
+
+  <p class="calibre1">　　以上完成了保存和载入功能，下面实现添加和删除功能。改用Core Data后，就不能再用alloc方法和init方法来创建BNRItem对象，而应该通过NSManagedObjectContext对象插入一个针对BNRItem实体的新对象，并得到相应的BNRItem对象。修改BNRItemStore.m中的createItem方法，代码如下：</p>
+
+  <p class="calibre1">　　- （BNRItem *）createItem</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">BNRItem *item = [[BNRItem alloc] init];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　double order;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[self.allItems count] == 0） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　order = 1.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　order = [[self.privateItems lastObject] orderingValue] + 1.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Adding after %d items, order = %.2f”,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.privateItems count], order）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *item =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[NSEntityDescription insertNewObjectForEntityForName:@“BNRItem”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inManagedObjectContext:self.context];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　item.orderingValue = order;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self.privateItems addObject:item];</p>
+
+  <p class="calibre1">　　return item;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　当用户删除某个BNRItem对象后，需要通知NSManagedObjectContext对象从数据库删除相应的数据。将以下代码加入BNRItemStore.m中的removeItem:。</p>
+
+  <p class="calibre1">　　- （void）removeItem:（BNRItem *）item</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSString *key = item.itemKey;</p>
+
+  <p class="calibre1">　　[[BNRImageStore sharedStore] deleteImageForKey:key];</p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.context deleteObject:item];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self.privateItems removeObjectIdenticalTo:item];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">排列BNRItem对象</h3>
+
+  <p class="calibre1">　　下面要为BNRItemStore实现BNRItem对象的排序功能。因为Core Data在使用关系数据库保存数据时，默认不会保留行的排列位置，所以当某个BNRItem对象在UITableView对象中的位置发生变化时，就必须更新该对象的orderingValue属性。</p>
+
+  <p class="calibre1">　　如果orderingValue是整数类型，那么实现排序功能会有点复杂。当某个BNRItem对象移动至新位置时，其他的BNRItem对象的orderingValue属性也要跟着变化。这也是为什么之前将orderingValue的类型声明为了double。当orderingValue的类型为double时，只需要找出位于插入位置之前和之后的BNRItem对象，将两个对象的orderingValues属性相加并除以2，就可以得到移动后的新orderingValue。修改BNRItemStore.m中的movePossessionAtIndex:toIndex:，加入排序功能，代码如下：</p>
+
+  <p class="calibre1">　　- （void）moveItemAtIndex:（NSUInteger）fromIndex</p>
+
+  <p class="calibre1">　　toIndex:（NSUInteger）toIndex</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　if （fromIndex == toIndex） {</p>
+
+  <p class="calibre1">　　return;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　BNRItem *item = self.privateItems[fromIndex];</p>
+
+  <p class="calibre1">　　[self.privateItems removeObjectAtIndex:fromIndex];</p>
+
+  <p class="calibre1">　　[self.privateItems insertObject:item atIndex:toIndex];</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 为移动的BNRItem对象计算新的orderValue</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　double lowerBound = 0.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 在数组中，该对象之前是否有其他对象？</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （toIndex &gt; 0） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　lowerBound = [self.privateItems[（toIndex - 1）] orderingValue];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　lowerBound = [self.privateItems[1] orderingValue] - 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　double upperBound = 0.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 在数组中，该对象之后是否有其他对象？</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （toIndex &lt; [self.privateItems count] - 1） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　upperBound = [self.privateItems[（toIndex + 1）] orderingValue];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　upperBound = [self.privateItems[（toIndex - 1）] orderingValue] + 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　double newOrderValue = （lowerBound + upperBound） / 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“moving to order %f”, newOrderValue）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　item.orderingValue = newOrderValue;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。虽然Homepwner的功能没有发生变化，但是内部已经改用Core Data实现数据的存取。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">为Homepwner增加BNRAssetType功能</h3>
+
+  <p class="calibre1">　　除了BNRItem实体，Homepwner的模型文件还描述了一个名为BNRAssetType的实体。BNRItem实体和BNRAssetType实体之间是一对一的关系。Homepwner需要提供某种途径，使用户可以为某个BNRItem对象设置BNRAssetType对象。此外，还要扩充BNRItemStore，使BNRItemStore对象能够获取BNRAssetType对象（创建此对象的任务将作为练习留给读者完成）。</p>
+
+  <p class="calibre1">　　在BNRItemStore.h中声明一个新方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （NSArray *）allAssetTypes;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在BNRItemStore.m中实现该方法，当Homepwner首次运行时（这时的BNRItemStore对象不会包含任何BNRAssetType对象），需要创建三种默认类型，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （NSArray *）allAssetTypes</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！_allAssetTypes） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSFetchRequest *request = [[NSFetchRequest alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSEntityDescription *e =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[NSEntityDescription entityForName:@“BNRAssetType”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inManagedObjectContext:self.context];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　request.entity = e;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSError *error = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *result = [self.context executeFetchRequest:request</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　error:&amp;error];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！result） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[NSException raise:@“Fetch failed”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　format:@“Reason: %@”, [error localizedDescription]];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_allAssetTypes = [result mutableCopy];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 第一次运行？</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[_allAssetTypes count] == 0） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSManagedObject *type;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　type = [NSEntityDescription</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　insertNewObjectForEntityForName:@“BNRAssetType”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inManagedObjectContext:self.context];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[type setValue:@“Furniture” forKey:@“label”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[_allAssetTypes addObject:type];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　type = [NSEntityDescription</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　insertNewObjectForEntityForName:@“BNRAssetType”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inManagedObjectContext:self.context];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[type setValue:@“Jewelry” forKey:@“label”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[_allAssetTypes addObject:type];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　type = [NSEntityDescription</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　insertNewObjectForEntityForName:@“BNRAssetType”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inManagedObjectContext:self.context];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[type setValue:@“Electronics” forKey:@“label”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[_allAssetTypes addObject:type];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return _allAssetTypes;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　下面要修改用户界面，使用户能够在BNRDetailViewController对象的视图中查看某个BNRItem对象的BNRAssetType对象，并进行修改（见图23-11）。</p>
+
+  <p class="calibre7"><img alt="tu23-11" src="../Images/image00660.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图23-11 查看和修改BNRAssetType对象的界面</p>
+
+  <p class="calibre1">　　使用Objective-C class模板创建新文件，父类选择NSObject，类名使用BNRAssetType- ViewController。</p>
+
+  <p class="calibre1">　　在BNRAssetTypeViewController.h中，先前置声明BNRItem类，然后将BNRAssetTypeViewController的父类改为UITableViewController，最后为BNRAssetTypeViewController声明一个类型为BNRItem的item属性。</p>
+
+  <p class="calibre1">　　#import &lt;Foundation/Foundation.h&gt;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@class BNRItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@interface BNRAssetTypeViewController : NSObject</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRAssetTypeViewController : UITableViewController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） BNRItem *item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　BNRAssetTypeViewController对象的作用是显示一组可供用户选择的BNRAssetType对象。按下BNRDetailViewController中的指定按钮，Homepwner应该会显示BNRAssetTypeViewController对象。在BNRAssetTypeViewController.m中实现数据源方法并导入相应的头文件（前文已经介绍过如何实现这类代码）：</p>
+
+  <p class="calibre1">　　#import “BNRAssetTypeViewController.h”</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRItemStore.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRItem.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation BNRAssetTypeViewController</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （instancetype）init</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [super initWithStyle:UITableViewStylePlain];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （instancetype）initWithStyle:（UITableViewStyle）style</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [self init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）viewDidLoad</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super viewDidLoad]</span>;</p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.tableView registerClass:[UITableViewCell class]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　forCellReuseIdentifier:@“UITableViewCell”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （NSInteger）tableView:（UITableView *）tableView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　numberOfRowsInSection:（NSInteger）section</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [[[BNRItemStore sharedStore] allAssetTypes] count];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （UITableViewCell *）tableView:（UITableView *）tableView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cellForRowAtIndexPath:（NSIndexPath *）indexPath</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UITableViewCell *cell =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[tableView dequeueReusableCellWithIdentifier:@“UITableViewCell”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　forIndexPath:indexPath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *allAssets = [[BNRItemStore sharedStore] allAssetTypes];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSManagedObject *assetType = allAssets[indexPath.row];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 通过键-值编码（key-value coding）得到BNRAssetType对象的label属性</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *assetLabel = [assetType valueForKey:@“label”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[cell.textLabel.text = assetLabel;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 为当前选中的对象加上勾选标记</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （assetType == self.item.assetType） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.accessoryType = UITableViewCellAccessoryCheckmark;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.accessoryType = UITableViewCellAccessoryNone;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return cell;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）tableView:（UITableView *）tableView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　didSelectRowAtIndexPath:（NSIndexPath *）indexPath</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.accessoryType = UITableViewCellAccessoryCheckmark;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *allAssets = [[BNRItemStore sharedStore] allAssetTypes];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSManagedObject *assetType = allAssets[indexPath.row];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.item.assetType = assetType;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.navigationController popViewControllerAnimated:YES];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　打开BNRDetailViewController.xib，向UIToolbar上拖曳一个UIBarButtonItem，然后按住Control将其拖曳到BNRDetailViewController.m的类扩展中，创建名为assetTypeButton插座变量。接下来使用同样的方法为assetTypeButton创建动作方法，命名为showAssetTypePicker:。</p>
+
+  <p class="calibre1">　　现在BNRDetailViewController.m中应该已经声明了以下属性和方法：</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIBarButtonItem *assetTypeButton;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRDetailViewController</p>
+
+  <p class="calibre1">　　// 省略其他方法</p>
+
+  <p class="calibre1">　　- （IBAction）showAssetTypePicker:（id）sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　在BNRDetailViewController.m顶部导入BNRAssetTypeViewController.h，代码如下：</p>
+
+  <p class="calibre1">　　#import “BNRDetailViewController.h”</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRAssetTypeViewController.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在BNRDetailViewController.m中实现showAssetTypePicker:，代码如下：</p>
+
+  <p class="calibre1">　　- （IBAction）showAssetTypePicker:（id）sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.view endEditing:YES];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRAssetTypeViewController *avc = [[BNRAssetTypeViewController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　alloc] init]; avc.item = self.item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.navigationController pushViewController:avc</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　animated:YES];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　最后更新UIBarButtonItem对象的标题，显示指定的BNRItem对象的类型。将以下代码加入BNRDetailViewController.m中的viewWillAppear:。</p>
+
+  <p class="calibre1">　　if （self.itemKey） {</p>
+
+  <p class="calibre1">　　// 根据itemKey从BNRImageStore对象获取相应的图片</p>
+
+  <p class="calibre1">　　UIImage *imageToDisplay = [[BNRImageStore sharedStore]</p>
+
+  <p class="calibre1">　　imageForKey:self.itemKey];</p>
+
+  <p class="calibre1">　　// 将得到的图片赋给UIImageView对象</p>
+
+  <p class="calibre1">　　self.imageView.image = imageToDisplay;</p>
+
+  <p class="calibre1">　　} else {</p>
+
+  <p class="calibre1">　　// 清空UIImageView对象</p>
+
+  <p class="calibre1">　　self.imageView.image = nil;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *typeLabel = [self.item.assetType valueForKey:@“label”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！typeLabel） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　typeLabel = @“None”;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.assetTypeButton.title = [NSString stringWithFormat:@“Type: %@”, typeLabel];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self updateFonts];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。选中某个BNRItem对象后，应该能设置该对象的BNRAssetType对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

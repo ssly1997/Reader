@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">19.1 创建BNRItemCell</h2>
+
+  <p class="calibre1">　　UITableViewCell是UIView的子类。创建UIView子类时，定制界面的方法是覆盖drawRect:，但是在创建UITableViewCell子类时，定制界面的方法是向UITableViewCell加入子视图。不过，并不是直接将子视图加入UITableViewCell，而是加入UITableViewCell的另一个子视图：contentView。</p>
+
+  <p class="calibre1">　　contentView起容器的作用，用于存放其他子视图。这些子视图构成UITableViewCell的布局（见图19-2）。要改变UITableViewCell子类的外观，需要修改contentView所包含的子视图。例如，可以创建UITextField、UILabel和UIButton等视图对象，并将它们加入contentView。</p>
+
+  <p class="calibre7"><img alt="tu19-2" src="../Images/image00616.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-2 UITableViewCell的视图层次结构</p>
+
+  <p class="calibre1">　　必须将子视图加入contentView而不是UITableViewCell对象自身的原因是，UITableViewCell对象会根据外部条件改变contentView的大小。例如，当UITableView对象进入编辑模式时，UITableViewCell对象会改变contentView的大小，为编辑控件（例如删除控件和移位控件）留出位置（见图19-3）。如果直接将子视图加入UITableViewCell对象，编辑控件就会遮住这些子视图。进入编辑模式时，UITableViewCell对象不会改变大小（UITableViewCell对象的宽度必须和UITableView对象的宽度相等），但是其包含的contentView会改变大小。</p>
+
+  <p class="calibre1">　　读者可能已经注意到视图层次结构中的UIScrollView对象，当UITableView对象进入编辑模式时，UITableViewCell对象会将contentView移动到左侧，这个过程需要借助UIScrollView对象。同样，在UITableViewCell对象中从右向左滑动显示删除控件时，也需要借助UIScrollView对象。实际上，contentView是UIScrollView对象的一个子视图。</p>
+
+  <p class="calibre7"><img alt="tu19-3" src="../Images/image00617.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-3 UITableViewCell对象的布局（标准模式和编辑模式）</p>
+
+  <p class="calibre1">　　打开Homepwner.xcodeproj。创建一个新的NSObject子类，并将其命名为BNRItemCell。在BNRItemCell.h中，将BNRItemCell的父类修改为UITableViewCell，代码如下：</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@interface BNRItemCell : NSObject</span></del></p>
+
+  <p class="calibre1">　　@interface BNRItemCell : <span class="calibre10">UITableViewCell</span></p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">创建UITableViewCell子类的界面</h3>
+
+  <p class="calibre1">　　创建UITableViewCell子类界面的最简单方法就是使用XIB文件。用空应用模板创建一个新的XIB文件并将其命名为BNRItemCell.xib（这里的Device Family无关紧要，使用默认值即可）。</p>
+
+  <p class="calibre1">　　新创建的XIB文件固化了一个BNRItemCell对象，当UITableView需要一个新的BNRItemCell对象时，UITableView会从这个XIB文件中解固BNRItemCell对象。</p>
+
+  <p class="calibre1">　　打开BNRItemCell.xib，从对象库面板中拖曳一个UITableViewCell对象至画布（请注意，是选择UITableViewCell，而不是UITableView或UITableViewController）。</p>
+
+  <p class="calibre1">　　在大纲视图中选中Table View Cell，再打开标识检视面板，在标题为Class的文本框中填入BNRItemCell（见图19-4）。</p>
+
+  <p class="calibre7"><img alt="tu19-4" src="../Images/image00618.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-4 修改Class</p>
+
+  <p class="calibre1">　　每个BNRItemCell对象需要显示三个文本标签和一张图片，所以需要拖曳三个UILabel对象和一个UIImageView对象至BNRItemCell。根据图19-5设置视图的大小和位置。请注意，最底部的UILabel对象需要使用较小的字体，文字颜色为深灰色。</p>
+
+  <p class="calibre7"><img alt="tu19-5" src="../Images/image00619.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-5 BNRItemCell的布局</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">为BNRItemCell创建并关联插座变量</h3>
+
+  <p class="calibre1">　　为了使BNRItemsViewController可以在tableView:cellForRowAtIndexPath:中设置BNRItemCell的界面内容，必须在BNRItemCell中添加相应的插座变量，用来关联三个UILabel对象和UIImageView对象。下面就使用拖曳的方式来创建并关联插座变量。</p>
+
+  <p class="calibre1">　　打开BNRItemCell.xib，然后按住Option并单击BNRItemCell.h，在辅助视图打开BNRItemCell.h。</p>
+
+  <p class="calibre1">　　按住Control，依次将新添加的子视图拖曳至BNRItemCell.h的方法声明区域，再根据图19-6为各个插座变量命名并设置关联特性（注意Connection、Storage和Object）。</p>
+
+  <p class="calibre7"><img alt="tu19-6" src="../Images/image00620.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-6 BNRItemCell中的关联</p>
+
+  <p class="calibre1">　　现在请读者仔细检查BNRItemCell.h中的代码：</p>
+
+  <p class="calibre1">　　@interface BNRItemCell : UITableViewCell</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIImageView *thumbnailView;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UILabel *nameLabel;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UILabel *serialNumberLabel;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UILabel *valueLabel;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　UITableViewCell的XIB文件不会使用File's Owner，所以不用为其设置类名，也不用为其创建任何关联。与UIViewController的XIB文件不同，UITableViewCell的XIB文件在解固时，不需要使用某个对象代替File's Owner，也不需要将其中的固化对象关联到File's Owner。为了理解两种XIB文件的区别，首先需要知道UITableView加载UITableViewCell的过程。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">使用BNRItemCell</h3>
+
+  <p class="calibre1">　　下面在BNRItemsViewController的tableView:cellForRowAtIndexPath:中为UITableView对象创建BNRItemCell对象。</p>
+
+  <p class="calibre1">　　首先在BNRItemsViewController.h顶部导入BNRItemCell.h：</p>
+
+  <p class="calibre1">　　#import “BNRItemCell.h”</p>
+
+  <p class="calibre1">　　在之前章节中，为了让UITableView在需要使用UITableViewCell时创建相应类的对象，需要向UITableView注册UITableViewCell的类；本章通过NIB文件加载UITableViewCell，则需要注册相应的NIB文件。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m的viewDidLoad中注册BNRItemCell.xib，并将重用标识设置为BNRItemCell，代码如下：</p>
+
+  <p class="calibre1">　　- （void）viewDidLoad</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　[super viewDidLoad];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[self.tableView registerClass:[UITableViewCell class]</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">forCellReuseIdentifier:@“UITableViewCell”];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建UINib对象，该对象代表包含了BNRItemCell的NIB文件</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UINib *nib = [UINib nibWithNibName:@“BNRItemCell” bundle:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 通过UINib对象注册相应的NIB文件</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.tableView registerNib:nib</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　forCellReuseIdentifier:@“BNRItemCell”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　注册NIB文件的原理非常简单，仅仅是将UINib对象以“BNRItemCell”作为键保存到NSDictionary中。UINib对象包含所有保存在其XIB文件中的数据，当UITableView对象需要使用UITableViewCell对象时，就会使用相应的UINib对象创建新的UITableViewCell对象。</p>
+
+  <p class="calibre1">　　在UITableView对象中注册了包含BNRItemCell.xib的UINib对象之后，UITableView对象就可以通过“BNRItemCell”键找到并加载BNRItemCell对象。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m中修改tableView: cellForRowAtIndexPath:，代码如下：</p>
+
+  <p class="calibre1">　　- （UITableViewCell *）tableView:（UITableView *）tableView</p>
+
+  <p class="calibre1">　　cellForRowAtIndexPath:（NSIndexPath *）indexPath</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">UITableViewCell *cell =</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[tableView dequeueReusableCellWithIdentifier:@“UITableViewCell”</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">forIndexPath:indexPath];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 获取BNRItemCell对象，返回的可能是现有的对象，也可能是新创建的对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItemCell *cell =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[tableView dequeueReusableCellWithIdentifier:@“BNRItemCell”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　forIndexPath:indexPath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *items = [[BNRItemStore sharedStore] allItems];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *item = items[indexPath.row];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.textLabel.text = item.description;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 根据BNRItem对象设置BNRItemCell对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.nameLabel.text = item.itemName;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.serialNumberLabel.text = item.serialNumber;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.valueLabel.text =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[NSString stringWithFormat:@“$%d”, item.valueInDollars];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　return cell;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　首先，由于创建了UITableViewCell子类，因此需要修改重用标识；其次，当设置BNRItemCell对象时，需要将BNRItem对象的各个属性赋给对应UILabel对象的text属性（本章稍后再处理UIImageView对象）。</p>
+
+  <p class="calibre1">　　构建并运行应用，创建一个新的BNRItem对象。可以发现，BNRItemCell对象已经可以正确加载了，不过显示效果并不好：目前所有子视图都没有添加约束。下面就在XIB文件中为BNRItemCell对象的各个子视图添加约束。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">为BNRItemCell添加约束</h3>
+
+  <p class="calibre1">　　BNRItemsViewController的UITableView对象会根据设备屏幕尺寸自动调整大小。当UITableView对象的宽度改变时，其中的所有UITableViewCell对象也会自动改变宽度，保持与UITableView对象的宽度相等。因此，必须为之前添加的子视图添加约束，以便自动适配UITableViewCell对象的当前宽度。（UITableViewCell对象的高度通常不会改变。只有手动设置UITableView对象的rowHeight属性或编写tableView:heightForRow- AtIndexPath:方法才会修改UITableViewCell对象的高度。）</p>
+
+  <p class="calibre1">　　下面是各个子视图需要的约束：</p>
+
+  <p class="calibre1">　　1.UIImageView对象的尺寸始终为（40×40）像素，在contentView中垂直居中，而左边紧贴contentView。</p>
+
+  <p class="calibre1">　　2.nameLabel和serialNumberLabel保持与UIImageView对象的左边距相等，并且始终保持画布当前距离。同时，它们的宽度延伸到valueLabel左边，填充大部分屏幕，而高度保持当前值。</p>
+
+  <p class="calibre1">　　3.valueLabel在contentView中垂直居中，左边和右边分别与两个UILabel对象和contentView保持画布当前距离。</p>
+
+  <p class="calibre1">　　首先选中UIImageView对象，然后打开Pin菜单，固定UIImageView对象的高度和宽度（也可以选中UIImageView对象并按住Control键将其沿倾斜方向拖曳至自身）。</p>
+
+  <p class="calibre1">　　接下来让UIImageView对象在contentView中垂直居中。打开Align菜单，选择Vertical Center in Container（在父视图中垂直居中）。如果这里使用拖曳的方式，请注意不要将UIImageView对象拖曳到了另一个子视图。避免该问题的方法是，将UIImageView对象拖曳至大纲视图中的Content View（见图19-7）。</p>
+
+  <p class="calibre7"><img alt="tu19-7" src="../Images/image00621.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-7 拖曳至大纲视图</p>
+
+  <p class="calibre1">　　下面同时为所有子视图设置水平方向的约束。按住Shift键，同时选中4个子视图，再打开Pin菜单，在菜单顶部选择左边和右边，然后点击Add 6 Constraints添加约束。</p>
+
+  <p class="calibre1">　　现在UIImageView对象已经具备了所有需要的约束，如果在画布中选中UIImageView对象，可以看见UIImageView对象周围蓝色的约束直线。（如果UIImageView对象的约束直线不是蓝色的，也不用担心，本章稍后会介绍如何修复该问题。）完成后的UIImageView对象约束应该如图19-8所示。</p>
+
+  <p class="calibre7"><img alt="tu19-8" src="../Images/image00622.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-8 UIImageView对象的约束</p>
+
+  <p class="calibre1">　　继续为nameLabel和serialNumberLabel添加约束。同时选中两个UILabel对象，然后打开Pin菜单，在菜单顶部选择顶边和底边，再勾选Height，最后点击Add 5 Constraints添加约束。可以发现，两个UILabel对象的约束直线也变为蓝色了。但是，如果现在改变UITableViewCell对象的高度，就会产生约束冲突。目前，垂直方向的所有约束关系（Relation）都是相等（Equal）。以下是垂直方向约束的视觉化格式字符串：</p>
+
+  <p class="calibre1">　　V:|-1-[nameLabel（==21）]-5-[serialNumberLabel（==15）]-1-|</p>
+
+  <p class="calibre1">　　由此可知，目前垂直方向的总高度为1+21+5+15+1=43，与contentView的高度相同。如果改变UITableViewCell的高度，就无法同时满足垂直方向的所有约束（读者可以尝试在大小检视面板中修改UITableViewCell的高度）。为了解决该问题，需要将其中一个约束的关系修改为大于或等于（Greater Than or Equal）。</p>
+
+  <p class="calibre1">　　下面修改nameLabel底边与serialNumberLabel顶边距离的约束。该约束在画布上的蓝色直线很短，很难选中；相反，可以选中nameLabel，然后打开大小检视面板，面板中列出了nameLabel的所有约束。找到底边与serialNumberLabel顶边距离的约束，然后点击右侧的齿轮图标，在弹出的菜单中选择Select and Edit…（选中并编辑…）。这时Xcode会自动切换到该约束的属性检视面板，在顶部的Relation下拉菜单中，选择Greater Than or Equal。现在两个UILabel对象的约束应该类似于图19-9。</p>
+
+  <p class="calibre7"><img alt="tu19-9" src="../Images/image00623.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-9 nameLabel和serialNumberLabel的约束</p>
+
+  <p class="calibre1">　　接下来选中valueLabel，点击Align菜单，勾选Vertical Center in Container（在父视图中垂直居中），最后点击Add 1 Constraint添加约束。</p>
+
+  <p class="calibre1">　　现在还有一个问题：目前三个UILabel对象都没有限定宽度，因此自动布局系统会根据固有内容大小设置它们的宽度。但是，目前三个UILabel对象的内容放大优先级是相同的，如果三个UILabel对象显示的文字都比较少（三个UILabel对象占据的屏幕宽度大于固有内容大小的宽度），自动布局系统就无法判断应该拉伸哪个UILabel对象以满足当前约束。</p>
+
+  <p class="calibre1">　　为了解决该问题，需要使valueLabel的内容放大优先级高于其他两个UILabel对象。读者可能会问：为什么不直接限定valueLabel的宽度呢？如果直接限定宽度，当valueLabel需要显示的文字比较多时，超出宽度的文字就会被截断而无法显示；相反，调整内容放大优先级后，valueLabel的宽度将根据需要显示的文字自动调整，以便显示所有文字（但是，如果文字过多，自动布局系统也会截断文字以满足当前约束）。</p>
+
+  <p class="calibre1">　　选中valueLabel，打开大小检视面板，将Horizontal Content Hugging Priority设置为1000。这时valueLabel的约束应该类似于图19-10。</p>
+
+  <p class="calibre7"><img alt="tu19-10" src="../Images/image00624.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-10 valueLabel的约束</p>
+
+  <p class="calibre1">　　现在请读者检查画布中的约束直线，如果仍然有橘红色直线，可以打开Resolve Auto Layout Issues菜单，然后选择Update All Frames in Item Cell。</p>
+
+  <p class="calibre1">　　虽然添加约束的步骤较多，但是目前contentView的子视图会根据UITableViewCell对象的尺寸自动调整大小和布局，以适配不同的屏幕和方向。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

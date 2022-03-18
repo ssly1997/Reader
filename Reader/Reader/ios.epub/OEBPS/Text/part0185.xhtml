@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">20.3 修改自动布局约束</h2>
+
+  <p class="calibre1">　　第15章限定了BNRDetailViewController界面中四个UILabel对象的宽度和高度，如果应用支持动态字体，自动布局系统将无法修改它们的宽度和高度。如果用户选择了一个较小的字体，UILabel对象可能会留下大片空白区域；相反，如果选择了一个较大的字体，UILabel对象可能无法显示全部文字。为了解决该问题，需要让自动布局系统根据UILabel对象的intrinsicContentSize属性动态设置UILabel对象的frame。</p>
+
+  <p class="calibre1">　　打开BNRDetailViewController.xib，在画布中依次选中四个UILabel对象并删除它们的宽度和高度约束。这时Interface Builder会提示视图位置错误，打开Resolve Auto Layout Issues菜单，选择Update All Frames in Control。</p>
+
+  <p class="calibre1">　　现在请读者修改除底部的dateLabel外的任意一个UILabel对象的文字（可以多输入一些文字，超出UILabel对象的当前宽度）。这时读者会注意到，三个UITextField对象将无法对齐。为了解决UITextField对象的布局问题，首先需要理解自动布局系统是如何设置视图frame的。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">复习内容放大优先级与内容缩小优先级</h3>
+
+  <p class="calibre1">　　第16章介绍过，所有视图都具有intrinsicContentSize属性，表示视图的固有内容大小，自动布局系统会根据固有内容大小自动为视图添加宽度和高度约束。如果需要让自动布局系统在必要时基于固有内容大小放大视图尺寸，则可以为视图添加一个优先级比视图的内容放大优先级（Content Hugging Priority）高的约束；相反，如果需要让自动布局系统在必要时基于固有内容大小缩小视图尺寸，则可以为视图添加一个优先级比视图的内容缩小优先级（Content Compression Resistance Priority）高的约束。</p>
+
+  <p class="calibre1">　　首先检查UILabel对象和UITextField对象在水平方向上的约束，如果使用视觉化格式语言描述该约束，以nameLabel和nameField为例，视觉化格式字符串如下所示：</p>
+
+  <p class="calibre1">　　H:|-8-[nameLabel]-8-[nameField]-8-|</p>
+
+  <p class="calibre1">　　从视觉化格式字符串中可以看出，目前并没有为nameLabel和nameField添加与宽度相关的约束，因此自动布局系统会在必要时调整nameLabel和nameField的宽度：对于内容放大优先级较高的视图，自动布局系统会根据固有内容大小设置它的宽度；对于内容放大优先级较低的视图，自动布局系统则会拉伸它的宽度，以满足当前约束。如果比较UILabel对象和UITextField对象，会发现UILabel对象的内容放大优先级是251，而UITextField对象的则是250。由于UILabel对象的内容放大优先级更高，因此UILabel对象会保持固有内容大小的宽度，而UITextField对象则会根据当前约束拉伸宽度。</p>
+
+  <p class="calibre1">　　为了对齐所有UITextField对象，可以使位于UITextField对象左侧的三个UILabel对象保持宽度相同。读者可能认为之前删除的宽度约束可以使三个UILabel对象保持宽度相同了，但实际上之前删除的宽度约束与现在要添加的约束有本质区别：之前的宽度约束是分别添加在各个UILabel对象上的，三个约束之间互相独立，没有任何关系，仅仅是限定的数值相同；而现在要同时为三个UILabel对象添加约束，无论其中哪个UILabel对象的宽度发生变化，其他两个UILabel对象也都会随之发生变化，始终保持宽度相等。</p>
+
+  <p class="calibre1">　　同时选中位于UITextField对象左侧的三个UILabel对象，然后打开Pin菜单，选择Equal Widths（宽度相等），并在Update Frames下拉菜单中选择All Frames in Container，最后点击Add 2 Constraints添加约束。这时界面应该类似于图20-4。</p>
+
+  <p class="calibre7"><img alt="tu20-4" src="../Images/image00634.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图20-4 为三个UILabel对象添加宽度相等约束</p>
+
+  <p class="calibre1">　　虽然步骤很简单，但是读者可能会对背后的原理产生疑惑。下面就具体解释以上步骤的原理。首先，UILabel对象的内容放大优先级是251，高于UITextField对象的250，因此自动布局系统会根据固有内容大小设置UILabel对象的宽度；其次，因为刚才为三个UILabel对象添加了宽度相等约束，所以目前三个UILabel对象各具有两个与宽度相关的约束：宽度相等约束（优先级为1000，属于必需约束）与自动布局系统根据固有内容大小添加宽度约束。</p>
+
+  <p class="calibre1">　　再看约束对视图布局的影响。为了满足当前约束，现在只有文字内容最长的UILabel对象会保持固有内容大小，而另外两个UILabel对象则会拉伸宽度，与最长的UILabel对象保持相等，这是由于宽度相等约束的优先级（1000）高于内容放大优先级（251）。</p>
+
+  <p class="calibre1">　　理解上述原理非常重要。目前UILabel对象和UITextField对象可以根据显示的文字内容自动调整布局，而文字内容在很多情况下都会发生变化，最常见的就是动态字体以及针对多种语言实施本地化（第25章会介绍本地化）。</p>
+
+  <p class="calibre1">　　现在BNRDetailViewController可以很好地支持动态字体了，在设置应用中修改用户首选字体，使用不同的字体大小测试BNRDetailViewController界面的显示效果。读者会注意到，界面中的文字会自动缩放，界面布局也会自动调整。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

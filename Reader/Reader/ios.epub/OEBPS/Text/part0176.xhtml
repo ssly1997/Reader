@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">19.2 处理图片</h2>
+
+  <p class="calibre1">　　现在为BNRItemCell中的UIImageView对象设置图片。要在BNRItemCell中显示BNRItem对象的图片，可以先根据BNRItem对象从BNRImageStore中获取相应的图片，然后直接赋给UIImageView对象。但是因为图片的尺寸很大，所以这样做需要读取大量的数据，还要由UIImageView负责调整图片的大小，这些额外的工作都会影响应用的性能。另一种更合理的解决方案是创建并使用图片的缩略图（thumbnail）。</p>
+
+  <p class="calibre1">　　iOS SDK提供了多种创建缩略图的途径，其中之一是根据原图在屏外上下文（offscreen context）中画出按比率缩小后的版本，然后从上下文取出新创建的图片。下面通过这种途径为BNRItem对象的图片创建缩略图。首先要为BNRItem添加一个UIImage属性，指向缩略图；然后要将这些缩略图保存起来，以便在应用再次启动时重新载入。</p>
+
+  <p class="calibre1">　　第11章通过BNRImageStore对象存取全尺寸的图片，每张图片都有自己的独立文件；相反，缩略图的文件体积很小，可以直接将其和BNRItem对象的其他属性一起固化。</p>
+
+  <p class="calibre1">　　打开BNRItem.h，为BNRItem对象的缩略图声明一个新属性，此外还要声明一个新方法，根据全尺寸图片设置缩略图，代码如下：</p>
+
+  <p class="calibre1">　　@property （nonatomic, copy） NSString *imageKey;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） UIImage *thumbnail;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）setThumbnailFromImage:（UIImage *）image;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　当用户为某个BNRItem对象拍摄或选取了图片后，BNRItem对象会获得相应的全尺寸图片。然后，BNRItem对象要为全尺寸图片生成缩略图，并赋给thumbnail属性。</p>
+
+  <p class="calibre1">　　完成上述过程的方法是setThumbnailFromImage:。它根据传入的全尺寸图片，在屏外上下文中创建图片的小尺寸版本，并将其赋给thumbnail。</p>
+
+  <p class="calibre1">　　为了能够创建屏外上下文，并通过上下文创建图片，iOS特别提供了一套函数。UIGraphicsBeginImageContext函数可以创建屏外图形上下文（offscreen image context）。需要传入该函数的实参有：图形上下文的宽和高（CGSize结构）、缩放倍数（scaling factor）和图片是否透明（布尔值）。调用该函数后，新创建的CGContext结构将成为当前图形上下文。</p>
+
+  <p class="calibre1">　　要在上下文中绘图，需要使用Core Graphics。具体做法和实现UIView子类的drawRect:类似。调用UIGraphicsGetImageFromCurrentImageContext函数可以从上下文得到一个UIImage对象，即绘制的图片。</p>
+
+  <p class="calibre1">　　通过图形上下文得到UIImage对象后，必须调用UIGraphicsEndImageContext函数，清理相应的上下文。</p>
+
+  <p class="calibre1">　　在BNRItem.m中实现以下方法，通过屏外上下文创建缩略图。</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）setThumbnailFromImage:（UIImage *）image</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGSize origImageSize = image.size;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 缩略图的大小</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect newRect = CGRectMake（0, 0, 40, 40）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 确定缩放倍数并保持宽高比不变</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　float ratio = MAX（newRect.size.width / origImageSize.width,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　newRect.size.height / origImageSize.height）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 根据当前设备的屏幕scaling factor创建透明的位图上下文</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIGraphicsBeginImageContextWithOptions（newRect.size, NO, 0.0）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建表示圆角矩形的UIBezierPath对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:newRect</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cornerRadius:5.0];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 根据UIBezierPath对象裁剪图形上下文</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[path addClip];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 让图片在缩略图绘制范围内居中</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect projectRect;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.size.width = ratio * origImageSize.width;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.size.height = ratio * origImageSize.height;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.origin.x = （newRect.size.width - projectRect.size.width） / 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　projectRect.origin.y = （newRect.size.height - projectRect.size.height） / 2.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 在上下文中绘制图片</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[image drawInRect:projectRect];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 通过图形上下文得到UIImage对象，并将其赋给thumbnail属性</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext（）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.thumbnail = smallImage;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 清理图形上下文</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIGraphicsEndImageContext（）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　修改BNRDetailViewController.m中的imagePickerController:didFinishPicking- MediaWithInfo:，加入以下代码，在获取全尺寸图片后创建缩略图。</p>
+
+  <p class="calibre1">　　- （void）imagePickerController:（UIImagePickerController *）picker</p>
+
+  <p class="calibre1">　　didFinishPickingMediaWithInfo:（NSDictionary *）info</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　UIImage *image = info [UIImagePickerControllerOriginalImage];</p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.item setThumbnailFromImage:image];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　为BNRItem添加thumbnail属性后，就可以在BNRItemsViewController中使用该属性。更新BNRItemsViewController.m中的tableView:cellForRowAtIndexPath:，代码如下：</p>
+
+  <p class="calibre1">　　cell.valueLabel.text =</p>
+
+  <p class="calibre1">　　[NSString stringWithFormat:@“$%d”, item.valueInDollars];</p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.thumbnailView.image = item.thumbnail;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　return cell;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。为某个BNRItem对象拍摄照片，当UITableView对象再次出现时，应该会显示该对象的缩略图、名称和价值（对已经存在的BNRItem对象需要重新拍摄照片）。</p>
+
+  <p class="calibre1">　　最后还要将缩略图固化到文件。在BNRItem.m的initWithCoder:中加入以下代码：</p>
+
+  <p class="calibre1">　　- （id）initWithCoder:（NSCoder *）aDecoder</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super init];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　_itemName = [aDecoder decodeObjectForKey:@“itemName”];</p>
+
+  <p class="calibre1">　　_serialNumber = [aDecoder decodeObjectForKey:@“serialNumber”];</p>
+
+  <p class="calibre1">　　_dateCreated = [aDecoder decodeObjectForKey:@“dateCreated”];</p>
+
+  <p class="calibre1">　　_itemKey = [aDecoder decodeObjectForKey:@“itemKey”];</p>
+
+  <p class="calibre1"><span class="calibre10">　　_thumbnail = [aDecoder decodeObjectForKey:@“thumbnail”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　_valueInDollars = [aDecoder decodeIntForKey:@“valueInDollars”]</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　- （void）encodeWithCoder:（NSCoder *）aCoder</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　[aCoder encodeObject:self.itemName forKey:@“itemName”];</p>
+
+  <p class="calibre1">　　[aCoder encodeObject:self.serialNumber forKey:@“serialNumber”];</p>
+
+  <p class="calibre1">　　[aCoder encodeObject:self.dateCreated forKey:@“dateCreated”];</p>
+
+  <p class="calibre1">　　[aCoder encodeObject:self.itemKey forKey:@“itemKey”];</p>
+
+  <p class="calibre1"><span class="calibre10">　　[aCoder encodeObject:self.thumbnail forKey:@“thumbnail”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[aCoder encodeInt:self.valueInDollars forKey:@“valueInDollars”];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。为若干BNRItem对象拍摄照片，然后终止应用并重新启动，应该能看到之前拍摄的照片的缩略图。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

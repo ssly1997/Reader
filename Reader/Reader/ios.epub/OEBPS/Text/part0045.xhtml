@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">4.8 高级练习：阴影和渐变</h2>
+
+  <p class="calibre1">　　到目前为止，还无法使用Objective-C类绘制阴影和渐变，只能使用Core Graphics。</p>
+
+  <p class="calibre1">　　绘制阴影之前，需要将阴影效果添加到一个图形上下文中，之后在该图形上下文中绘制的所有不透明图像都会带有阴影效果。可以为阴影设置偏移量（使用CGSize表示）和模糊指数（使用CGFloat表示）。以下是为图形上下文添加阴影效果的方法声明：</p>
+
+  <p class="calibre1">　　void <span class="calibre10">CGContextSetShadow</span> (</p>
+
+  <p class="calibre1">　　CGContextRef context,</p>
+
+  <p class="calibre1">　　CGSize offset,</p>
+
+  <p class="calibre1">　　CGFloat blur);</p>
+
+  <p class="calibre1">　　还有一个方法可以设置一个颜色参数，为简单起见，这里使用默认阴影颜色。</p>
+
+  <p class="calibre1">　　请注意没有删除阴影效果的函数。因此需要在添加阴影效果之前保存绘图状态，之后再恢复没有阴影效果的状态。类似于以下代码：</p>
+
+  <p class="calibre1">　　CGContextSaveGState(currentContext);</p>
+
+  <p class="calibre1">　　CGContextSetShadow(currentContext, CGSizeMake(4,7), 3);</p>
+
+  <p class="calibre1">　　// 在这里绘制的图像会带有阴影效果</p>
+
+  <p class="calibre1">　　CGContextRestoreGState(currentContext);</p>
+
+  <p class="calibre1">　　// 在这里绘制的图像没有阴影效果</p>
+
+  <p class="calibre1">　　练习的第一部分是为上一个练习中绘制的图像添加阴影效果，如图4-22所示。</p>
+
+  <p class="calibre7"><img alt="tu4-22" src="../Images/image00436.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-22 绘制阴影</p>
+
+  <p class="calibre1">　　渐变用来在图形中填充一系列平滑过渡的颜色。可以在CGGradientRef中设置需要的颜色和渐变的方式（线性渐变和径向渐变）。类似于以下代码：</p>
+
+  <p class="calibre1">　　CGFloat locations[2] = { 0.0, 1.0 };</p>
+
+  <p class="calibre1">　　CGFloat components[8] = { 1.0, 0.0, 0.0, 1.0, // 起始颜色为红色</p>
+
+  <p class="calibre1">　　　　　　　　　　　　　　　1.0, 1.0, 0.0, 1.0 }; // 终止颜色为黄色</p>
+
+  <p class="calibre1">　　CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();</p>
+
+  <p class="calibre1">　　CGGradientRef gradient = CGGradientCreateWithColorComponents(colorspace,</p>
+
+  <p class="calibre1">　　　　　　　　　　　　　　　　　　　　　　　　components,</p>
+
+  <p class="calibre1">　　　　　　　　　　　　　　　　　　　　　　　　locations,2);</p>
+
+  <p class="calibre1">　　CGPoint startPoint = ...;</p>
+
+  <p class="calibre1">　　CGPoint endPoint = ...;</p>
+
+  <p class="calibre1">　　CGContextDrawLinearGradient(currentContext, gradient,</p>
+
+  <p class="calibre1">　　　　　　　　　　　　 startPoint, endPoint, 0);</p>
+
+  <p class="calibre1">　　CGGradientRelease(gradient);</p>
+
+  <p class="calibre1">　　CGColorSpaceRelease(colorspace);</p>
+
+  <p class="calibre1">　　CGContextDrawLinearGradient函数的最后一个参数用来设置起始位置（startPoint）和终止位置（endPoint）以外的绘制区域的颜色填充方式。如果需要使用起始颜色填充起始位置之前的绘制区域，可以将最后一个参数设置为kCGGradientDraws- BeforeStartLocation。相反，如果需要使用终止颜色填充终止位置之后的绘制区域，可以设置为kCGGradientDrawsAfterEndLocation。如果渐变起止位置以外的绘制区域都需要填充，可以使用位运算符将两个选项连接起来：</p>
+
+  <p class="calibre1">　　CGContextDrawLinearGradient(currentContext, gradient, startPoint, endPoint,</p>
+
+  <p class="calibre1">　　kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);</p>
+
+  <p class="calibre1">　　请注意，与填充颜色不同，无法使用渐变填充路径——渐变会直接填满整个图形上下文。因此，如果需要将渐变应用在指定路径范围以内，必须使用剪切路径（clipping path）裁剪图形上下文。同时，与绘制阴影时的情况类似，没有函数可以删除剪切路径，同样需要在使用剪切路径之前保存绘图状态，填充渐变之后再恢复绘图状态。</p>
+
+  <p class="calibre1">　　以下代码将一个UIBezierPath对象myPath设置为当前图形上下文currentContext的剪切路径：</p>
+
+  <p class="calibre1">　　CGContextSaveGState(currentContext);</p>
+
+  <p class="calibre1">　　[myPath addClip];</p>
+
+  <p class="calibre1">　　// 在这里为myPath填充渐变</p>
+
+  <p class="calibre1">　　CGContextRestoreGState(currentContext);</p>
+
+  <p class="calibre1">　　练习的第二部分是绘制一个带有渐变效果的三角形。起始颜色（底部）是黄色，终止颜色（顶部）是绿色，如图4-23所示。</p>
+
+  <p class="calibre7"><img alt="tu4-23" src="../Images/image00437.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-23 绘制带有渐变效果的三角形</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">12.8 深入学习：响应对象链</h2>
+
+  <p class="calibre1">　　第7章已简单介绍过UIResponder和第一响应对象。UIResponder对象可以接收触摸事件，而UIView是典型的UIResponder子类。除了UIView，还有很多其他的UIResponder子类，其中包括UIViewController、UIApplication和UIWindow。UIViewController不是视图对象，既不能触摸也无法显示，为什么也是UIResponder子类？这是因为虽然不能向UIViewController对象直接发送触摸事件，但是该对象能够通过响应对象链接收事件。</p>
+
+  <p class="calibre1">　　UIResponder对象拥有一个名为nextResponder的指针，相关的UIResponder对象可以通过该指针组成一个响应对象链（见图12-5）。当<span class="calibre10">UIView</span>对象属于某个<span class="calibre10">UIViewController</span>对象时，其nextResponder指针就会指向包含该视图的<span class="calibre10">UIViewController</span>对象。当<span class="calibre10">UIView</span>对象不属于任何<span class="calibre10">UIViewController</span>对象时，其nextResponder指针就会指向该视图的父视图。<span class="calibre10">UIViewController</span>对象的nextResponder通常会指向其视图的父视图。最顶层的父视图是UIWindow对象，而<span class="calibre10">UIWindow</span>对象的nextResponder指向的是<span class="calibre10">UIApplication</span>单例。</p>
+
+  <p class="calibre7"><img alt="tu12-5" src="../Images/image00537.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图12-5 响应对象链</p>
+
+  <p class="calibre1">　　如果<span class="calibre10">UIResponder</span>对象没有处理传给它的事件，会发生什么？该对象会将未处理的消息转发给自己的nextResponder。这也是<span class="calibre10">touchesBegan:withEvent:</span>这类方法的默认实现。因此，如果没有为某个<span class="calibre10">UIResponder</span>对象覆盖特定的事件处理方法，那么该对象的nextResponder会尝试处理相应的触摸事件。最终，该事件会传递给<span class="calibre10">UIApplication</span>（响应对象链的最后一个对象），如果<span class="calibre10">UIApplication</span>也无法对其处理，系统就会丢弃该事件。</p>
+
+  <p class="calibre1">　　除了由UIResponder对象向nextResponder转发消息，也可以直接向nextResponder发送消息。假设有一个正在跟踪触摸事件的视图，当该视图发生连按事件时，需要由该视图的nextResponder来处理这个事件。相应的代码如下：</p>
+
+  <p class="calibre1">　　- （void）touchesBegan:（NSSet *）touches withEvent:（UIEvent *）event</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　UITouch *touch = [touches anyObject];</p>
+
+  <p class="calibre1">　　if （touch.tapCount == 2） {</p>
+
+  <p class="calibre1">　　[[self nextResponder] touchesBegan:touches withEvent:event];</p>
+
+  <p class="calibre1">　　return;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　……继续处理非连按触摸事件</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

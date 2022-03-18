@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">11.12 深入学习：摄像</h2>
+
+  <p class="calibre1">　　理解了如何通过UIImagePickerController实现拍照功能，实现摄像功能也会很容易。前文曾经提过，它的sourceType属性决定了照片的来源是相机、照片库还是最近拍摄的照片。它还有一个名为mediaTypes的属性，该属性是一个数组对象，包含媒体类型标识（NSString对象）。mediaTypes属性的作用是限制用户选择媒体类型。</p>
+
+  <p class="calibre1">　　UIImagePickerController对象可以选择的媒体类型有两种，分别为静态照片和视频。mediaTypes数组默认只包含常量字符串kUTTypeImage。因此，如果不修改该对象的mediaTypes属性，那么用户只能使用相机拍摄静态照片，而照片库和最近拍摄的照片中也只会显示静态照片。</p>
+
+  <p class="calibre1">　　添加摄像（或者选取已有视频）功能很简单，只需将常量字符串kUTTypeMovie加入mediaTypes数组即可。但是有些设备不支持摄像功能。和类方法isSourceTypeAvailable:（检查设备是否有相机）相似，availableMediaTypesForSourceType:方法可以检查相机是否能拍摄视频。以下代码可以将UIImagePickerController对象设置为既能摄像又能拍照。</p>
+
+  <p class="calibre1">　　UIImagePickerController *ipc = [[UIImagePickerController alloc] init];</p>
+
+  <p class="calibre1">　　NSArray *availableTypes = [UIImagePickerController</p>
+
+  <p class="calibre1">　　availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];</p>
+
+  <p class="calibre1">　　ipc.mediaTypes = availableTypes;</p>
+
+  <p class="calibre1">　　ipc.sourceType = UIImagePickerControllerSourceTypeCamera;</p>
+
+  <p class="calibre1">　　ipc.delegate = self;</p>
+
+  <p class="calibre1">　　加入摄像功能的UIImagePickerController界面会多出一个开关，用户使用这个开关，可以在照相模式和摄像模式之间切换。如果用户选择摄像模式，就需要在UIImagePickerController的委托方法imagePickerController: didFinishPickingMediaWithInfo:中处理摄像结果。</p>
+
+  <p class="calibre1">　　处理静态照片时，传入imagePickerController:didFinishPickingMediaWithInfo:的info参数（NSDictionary类型）会包含一个UIImage对象，以对应整张照片。但是针对拍摄的视频，Cocoa Touch没有提供相应的“UIVideo类”（移动设备内存有限，一次载入整个视频不现实）。因此，UIImagePickerController对象会将拍摄的视频存入临时目录。当用户结束摄像时，该对象的委托对象会收到imagePickerController: didFinishPickingMediaWithInfo:消息，并且传入的info参数会包含视频的文件路径。获取路径的代码如下：</p>
+
+  <p class="calibre1">　　- （void）imagePickerController:（UIImagePickerController *）picker</p>
+
+  <p class="calibre1">　　didFinishPickingMediaWithInfo:（NSDictionary *）info</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSURL *mediaURL = info[UIImagePickerControllerMediaURL];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　第18章会详细介绍文件系统，读者目前需要知道的是，将视屏文件留在临时目录里是“不安全”的，应该将文件移至其他目录，代码如下：</p>
+
+  <p class="calibre1">　　- （void）imagePickerController:（UIImagePickerController *）picker</p>
+
+  <p class="calibre1">　　didFinishPickingMediaWithInfo:（NSDictionary *）info</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSURL *mediaURL = info[UIImagePickerControllerMediaURL];</p>
+
+  <p class="calibre1">　　if （mediaURL） {</p>
+
+  <p class="calibre1">　　// 确定设备是否支持视频</p>
+
+  <p class="calibre1">　　if （UIVideoAtPathIsCompatibleWithSavedPhotosAlbum（[mediaURL path]）） {</p>
+
+  <p class="calibre1">　　// 将视频存入相册</p>
+
+  <p class="calibre1">　　UISaveVideoAtPathToSavedPhotosAlbum（[mediaURL path], nil, nil, nil）；</p>
+
+  <p class="calibre1">　　// 删除临时目录下的视频</p>
+
+  <p class="calibre1">　　[[NSFileManager defaultManager] removeItemAtPath:[mediaURL path]</p>
+
+  <p class="calibre1">　　error:nil];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　最后还有一点需要额外说明：如何限制用户只能拍摄视频（或者只能选择现有的视频）？限制用户只能选择照片很简单（保留mediaTypes的默认值即可）。允许用户在照片和视频之间做一个选择也很简单（将mediaTypes设置为availableMediaTypesForSourceType:的返回值即可）。但是，如果要限制用户只使用视频，就会复杂一些。首先必须确定设备是否支持视频，然后设置mediaTypes属性指向一个只包含视频标识的数组对象。</p>
+
+  <p class="calibre1">　　NSArray *availableTypes =</p>
+
+  <p class="calibre1">　　[UIImagePickerController availableMediaTypesForSourceType:</p>
+
+  <p class="calibre1">　　UIImagePickerControllerSourceTypeCamera];</p>
+
+  <p class="calibre1">　　if （[availableTypes containsObject:（__bridge NSString *）kUTTypeMovie]） {</p>
+
+  <p class="calibre1">　　[ipc setMediaTypes:@[（__bridge NSString *）kUTTypeMovie]];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　为什么要将kUTTypeMovie转成NSString？这是因为常量kUTTypeMovie的类型是CFStringRef，其定义如下：</p>
+
+  <p class="calibre1">　　const CFStringRef kUTTypeVideo;</p>
+
+  <p class="calibre1">　　编译这段代码，编译器会报告无法找到kUTTypeMovie的定义。这是因为kUTTypeMovie和kUTTypeImage都是在MobileCoreServices框架中声明的，所以必须先导入该框架：</p>
+
+  <p class="calibre1">　　@import MobileCoreServices;</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

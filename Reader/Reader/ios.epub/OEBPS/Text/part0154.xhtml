@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">17.2 自动转屏通告机制</h2>
+
+  <p class="calibre1">　　当设备方向发生变化时，可能需要在视图控制器中执行一些操作。例如，Homepwner应用目前存在一个问题：当应用在iPhone中运行，并且界面处于横排方向时，BNRDetailViewController中的UIImageView对象会显得非常小，如果限制用户只能在竖排方向拍摄和浏览照片，用户体验会更好——可以隐藏UIImageView对象并禁用相机按钮。</p>
+
+  <p class="calibre1">　　首先，为了禁用相机按钮，需要创建一个指向相机按钮的插座变量。打开BNRDetailView- Controller.m，同时，在辅助编辑器中打开BNRDetailViewController.xib（在项目导航面板中按住Option键并单击BNRDetailViewController.xib）。</p>
+
+  <p class="calibre1">　　现在，按住Control键，将UIToolbar中的相机按钮拖曳到BNRDetailViewController.m的类扩展中，创建弱引用的插座变量cameraButton。Xcode会自动生成如下代码：</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIBarButtonItem *cameraButton;</p>
+
+  <p class="calibre1">　　接下来的任务是：当应用在iPhone中运行，并且界面处于横排方向时，隐藏UIImageView对象并禁用相机按钮。</p>
+
+  <p class="calibre1">　　如果需要在界面方向发生变化时执行某些操作，则可以在UIViewController中覆盖willAnimateRotationToInterfaceOrientation:duration:方法。在界面方向发生改变后，UIViewController会收到willAnimateRotationToInterfaceOrientation: duration:消息，消息的第一个参数是新的界面方向。</p>
+
+  <p class="calibre1">　　在BNRDetailViewController.m中创建一个新方法：prepareViewsForOrientation:，如果设备类型是iPhone，同时界面方向处于横排方向，就隐藏UIImageView对象并禁用相机按钮。接下来，当BNRDetailViewController的视图出现在屏幕上，以及界面方向发生变化时，调用此方法：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）prepareViewsForOrientation:（UIInterfaceOrientation）orientation</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果是iPad，则不执行任何操作</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[UIDevice currentDevice].userInterfaceIdiom</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　== UIUserInterfaceIdiomPad） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 判断设备是否处于横排方向</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （UIInterfaceOrientationIsLandscape（orientation）） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imageView.hidden = YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.cameraButton.enabled = NO;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imageView.hidden = NO;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.cameraButton.enabled = YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）willAnimateRotationToInterfaceOrientation:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（UIInterfaceOrientation）toInterfaceOrientation</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　duration:（NSTimeInterval）duration</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self prepareViewsForOrientation:toInterfaceOrientation];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　- （void）viewWillAppear:（BOOL）animated</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　[super viewWillAppear:animated];</p>
+
+  <p class="calibre1"><span class="calibre10">　　UIInterfaceOrientation io =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UIApplication sharedApplication] statusBarOrientation];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self prepareViewsForOrientation:io];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　…</p>
+
+  <p class="calibre1">　　在iPhone模拟器上构建并运行应用。在BNRDetaileViewController中为BNRItem添加一张图片，然后将iPhone模拟器旋转至横排方向。可以发现添加的图片消失了，同时相机按钮也会变为灰色，无法点击。接下来将iPhone模拟器旋转至竖排方向，此时消失的图片会再次显示在屏幕上，相机按钮也可以点击了。如果在iPad上运行应用，图片会一直显示，相机按钮也始终可以点击。</p>
+
+  <p class="calibre1">　　如果在该方法中编写修改视图属性的代码（例如修改视图的frame或通过hidden显示/隐藏视图），则方法会自动为属性的变化过程添加动画效果（例如由大变小或淡入淡出）。duration参数表示动画的持续时间。如果在应用转屏时不需要对视图做处理，或者不需要使用属性变换的动画效果，也可以将该方法替换为willRotateToInterfaceOrientation: duration:。两个方法将会在转屏时同时调用，参数的含义也都是相同的。但是，willRotateToInterfaceOrientation:duration:方法中不会自动添加任何动画效果。</p>
+
+  <p class="calibre1">　　此外，如果需要在转屏完成之后执行一些操作，则可以在UIViewController中覆盖didRotateFromInterfaceOrientation:方法。该方法的参数是发生转屏之前的界面方向。最后，UIViewController对象有一个interfaceOrientation属性，表示该对象的当前界面方向。</p>
+
+  <p class="calibre1">　　本节编写了针对iPhone的特定代码，下一节将为另一种设备添加新功能——如果应用运行在iPad中，则会通过UIPopoverController显示UIImagePickerController。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

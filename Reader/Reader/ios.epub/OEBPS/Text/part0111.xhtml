@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">12.2 创建TouchTracker应用</h2>
+
+  <p class="calibre1">　　下面创建一个名为TouchTracker的应用。通过Xcode的Empty Application模板，创建一个新的iPhone项目并将其命名为TouchTracker。Class Prefix保持与之前项目相同，填入BNR（见图12-2）。</p>
+
+  <p class="calibre7"><img alt="tu12-2" src="../Images/image00534.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图12-2 创建TouchTracker</p>
+
+  <p class="calibre1">　　首先，TouchTracker需要一个能够描述线条的模型对象。创建一个新的NSObject子类并将其命名为BNRLine。在BNRLine.h中，声明两个CGPoint类型的属性，代码如下：</p>
+
+  <p class="calibre1">　　#import &lt;Foundation/Foundation.h&gt;</p>
+
+  <p class="calibre1">　　@interface BNRLine : NSObject</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic） CGPoint begin;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic） CGPoint end;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　接着，创建一个新的NSObject子类并将其命名为<span class="calibre10">BNRDrawView</span>。在BNRDrawView.h中，将<span class="calibre10">BNRDrawView</span>的父类改为<span class="calibre10">UIView</span>，代码如下：</p>
+
+  <p class="calibre1">　　#import &lt;Foundation/Foundation.h&gt;</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@interface BNRDrawView : NSObject</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRDrawView : UIView</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　下面创建一个<span class="calibre10">UIViewController</span>子类，用于管理<span class="calibre10">BNRDrawView</span>对象。创建一个新的<span class="calibre10">NSObject</span>子类并将其命名为<span class="calibre10">BNRDrawViewController</span>。在BNRDrawViewController.h中，将<span class="calibre10">BNRDrawViewController</span>的父类改为<span class="calibre10">UIViewController</span>，代码如下：</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@interface BNRDrawViewController : NSObject</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRDrawViewController : UIViewController</span></p>
+
+  <p class="calibre1">　　在BNRDrawViewController.m中，先导入BNRDrawView.h，然后覆盖loadView方法，创建一个BNRDrawView对象并将其赋给BNRDrawViewController对象的view属性，代码如下：</p>
+
+  <p class="calibre1">　　#import “BNRDrawViewController.h”</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRDrawView.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation BNRDrawViewController</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）loadView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.view = [BNRDrawView alloc] initWithFrame:CGRectZero];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　在BNRAppDelegate.m中，先导入BNRDrawViewController.h，然后创建一个BNRDrawViewController对象，并将新创建的对象设置为UIWindow的rootView- Controller，代码如下：</p>
+
+  <p class="calibre1">　　#import “BNRAppDelegate.h”</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRDrawViewController.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation BNRAppDelegate</p>
+
+  <p class="calibre1">　　- （BOOL）application:（UIApplication *）application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:（NSDictionary *）launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];</p>
+
+  <p class="calibre1">　　// 在此处加入自定义代码</p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRDrawViewController *dvc = [[BNRDrawViewController alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window.rootViewController = dvc;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　图12-3是目前TouchTracker的对象图。</p>
+
+  <p class="calibre7"><img alt="tu12-3" src="../Images/image00535.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图12-3 TouchTracker对象图<br class="calibre2"/></p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

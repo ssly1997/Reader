@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">16.5 另一种添加方式</h2>
+
+  <p class="calibre1">　　虽然视觉化格式语言可以形象地描述大部分约束，但是，如果某个约束是根据另一个约束计算而来的，就无法使用视觉化格式语言。例如，假设需要将dateLabel的高度设置为nameLabel高度的两倍，就必须使用NSLayoutConstraint的另一个工厂方法：</p>
+
+  <p class="calibre1">　　+ （id）<span class="calibre10">constraintWithItem:</span>（id）view1</p>
+
+  <p class="calibre1">　　<span class="calibre10">attribute:</span>（NSLayoutAttribute）attr1</p>
+
+  <p class="calibre1">　　<span class="calibre10">relatedBy:</span>（NSLayoutRelation）relation</p>
+
+  <p class="calibre1">　　<span class="calibre10">toItem:</span>（id）view2</p>
+
+  <p class="calibre1">　　<span class="calibre10">attribute:</span>（NSLayoutAttribute）attr2</p>
+
+  <p class="calibre1">　　<span class="calibre10">multiplier:</span>（CGFloat）multiplier</p>
+
+  <p class="calibre1">　　<span class="calibre10">constant:</span>（CGFloat）c</p>
+
+  <p class="calibre1">　　与视觉化格式语言不同，该方法只会创建一个约束，该约束用于限定两个布局属性之间的关系。在该方法的参数中，<span class="calibre10">multiplier</span>是乘数，<span class="calibre10">constant</span>是常量，用于计算view1布局属性的值，稍后会给出计算表达式。</p>
+
+  <p class="calibre1">　　现在请读者打开<span class="calibre10">NSLayoutConstraint</span>头文件，找到NSLayoutAttribute枚举，其中包括所有布局属性常量：</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeLeft</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeRight</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeTop</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeBottom</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeWidth</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeHeight</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeBaseline</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeCenterX</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeCenterY</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeLeading</p>
+
+  <p class="calibre1">　　•NSLayoutAttributeTrailing</p>
+
+  <p class="calibre1">　　下面演示如何使用该方法：如果需要将imageView的宽度设置为自身高度的1.5倍，可以编写如下代码（读者不要将这段代码添加到项目中，否则会与其他约束产生冲突）：</p>
+
+  <p class="calibre1">　　NSLayoutConstraint *aspectConstraint =</p>
+
+  <p class="calibre1">　　[NSLayoutConstraint constraintWithItem:self.imageView</p>
+
+  <p class="calibre1">　　attribute:NSLayoutAttributeWidth</p>
+
+  <p class="calibre1">　　relatedBy:NSLayoutRelationEqual</p>
+
+  <p class="calibre1">　　toItem:self.imageView</p>
+
+  <p class="calibre1">　　attribute:NSLayoutAttributeHeight</p>
+
+  <p class="calibre1">　　multiplier:1.5</p>
+
+  <p class="calibre1">　　constant:0.0];</p>
+
+  <p class="calibre1">　　为了理解该方法所描述的约束，图16-4是该方法中各个参数的计算表达式，自动布局系统会根据该表达式为第一个参数所表示的视图计算布局属性的值，再创建相应的<span class="calibre10">NSLayoutConstraint</span>对象。</p>
+
+  <p class="calibre7"><img alt="tu16-4" src="../Images/image00592.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图16-4 NSLayoutConstraint表达式</p>
+
+  <p class="calibre1">　　由于该方法只创建了一个约束，因此需要使用<span class="calibre10">UIView</span>添加单个约束的实例方法：</p>
+
+  <p class="calibre1">　　- （void）<span class="calibre10">addConstraint:</span>（NSLayoutConstraint *）constraint</p>
+
+  <p class="calibre1">　　之前介绍过判断约束应该添加到哪个视图中的四条判定法则，而该方法符合第二条法则。该方法创建的约束只对第一个参数所表示的视图（这里是imageView）起作用，因此约束应该添加到该视图中。</p>
+
+  <p class="calibre1">　　对于aspectConstraint，应该将其添加到imageView中：</p>
+
+  <p class="calibre1">　　[self.imageView addConstraint:aspectConstraint];</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

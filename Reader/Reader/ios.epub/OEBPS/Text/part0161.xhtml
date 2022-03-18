@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">17.9 深入学习：视图控制器之间的关系</h2>
+
+  <p class="calibre1">　　要理解应用会在什么位置，以及会以怎样的形式显示某个视图控制器，就有必要搞清楚视图控制器之间的关系。视图控制器之间的关系可以分为两类：父-子关系和显示-被显示关系。下面分别针对这两种类型进行详细介绍。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">父-子关系</h3>
+
+  <p class="calibre1">　　当使用视图控制器容器（view controller container）时，就会产生拥有父-子关系的视图控制器。UINavigationController对象、UITabBarController对象和UISplitViewController对象（第22章会介绍）都是视图控制器容器。这些容器的共性是都有一个类型为数组对象的viewControllers属性，用于保存一组视图控制器。</p>
+
+  <p class="calibre1">　　无论哪种视图控制器容器，都是UIViewController的子类对象，因此也有一个名为view的属性。视图控制器容器的特性是：容器对象会将viewControllers中的视图作为子视图加入自己的视图。此外，容器对象通常都会有自己的默认外观。以UINavigation- Controller对象为例，它会在其视图顶部显示一个UINavigationBar对象，然后在余下的空间中显示topViewController的视图。</p>
+
+  <p class="calibre1">　　处在同一个父-子关系下的视图控制器形成一个族系（family）。以UINavigationController为例，某个UINavigationController对象和其下的viewControllers都属于同一个族系。一个族系可以有多个级别，例如，一个UITabBarController对象可以包含一个UINavigationController对象，而这个UINavigationController对象又可以包含一个UIViewController对象。在这种情况下，这三个视图控制器都处在同一个族系中（见图17-5）。任何容器对象都可以通过viewControllers访问其子对象，而子对象也可以通过UIViewController对象的四个特定属性来访问其容器对象。</p>
+
+  <p class="calibre7"><img alt="tu17-5" src="../Images/image00597.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图17-5 视图控制器族系示例</p>
+
+  <p class="calibre1">　　先介绍这四个特定属性的前三个，这三个属性分别是：navigationController、tabBarController和splitViewController。当某个视图控制器收到navigationController消息、tabBarController消息或splitViewController消息后，就会沿着族系向上查找，直到找到类型匹配的视图控制器容器。如果没有找到，相应的方法就会返回nil。</p>
+
+  <p class="calibre1">　　然后介绍第四个属性。UIViewController有一个名为parentViewController的属性。该属性会指向族系中“最近”的那个容器对象。因此，根据族系的形成方式，parentViewController可能会指向UINavigationController对象、UITabBarController对象或UISplitViewController对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">显示-被显示关系</h3>
+
+  <p class="calibre1">　　视图控制器的另一类关系是显示-被显示关系（presenting-presenter relationship）。当某个视图控制器以模态形式显示另一个视图控制器时，就会产生拥有这种关系的视图控制器。当某个视图控制器（A）以模态形式显示另一个视图控制器（B）时，B的视图会覆盖A的视图。这和之前介绍的父-子关系不同，父-子关系中的子视图只会在容器对象的视图内显示。此外，任何一个UIViewController对象都可以以模态的形式显示另一个视图控制器。</p>
+
+  <p class="calibre1">　　通过UIViewController对象的presentingViewController属性和presentedViewController属性，可以得到指向相应视图控制器的指针。当某个视图控制器（A）以模态形式显示另一个视图控制器（B）时，A的presentedViewController会指向B，而B的presentingViewController属性会指向A（见图17-6）。</p>
+
+  <p class="calibre7"><img alt="tu17-6" src="../Images/image00598.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图17-6 显示-被显示关系</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">显示-被显示关系中的族系</h3>
+
+  <p class="calibre1">　　在显示-被显示关系中，位于关系两头的视图控制器不会处于同一个族系中。被显示的视图控制器会有自己的族系，这个族系可以只有一个UIViewController对象，也可以由多个UIViewController对象组成。</p>
+
+  <p class="calibre1">　　UIViewController中的某些属性是和族系有关的（例如presentedViewController和navigationController），理解各种族系之间的差别可以帮助读者理解这些属性的工作原理。以图17-7中的视图控制器为例，图中有两个族系，分别包含多个视图控制器。此外，该图还显示了和视图控制器有关的各个属性。</p>
+
+  <p class="calibre7"><img alt="tu17-7" src="../Images/image00599.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图17-7 视图控制器的层次结构示例</p>
+
+  <p class="calibre1">　　从图17-7中可以看出，凡是针对父-子关系的属性，其指向的对象都会在当前族系的范围内。因此，向族系2中的视图控制器发送tabBarController消息，并不会返回族系1中的UITabBarController对象，而会返回nil。同理，向族系2中的视图控制器发送navigationController消息，返回的是族系2中的UINavigationController对象，而不是族系1中的。</p>
+
+  <p class="calibre1">　　不同族系中的视图控制器的关系稍微复杂一些。当应用以模态形式显示某个视图控制器时，负责显示该视图控制器的将是相关族系中的顶部视图控制器（或者可以说“最老”的那个）。以图17-7中的对象为例，族系2中的视图控制器的presentingViewController属性指向的都是UITabBarController对象。无论应用是向族系1中的哪个视图控制器发送presentViewController:animated:completion:消息，负责显示的对象始终是UITabBarController对象。</p>
+
+  <p class="calibre1">　　这也解释了为什么当Homepwner以模态形式显示BNRDetailViewController对象时，该对象的视图会遮住UINavigationBar对象，而不会将BNRDetailViewController对象压入UINavigationController对象的栈。虽然Homepwner向BNRItemsViewController对象发送的是presentViewController:animated:completion:消息，但是实际负责以模态形式显示BNRDetailViewController对象的是位于族系顶部的UINavigationController对象。BNRDetailViewController对象的视图会被放置在UINavigationController对象的视图上方，从而导致遮住UINavigationBar对象。</p>
+
+  <p class="calibre1">　　对某个族系中的所有视图控制器，其presentingViewController属性和presentedViewController属性都是有效的，并且总会指向另一个族系中的顶部对象。</p>
+
+  <p class="calibre1">　　通过编写代码，可以改变这种“顶部对象负责以模态形式显示其他视图控制器”的行为（只能在iPad中使用），这样就可以限定视图的显示位置。以BNRDetailViewController对象为例，可以要求包含了该对象的UINavigationController对象显示在UITableView对象上，从而避免覆盖UINavigationBar。</p>
+
+  <p class="calibre1">　　为此，UIViewController提供了definesPresentationContext属性，其默认值是NO。当某个视图控制器的definesPresentationContext是NO时，会将“显示权（presentation off）”传递给父视图控制器，并沿着族系依次向上传递，直到最顶层视图控制器。也就是说，最后会由最顶层视图控制器负责显示新的视图控制器；相反，在传递过程中，如果某个视图控制器的definesPresentationContext是YES，该视图控制器就不会再将“显示权”传递给父视图控制器，而是由自己负责显示新的视图控制器（见图17-8）。此外，对后面这种情况，必须将需要显示的视图控制器的modalPresentationStyle属性设置为UIModalPresentationCurrentContext。</p>
+
+  <p class="calibre7"><img alt="tu17-8" src="../Images/image00600.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图17-8 definesPresentationContext属性为YES的示例</p>
+
+  <p class="calibre1">　　修改BNRItemsViewController.m中的addNewItem:，针对上述内容做一个测试，代码如下：</p>
+
+  <p class="calibre1">　　UINavigationController *navController = [[UINavigationController alloc]</p>
+
+  <p class="calibre1">　　initWithRootViewController:detailViewController];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">navController.modalPresentationStyle = UIModalPresentationFormSheet;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　navController.modalPresentationStyle = UIModalPresentationCurrentContext;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.definesPresentationContext = YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　navController.modalTransitionStyle =</p>
+
+  <p class="calibre1">　　UIModalTransitionStyleFlipHorizontal;</p>
+
+  <p class="calibre1">　　[self presentViewController:navController animated:YES completion:nil];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　针对iPad模拟器或iPad构建并运行应用。按下+按钮，BNRDetailViewController对象的视图应该不会覆盖UINavigationBar对象。以上修改只是为了测试，请读者在开始第18章之前先还原代码。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

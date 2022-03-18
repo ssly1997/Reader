@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">4.3 创建UIView子类</h2>
+
+  <p class="calibre1">　　首先创建一个UIView子类，选择菜单File→New→File…（键盘快捷键是Command-N），再选择iOS下的Cocoa Touch，然后选择Objective-C class（见图4-5）。</p>
+
+  <p class="calibre7"><img alt="tu4-5" src="../Images/image00418.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-5 创建新类</p>
+
+  <p class="calibre1">　　点击Next按钮，在Class文本框中输入BNRHypnosisView，在Subclass of下拉菜单中选择UIView（见图4-6）。</p>
+
+  <p class="calibre7"><img alt="tu4-6" src="../Images/image00419.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-6 设置新类的父类是UIView</p>
+
+  <p class="calibre1">　　单击Next按钮，确保选中了Targets中Hypnosister前的选择框。单击Create按钮。</p>
+
+  <p class="calibre1">　　在编写绘制同心圆的代码之前，首先需要了解如何通过编写代码创建和显示视图对象。为简单起见，本节不会在BNRHypnosisView中绘制同心圆，而是绘制一个红色背景的矩形，如图4-7所示。</p>
+
+  <p class="calibre7"><img alt="tu4-7" src="../Images/image00420.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-7 BNRHypnosisView的第一个版本</p>
+
+  <h3 class="sigil_not_in_toc"><br class="calibre2"/></h3>
+
+  <h3 class="sigil_not_in_toc">视图及其frame属性</h3>
+
+  <p class="calibre1">　　打开BNRHypnosisView.m文件。UIView子类的模板会自动生成两个方法，第一个是initWithFrame:，该方法是UIView的指定初始化方法，带有一个CGRect结构类型的参数，该参数会被赋给UIView的frame属性。</p>
+
+  <p class="calibre1">　　@property(nonatomic)CGRect frame;</p>
+
+  <p class="calibre1">　　视图的frame属性保存的是视图的大小和相对于父视图的位置。</p>
+
+  <p class="calibre1">　　CGRect结构包含另外两个结构：origin和size。origin的类型是CGPoint结构，该结构包含两个float类型的成员：x和y。size的类型是CGSize结构，该结构也包含两个float类型的成员：width和height（见图4-8）。</p>
+
+  <p class="calibre7"><img alt="tu4-8" src="../Images/image00421.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-8 CGRect</p>
+
+  <p class="calibre1">　　图由frame可知，视图对象的形状一定是矩形。</p>
+
+  <p class="calibre1">　　打开BNRAppDelegate.m，在文件顶部导入BNRHypnosisView类的头文件。</p>
+
+  <p class="calibre1">　　#import "BNRAppDelegate.h"</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import "BNRHypnosisView.h"</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation BNRAppDelegate</p>
+
+  <p class="calibre1">　　在BNRAppDelegate.m中找到application:didFinishLaunchingWithOptions:方法，在创建UIWindow对象的代码之后创建一个CGRect结构，然后使用该结构创建一个BNRHypnosisView对象，并设置backgroundColor属性为红色。最后，将BNRHypnosisView对象加入UIWindow对象，使其成为窗口的子视图。</p>
+
+  <p class="calibre1">　　- (BOOL)application:(UIApplication *)application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.window = [[UIWindow alloc] initWithFrame:</p>
+
+  <p class="calibre1">　　　　　　　　　[[UIScreen mainScreen] bounds]];</p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect firstFrame = CGRectMake(160, 240, 100, 150);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRHypnosisView *firstView = [[BNRHypnosisView alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　　　　　　　　　 initWithFrame:firstFrame];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　firstView.backgroundColor = [UIColor redColor];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.window addSubview:firstView];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　结构不是Objective-C对象，因此不能向CGRect发送消息。可以使用CGRectMake函数创建一个CGRect。该函数需要传入origin.x、origin.y、size.width和size.height的值作为参数。CGRect占用的内存比大部分对象都小，因此不用传入指针——initWithFrame:方法中需要传入的参数类型是CGRect，而不是CGRect *。</p>
+
+  <p class="calibre1">　　为了设置backgroundColor属性，需要使用UIColor的类方法：redColor。这是一个简便方法，它返回一个表示红色的UIColor对象。UIColor中定义了一系列对应于常见颜色的简便方法，例如blueColor、blackColor和clearColor。</p>
+
+  <p class="calibre1">　　构建并运行应用，红色的矩形就是BNRHypnosisView对象。因为BNRHypnosisView对象的frame结构中的origin是（160, 240），所以相对于UIWindow对象（BNRHypnosisView对象的父视图）的左上角，BNRHypnosisView对象的左上角会位于右侧160点、下方240点的位置。此外，因为这个frame结构中的size是（100, 150），所以BNRHypnosisView对象的宽度为100点，高度为150点（见图4-9）。</p>
+
+  <p class="calibre7"><img alt="tu4-9" src="../Images/image00422.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-9 向Hypnosister应用中添加一个BNRHypnosisView对象</p>
+
+  <p class="calibre1">　　请注意这些值的单位是点（points），不是像素（pixels）。如果单位是像素，那么视图在Retina和非Retina显示屏上的大小无法保持一致。点的大小与设备分辨率相关，取决于屏幕以多少像素显示一个点：在Retina显示屏上，一个点是两个像素高度、两个像素宽度；非Retina显示屏则是一个像素高度、一个像素宽度。如果打印到纸上，一英寸是72点。为了保持应用界面在不同分辨率的屏幕上看起来一致，大小、位置、直线、曲线等都使用点作为单位。</p>
+
+  <p class="calibre1">　　在Xcode控制台中，请注意输出的警告信息：“Application windows are expected to have a root view controller at the end of application launch.（应用启动完毕之后，需要为窗口设置一个根视图控制器。）”视图控制器可以用来管理应用中的多个视图对象，大部分iOS应用都有一个或多个视图控制器。Hypnosister是一个非常简单的应用，不需要视图控制器，所以读者可以忽略这行警告信息。第6章会介绍更多关于视图控制器的知识。</p>
+
+  <p class="calibre1">　　现在请看应用中已经创建好的视图层次结构（见图4-10）。</p>
+
+  <p class="calibre7"><img alt="tu4-10" src="../Images/image00423.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-10 UIWindow对象有一个子视图——BNRHypnosisView</p>
+
+  <p class="calibre1">　　每个UIView对象都有一个superview属性。将一个视图作为子视图加入另一个视图时，会自动创建相应的反向关联。在本例中，BNRHypnosisView对象的superview属性指向应用的UIWindow对象。（为了避免强引用循环，superview属性是弱引用。）</p>
+
+  <p class="calibre1">　　接下来尝试向视图层次结构中再加入一个视图。打开BNRAppDelegate.m，再创建一个BNRHypnosisView对象并设置不同的大小、位置和背景颜色：</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　[self.window addSubview:firstView];</p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect secondFrame = CGRectMake(20, 30, 50, 50);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRHypnosisView *secondView = [[BNRHypnosisView alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　　　　　　　　　 initWithFrame:secondFrame];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　secondView.backgroundColor = [UIColor blueColor];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.window addSubview:secondView];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　再次构建并运行应用，除了之前添加的红色矩形外，窗口的左上角还有一个蓝色矩形。新的视图层次结构如图4-11所示。</p>
+
+  <p class="calibre7"><img alt="tu4-11" src="../Images/image00424.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-11 UIWindow包含两个子视图</p>
+
+  <p class="calibre1">　　视图层次结构还可以包含两层以上的嵌套。在BNRAppDelegate.m中将第二个BNRHypnosisView对象加入第一个BNRHypnosisView对象，而不是UIWindow对象（见图4-12）。</p>
+
+  <p class="calibre7"><img alt="tu4-12" src="../Images/image00425.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-12 secondView是firstView的子视图</p>
+
+  <p class="calibre1">　　代码如下：</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　BNR HypnosisView *secondView = [[BNRHypnosisView alloc]</p>
+
+  <p class="calibre1">　　　　　　　　　　　　　　　　　　 initWithFrame:secondFrame];</p>
+
+  <p class="calibre1">　　secondView.backgroundColor = [UIColor blueColor];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[self.window addSubview:secondView];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　[firstView addSubview:secondView];</span></p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　构建并运行应用，请注意secondView在屏幕上的位置发生了变化。视图的frame所代表的位置是相对于其父视图的，所以secondView的左上角将以firstView的左上角位置为起点，偏移（20, 30）点。新的视图层次结构如图4-13所示。</p>
+
+  <p class="calibre7"><img alt="tu4-13" src="../Images/image00426.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图4-13 Hypnosister应用新的视图层次结构</p>
+
+  <p class="calibre1">　　（如果读者觉得蓝色的BNRHypnosisView对象看起来比之前大，这是由于该视图位于更小的区域而产生的一种错觉。它的大小其实没有改变。）现在读者已经理解了视图层次结构，在进行下一步工作之前，请先删除secondView对象。</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　[self.window addSubview:firstView];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">CGRect secondFrame = CGRectMake(20, 30, 50, 50);</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">BNRHypnosisView *secondView = [[BNRHypnosisView alloc]</span></del></p>
+
+  <p class="calibre1">                                    <del class="calibre11"><span class="calibre10">initWithFrame:secondFrame];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">secondView.backgroundColor = [UIColor blueColor];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[view addSubview:secondView];</span></del></p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　...</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

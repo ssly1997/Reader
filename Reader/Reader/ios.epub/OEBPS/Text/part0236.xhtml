@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">28.2 Storyboard文件中的UITableViewController</h2>
+
+  <p class="calibre1">　　编写iOS应用时，如果要使用UITableViewController对象，通常都要为其实现相应的数据源方法，针对不同的表格行返回相应的UITableViewCell对象。如果UITableView对象的显示内容是动态的（例如一组可能会被修改的BNRItem对象），通过实现数据源方法，就可以返回显示内容不同的UITableViewCell对象。但是，如果UITableView对象的显示内容是静态的，就可能需要编写大量的代码来创建所有的UITableViewCell对象。通过使用Storyboards，不用实现数据源方法，就能为某个UITableViewController对象设置静态的UITableViewCell对象。</p>
+
+  <p class="calibre1">　　下面要为Colorboard.storyboard增加一个UITableViewController对象，并为该对象设置静态的UITableViewCell对象。Apple经常会改变文件模板，所以，在Colorboard.storyboard中，UINavigationController对象的根视图控制器可能不是UITableViewController。出于学习目的，建议读者手动为UINavigationController对象添加根视图控制器。</p>
+
+  <p class="calibre1">　　如果storyboard自动为UINavigationController对象生成了根视图控制器，那么先删除其根视图控制器。在Colorboard.storyboard中，选中代表根视图控制器的那个黑色工具条，然后按下Delete键。这时的UINavigationController对象将不再拥有根视图控制器。</p>
+
+  <p class="calibre1">　　接下来从对象库面板中拖曳一个UITableViewController对象至画布，然后将其设置为UINavigationController对象的根视图控制器，步骤如下：按住Control键，从UINavigationController对象的view拖曳至UITableViewController对象的view，然后松开鼠标。这时Xcode会显示一个黑色的面板。选择面板中的root View（见图28-7）。</p>
+
+  <p class="calibre7"><img alt="tu28-7" src="../Images/image00696.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-7 设置关系</p>
+
+  <p class="calibre1">　　完成上述步骤后，Xcode会将UITableViewController对象设置为UINavigationController对象的根视图控制器。Xcode会在这两个对象之间显示一个箭头，从UINavigationController对象指向UITableViewController对象。箭头中间的图标代表相应关系的类型（见图28-8）。</p>
+
+  <p class="calibre7"><img alt="tu28-8" src="../Images/image00697.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-8 设置UINavigationController和UITableViewController</p>
+
+  <p class="calibre1">　　（通过位于画布右下方的缩放按钮，可以修改画布的显示比例。如果缩小显示比例，就可以在画布的可视区域内看到更多的对象。对包含很多UIViewController对象的Storyboard文件，缩小显示比例会很有用。但是，在缩小的显示比例下，将无法在画布中选择UIViewController对象的view及其子视图。）</p>
+
+  <p class="calibre1">　　选中UITableViewController对象的UITableView对象，打开属性检视面板，找到标题为Content的下拉列表，然后选择Static Cells（见图28-9）。</p>
+
+  <p class="calibre7"><img alt="tu28-9" src="../Images/image00698.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-9 Static Cells</p>
+
+  <p class="calibre1">　　Xcode会将三个UITableViewCell对象加至UITableView对象。可以分别选中这些UITableViewCell对象并进行设置。选中位于顶部的UITableViewCell对象，在属性检视面板中，找到标题为Style的下拉列表，然后选择Basic（见图28-10）。</p>
+
+  <p class="calibre1">　　完成上述修改后，当前选中的UITableViewCell对象的标题会变成Title。双击标题，将内容修改为Red（红色）。</p>
+
+  <p class="calibre7"><img alt="tu28-10" src="../Images/image00699.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-10 Basic样式的UITableViewCell</p>
+
+  <p class="calibre1">　　针对第二个UITableViewCell对象，重复上述步骤，但是要将标题修改为Green（绿色）。最后删除第三个UITableViewCell对象（选中该对象，然后单击Delete）。</p>
+
+  <p class="calibre1">　　由于UITableViewController对象位于UINavigationController对象的视图控制器栈中，因此UITableView对象顶部有一个UINavigationBar对象。选中UINavigationBar对象，在属性检视面板中将其标题改为Colors。完成后的UITableView对象如图28-11所示。</p>
+
+  <p class="calibre7"><img alt="tu28-11" src="../Images/image00700.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-11 完成后的UITableViewCell对象</p>
+
+  <p class="calibre1">　　构建并运行应用。Colorboard的界面应该和Storyboard文件中的界面完全一致：位于窗口顶部的是一个标题为Colors的UINavigationBar对象，位于该对象下方的是一个UITableView对象，其中有两个UITabelViewCell对象，标题分别为Red和Green。</p>
+
+  <p class="calibre1">　　由此可见，在Storyboard中，不需要实现任何数据源方法，就可以在UITableView对象中显示静态的UITableViewCell对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

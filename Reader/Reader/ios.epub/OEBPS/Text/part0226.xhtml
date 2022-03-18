@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">26.1 NSUserDefaults</h2>
+
+  <p class="calibre1">　　NSUserDefaults提供了一个类方法standardUserDefaults，用于获取NSUserDefaults单例。NSUserDefaults单例以键-值对的形式存储了一系列用户偏好设置。其中，键是用户偏好设置的名称，值是对应的某类数据。与NSDictionary类似，可以通过objectForKey:和setObject:forKey:存取数据。</p>
+
+  <p class="calibre1">　　NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];</p>
+
+  <p class="calibre1">　　NSString *greeting = [defaults objectForKey:@“FavoriteGreeting”];</p>
+
+  <p class="calibre1">　　NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];</p>
+
+  <p class="calibre1">　　[defaults setObject:@“Hello” forKey:@“FavoriteGreeting”];</p>
+
+  <p class="calibre1">　　对于setObject:forKey:，NSUserDefaults会自动将对象存储到对应的plist文件中——显然，对象的类型必须是plist文件可以存储的类型，包括：NSArray、NSDictionary、NSString、NSData、NSDate和NSNumber。如果需要存储plist文件不支持的类型，可以先将其归档为NSData类型，再存入plist文件。</p>
+
+  <p class="calibre1">　　如果通过objectForKey:获取一项没有值的用户偏好设置，NSUserDefaults会返回该项的出厂设置，也称为默认设置。这类设置并没有存储在plist文件中，需要在每次应用启动时向NSUserDefaults注册。为了确保在代码中访问NSUserDefaults之前注册好出厂设置，可以在应用程序委托中覆盖类方法initialize，代码如下：</p>
+
+  <p class="calibre1">　　+ （void）initialize</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];</p>
+
+  <p class="calibre1">　　NSDictionary *factorySettings = @{@“FavoriteGreeting”: @“Hey!”,</p>
+
+  <p class="calibre1">　　@“HoursBetweenMothershipConnection : @2};</p>
+
+  <p class="calibre1">　　[defaults registerDefaults:factorySettings];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　Objective-C运行环境（Objective-C runtime）会在创建某个类的第一个对象之前调用该类的initialize方法。</p>
+
+  <p class="calibre1">　　本节将为Homepwner添加一项用户偏好设置，可以在添加BNRItem对象时默认显示用户设置的名称和价值。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">注册出厂设置</h3>
+
+  <p class="calibre1">　　应用启动时，首先需要向NSUserDefaults注册出厂设置。通过NSUserDefaults对象存取数据时，使用的键必须是NSString对象。通常情况下，可以将这类字符串定义成静态变量。这样就不用每次使用写死的字符串，直接使用相应的变量即可。使用静态变量有两个好处，一是方便修改，二是可以避免输入错误（如果输错了变量名，编译器就会发出警告；但是，如果输错了字符串，则不会有任何提示）。</p>
+
+  <p class="calibre1">　　打开BNRAppDelegate.h，声明两个NSString类型的静态变量，代码如下：</p>
+
+  <p class="calibre1">　　#import &lt;UIKit/UIKit.h&gt;</p>
+
+  <p class="calibre1"><span class="calibre10">　　extern NSString * const BNRNextItemValuePrefsKey;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　extern NSString * const BNRNextItemNamePrefsKey;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@interface BNRAppDelegate : UIResponder &lt;UIApplicationDelegate&gt;</p>
+
+  <p class="calibre1">　　@property （strong, nonatomic） UIWindow *window;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　再打开BNRAppDelegate.m，实现两个静态变量，然后将其作为键在initialize方法中注册出厂设置：</p>
+
+  <p class="calibre1">　　#import ”BNRAppDelegate.h“</p>
+
+  <p class="calibre1">　　#import ”BNRItemsViewController.h“</p>
+
+  <p class="calibre1">　　#import ”BNRItemStore.h“</p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString * const BNRNextItemValuePrefsKey = @”NextItemValue“;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString * const BNRNextItemNamePrefsKey = @”NextItemName“;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation BNRAppDelegate</p>
+
+  <p class="calibre1"><span class="calibre10">　　+ （void）initialize</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSDictionary *factorySettings = @{BNRNextItemValuePrefsKey: @75,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRNextItemNamePrefsKey: @”Coffee Cup“};</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[defaults registerDefaults:factorySettings];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　</p>
+
+  <h3 class="sigil_not_in_toc">读取用户偏好设置</h3>
+
+  <p class="calibre1">　　下面在BNRItemStore.m的createItem方法中为BNRItem对象的属性设置默认值。注意，为了让编译器知道BNRNextItemValuePrefsKey常量，必须先在BNRItemStore.m顶部导入BNRAppDelegate.h。</p>
+
+  <p class="calibre1">　　- （BNRItem *）createItem</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　double order;</p>
+
+  <p class="calibre1">　　if （_allItems.count == 0） {</p>
+
+  <p class="calibre1">　　order = 1.0;</p>
+
+  <p class="calibre1">　　} else {</p>
+
+  <p class="calibre1">　　order = [[self.privateItems lastObject] orderingValue] + 1.0;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　BNRItem *item =</p>
+
+  <p class="calibre1">　　[NSEntityDescription insertNewObjectForEntityForName:@”BNRItem“</p>
+
+  <p class="calibre1">　　inManagedObjectContext:self.context];</p>
+
+  <p class="calibre1">　　item.orderingValue = order;</p>
+
+  <p class="calibre1"><span class="calibre10">　　NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　item.valueInDollars = [defaults integerForKey:BNRNextItemValuePrefsKey];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　item.itemName = [defaults objectForKey:BNRNextItemNamePrefsKey];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 查看NSUserDefaults中存储了哪些数据</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@”defaults = %@“, [defaults dictionaryRepresentation]）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self.privateItems addObject:item];</p>
+
+  <p class="calibre1">　　return item;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　NSUserDefaults提供了若干简便方法，可以直接存取某些常用类型的值，例如以上代码中的integerForKey:。其他还有float、double、BOOL和NSURL等。以下两行代码的效果是相同的：</p>
+
+  <p class="calibre1">　　item.valueInDollars = [defaults integerForKey:BNRNextItemValuePrefsKey];</p>
+
+  <p class="calibre1">　　item.valueInDollars =</p>
+
+  <p class="calibre1">　　[[defaults objectForKey:BNRNextItemValuePrefsKey] intValue];</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">修改用户偏好设置</h3>
+
+  <p class="calibre1">　　为应用提供修改用户偏好设置的界面很简单，可以在应用内创建相应的视图控制器，也可以为应用创建设置束，但是记录用户的使用习惯有一定的技巧，需要考虑应用特定的使用场景并推测用户的下一步操作。例如，假设用户设置了某个BNRItem对象的价值是100元，那么，用户可能将下一个BNRItem对象的价值也设置为100元。像这类用户使用信息就可以存入NSUserDefaults，方便用户再次使用。</p>
+
+  <p class="calibre1">　　打开BNRDetailViewController.m，导入BNRAppDelegate.h，然后修改viewWill- Disappear:，代码如下：</p>
+
+  <p class="calibre1">　　- （void）viewWillDisappear:（BOOL）animated</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　[super viewWillDisappear:animated];</p>
+
+  <p class="calibre1">　　[self.view endEditing:YES];</p>
+
+  <p class="calibre1">　　BNRItem *item = self.item;</p>
+
+  <p class="calibre1">　　item.itemName = self.nameField.text;</p>
+
+  <p class="calibre1">　　item.serialNumber = self.serialNumberField.text;</p>
+
+  <p class="calibre1"><span class="calibre10">　　int newValue = [self.valueField.text intValue];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 比较valueInDollars属性与valueField中的新值，判断是否有改动</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （newValue != item.valueInDollars） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果有改动，将新值赋给valueInDollars属性</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　item.valueInDollars = newValue;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将新值存入NSUserDefaults</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[defaults setInteger:newValue</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　forKey:BNRNextItemValuePrefsKey];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">item.valueInDollars = [self.valueField.text intValue];</span></del></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用，首先创建一个名为”Coffee Cup“、价值为75元的BNRItem对象。然后创建第二个BNRItem对象，这时对象的默认价值也为75元。</p>
+
+  <p class="calibre1">　　同时，控制台中会输出NSUserDefaults中存储的所有数据。其中，大部分数据的键都是NSGlobalDomain。NSGlobalDomain保存了整个设备的用户偏好设置，例如语言与地区。再看NextItemName，由于应用并没有设置NextItemName的值，因此NSUserDefaults会读取NextItemName的工厂设置。工厂设置的值存放在NSUserDefaults的注册域（registration domain）中。相反，由于现在已经设置了NextItemValue的值，因此NSUserDefaults会读取应用域（application domain）中的值。对于Homepwner来说，应用域的域名是com.bignerdranch.Homepwner。</p>
+
+  <p class="calibre1">　　默认情况下，应用域是空的，没有键也没有值。当应用第一次设置某项用户偏好设置的值时，相应的值会通过指定的键加入应用域。当通过NSUserDefaults获取某项用户偏好设置的值时，NSUserDefaults会先在应用域中查找，如果找到了值，NSUserDefaults就会返回这个值。如果没有找到，NSUserDefaults就会在注册域中查找并返回默认值。</p>
+
+  <p class="calibre1">　　另外，在用户偏好设置较多的应用中，可能需要提供一个”还原默认设置“的按钮，以便将所有用户偏好设置都恢复到默认值。可以通过NSUserDefaults的实例方法removeObjectForKey:删除某个键对应的用户偏好设置。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">7.6 使用调试器</h2>
+
+  <p class="calibre1">　　使用Xcode启动应用时，调试器会被附着在应用上。调试器会监视应用当前的状态，例如应用当前正在执行的方法和该方法能够访问的变量数值。调试器能够帮助我们了解应用当前正在做什么，进而找到并修正错误。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">使用断点</h3>
+
+  <p class="calibre1">　　使用调试器的途径之一是设置断点。为某行代码设置断点后，应用会在运行该行代码前暂停执行。接着可以让应用逐行运行余下的代码。当应用没有按预期工作时，可以通过断点和逐行运行找出问题。</p>
+
+  <p class="calibre1">　　在项目导航面板中选中BNRHypnosisView.m（注意，不要错选为BNRHypnosisViewController.m），找到initWithFrame:中设置circleColor属性的那行代码。单击这行代码左侧的空白区域（位于编辑器区域左侧的浅色长条，见图7-5），Xcode就会在该行添加一个蓝色的指示器，表示为该行代码设置了断点。</p>
+
+  <p class="calibre7"><img alt="tu7-5" src="../Images/image00469.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图7-5 断点示例</p>
+
+  <p class="calibre1">　　构建并运行应用，当应用执行到设置了断点的那一行代码时，就会暂停执行。新出现的绿色指示器（和断点位于同一行）会显示应用当前的运行位置。</p>
+
+  <p class="calibre1">　　这时可以进一步查看HypnoNerd的运行状况。单击导航面板区域中的图标，打开调试导航面板，面板中会显示应用在断点处的栈跟踪信息。当应用暂停时，凡是其栈帧在栈中的方法和函数都会出现在栈跟踪信息中。通过调试导航面板底部的滑动条，可以展开或收起栈跟踪信息。将滑块拖曳至最右端，可以显示栈跟踪信息中的全部方法（见图7-6）。</p>
+
+  <p class="calibre7"><img alt="tu7-6" src="../Images/image00470.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图7-6 调试导航面板</p>
+
+  <p class="calibre1">　　栈跟踪信息顶部会显示断点处的方法，位于该方法下方的是调用该方法的方法，依此类推。之前读者自己实现的两个方法呈黑色，系统库实现的方法呈灰色。</p>
+
+  <p class="calibre1">　　选中位于栈顶的方法。位于编辑器区域下方，控制台左侧的是变量视图。变量视图会针对当前选中的方法（BNRHypnosisView的initWithFrame:），显示其作用域内的变量和这些变量的当前数值（见图7-7）。</p>
+
+  <p class="calibre7"><img alt="tu7-7" src="../Images/image00471.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图7-7 带变量视图的调试区域</p>
+
+  <p class="calibre1">　　（如果Xcode没有显示变量视图，则可以先找到位于控制台右下角的控件，然后单击左边的按钮，打开变量视图。）</p>
+
+  <p class="calibre1">　　变量视图在显示指针变量时，会显示指针变量所指向对象的内存地址，其中，self已经有了内存地址。在断点所位于的方法中，self是BNRHypnosisView对象，有内存地址意味着在执行到断点的那行代码之前，程序已经创建并初始化了该对象。</p>
+
+  <p class="calibre1">　　接下来点击self旁边的三角形按钮。self下方的第一个条目是self的父类。BNRHypnosisView的父类是UIView。单击UIView边上的三角形按钮，可以显示self继承自父类的变量。</p>
+
+  <p class="calibre1">　　除继承自UIView的变量之外，BNRHypnosisView还有一个_circleColor变量。由于断点设置在为该变量赋值的那行代码，因此HypnoNerd还没有执行该行代码，_circleColor变量的值是nil（0x0）。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">单步执行代码</h3>
+
+  <p class="calibre1">　　调试器除了能暂停应用的执行外，还可以一行一行地单步执行代码，并显示应用执行每行代码后的状态。通过调试工具条（debugger bar）中的多个按钮，可以控制应用的运行。调试工具条位于编辑器区域和调试区域之间（见图7-8）。</p>
+
+  <p class="calibre7"><img alt="tu7-8" src="../Images/image00472.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图7-8 调试工具条</p>
+
+  <p class="calibre1">　　单击单步执行（step over line）按钮，Xcode只会执行当前指向的那行代码，即为_circleColor变量赋值。绿色指示器会移动至下一行。变量视图所显示的_circleColor会变成内存中的一个有效地址，表示程序已经创建并初始化了_circleColor。</p>
+
+  <p class="calibre1">　　接下来可以继续单步执行代码并查看执行情况，也可以单击继续执行（continue executing）按钮，恢复代码的正常运行。此外，还可以单击跳入方法（step into method）按钮，跳入某个方法。跳入某个方法时，调试器会进入断点代码所调用的方法。跳入方法后，一样可以单步执行代码。</p>
+
+  <p class="calibre1">　　类似还有跳出方法（step out method）按钮，跳出某个方法时，调试器会进入调用断点代码的方法。请读者点击跳出方法按钮，就可以发现调试器会进入BNRHypnosisViewController.m的loadView方法。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">删除断点</h3>
+
+  <p class="calibre1">　　如果需要在调试后正常运行应用，可以通过以下几种方式删除断点：将蓝色断点符号拖曳出代码标志区；右击蓝色断点符号，选择Delete Breakpoint（删除断点）；单击导航面板选择条中的图标，显示断点导航面板并列出项目中的所有断点，然后选择相应的断点并删除。</p>
+
+  <p class="calibre1">　　新程序员有时会忘记曾经为项目设置过断点。当应用在断点处暂停运行时，看上去会和应用崩溃非常类似。当读者找不出应用崩溃的原因时，可以在断点导航面板中检查断点，也许“崩溃”其实是由某个被遗忘的断点造成的。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">设置异常断点</h3>
+
+  <p class="calibre1">　　以上介绍了如何为某一行代码设置断点。此外，还可以让调试器为导致应用崩溃或引发异常的那行代码自动设置断点。</p>
+
+  <p class="calibre1">　　为此，需要为调试器增加一个针对所有异常的断点。打开断点导航面板，单击面板底部的“+”按钮，选择Add Exception Breakpoint…（添加异常断点），如图7-9所示。</p>
+
+  <p class="calibre7"><img alt="tu7-9" src="../Images/image00473.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图7-9 添加异常断点</p>
+
+  <p class="calibre1">　　如果读者遇到了应用崩溃问题，并且无法找到错误原因时，就可以通过添加异常断点定位有问题的代码。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

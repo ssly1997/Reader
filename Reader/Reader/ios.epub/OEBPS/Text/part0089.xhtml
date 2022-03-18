@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">10.1 UINavigationController对象</h2>
+
+  <p class="calibre1">　　当某个应用通过UINavigationController对象显示多个屏幕的信息时，相应的UINavigationController对象会以栈的形式保存所有屏幕的信息。这里的栈是一个数组对象，保存的都是UIViewController对象。一个UIViewController对象的视图对应一个屏幕。只有位于栈顶的UIViewController对象，其视图才是可见的。</p>
+
+  <p class="calibre1">　　初始化UINavigationController对象时，需要传入一个UIViewController对象。这个UIViewController对象将成为UINavigationController对象的根视图控制器（root view controller），且根视图控制器将永远位于栈底。应用可以在运行时向UINavigationController的栈压入更多的视图控制器。</p>
+
+  <p class="calibre1">　　将某个视图控制器压入UINavigationController对象的栈时，新加入的视图控制器的视图会从窗口右侧推入。出栈时，UINavigationController对象会移出位于栈顶的视图控制器，其视图会向窗口右侧推出，然后用户会看见仅次于栈顶位置的视图控制器的视图。</p>
+
+  <p class="calibre1">　　图10-3显示的是一个包含两个视图控制器的UINavigationController对象，其中一个是根视图控制器，另一个是位于栈顶的其他视图控制器。因为后一个视图控制器位于栈顶，所以用户可以看到该视图控制器的视图。</p>
+
+  <p class="calibre7"><img alt="tu10-3" src="../Images/image00500.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-3 某个UINavigationController对象的栈</p>
+
+  <p class="calibre1">　　类似于UITabBarController对象，UINavigationController对象有一个名为viewControllers的属性，指向一个负责保存视图控制器的数组对象。在这个数组对象中，根视图控制器是第一个对象。当应用将某个视图控制器压入栈后，UINavigationController对象会将新加入的对象加在viewControllers数组的末尾。因此，该数组中的最后一个视图控制器会位于栈的顶部。UINavigationController对象的topViewController属性是一个指针，指向当前位于栈顶的视图控制器。</p>
+
+  <p class="calibre1">　　UINavigationController是UIViewController的子类，所以UINavigationController对象也有自己的视图。该对象的视图有两个子视图：一个是UINavigationBar对象，另一个是topViewController的视图（见图10-4）。和其他视图控制器一样，可以将UINavigationController对象设置为UIWindow对象的rootViewController，从而将该对象的视图作为子视图加入窗口。</p>
+
+  <p class="calibre7"><img alt="tu10-4" src="../Images/image00501.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-4 UINavigationController对象的视图示例</p>
+
+  <p class="calibre1">　　本章首先为Homepwner添加一个UINavigationController对象，然后将BNRItems- ViewController对象设置为UINavigationController对象的rootViewController。此外，还要创建一个UIViewController子类。当用户选中UITableView对象的某个表格行时，Homepwner要创建该子类的对象并将新创建的对象压入UINavigationController栈，使相应的视图能够推入窗口。用户通过该视图控制器，可以查看并修改选中的BNRItem对象的属性。更新后的Homepwner应用对象图如图10-5所示。</p>
+
+  <p class="calibre7"><img alt="tu10-5" src="../Images/image00502.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-5 Homepwner应用对象图</p>
+
+  <p class="calibre1">　　图10-5列出了较多的对象，可见Homepwner已经初具规模。通过视图控制器和UINavigationController对象，能够很方便地处理此类复杂的对象图。编写iOS应用时，要将各个UIViewController对象视为独立的个体，这点很重要。余下的大量工作可以由Cocoa Touch来完成。</p>
+
+  <p class="calibre1">　　接下来为Homepwner添加一个UINavigationController对象。打开Homepwner项目并在项目导航面板中选中BNRAppDelegate.m。UINavigationController对象的使用方法很简单，只需要为其设置一个根视图控制器，然后将它的视图添加到屏幕上即可。</p>
+
+  <p class="calibre1">　　在application:didFinishLaunchingWithOptions:中先创建一个BNRItemsViewController对象，然后创建一个UINavigationController对象并将之前创建的BNRItemsViewController对象设置为根视图控制器，最后将UINavigationController对象设置为UIWindow对象的根视图控制器，代码如下：</p>
+
+  <p class="calibre1">　　- （BOOL）application:（UIApplication *）application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:（NSDictionary *）launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.window = [[UIWindow alloc]</p>
+
+  <p class="calibre1">　　initWithFrame:UIScreen.mainScreen.bounds]];</p>
+
+  <p class="calibre1">　　// 在这里添加应用启动后的初始化代码</p>
+
+  <p class="calibre1">　　BNRItemsViewController *itemsViewController =</p>
+
+  <p class="calibre1">　　[[BNRItemsViewController alloc] init];</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建UINavigationController对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 该对象的栈只包含itemsViewController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UINavigationController *navController = [[UINavigationController alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　initWithRootViewController:itemsViewController];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window.rootViewController = itemsViewController;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将UINavigationController对象设置为UIWindow对象的根视图控制器，</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 这样就可以将UINavigationController对象的视图添加到屏幕上</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window.rootViewController = navController;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。除了屏幕顶部新出现的UINavigationBar对象（见图10-6），Homepwner看上去应该和之前的相同。BNRItemsViewController对象的视图大小会发生变化以适应带UINavigationBar对象的屏幕。这项工作是由UINavigationController完成的。</p>
+
+  <p class="calibre7"><img alt="tu10-6" src="../Images/image00503.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-6 Homepwner会在屏幕顶部显示一个空白的导航条</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

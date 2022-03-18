@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">25.2 资源的本地化</h2>
+
+  <p class="calibre1">　　实施国际化时，需要通过NSLocale对象获取相应的区域信息。NSLocale只包含和区域有关的属性，如果需要“国际化”应用其他的资源，就需要实施本地化。本地化是指根据用户的区域或语言设置，创建相应的应用资源的过程。本地化通常意味着以下两件事情。</p>
+
+  <p class="calibre1">　　•针对不同的区域和语言，创建多个版本的资源，例如图片、声音和界面。</p>
+
+  <p class="calibre1">　　•创建并获取字符串对照表（strings table），将界面文字翻译成不同的语言。</p>
+
+  <p class="calibre1">　　任何资源文件，无论是图片文件还是XIB文件，都可以实施本地化。Xcode在针对某种语言本地化某个资源文件时，会复制一份该资源的拷贝，并将该拷贝加入应用程序包。此外，Xcode会根据语言将这些本地化后的资源文件存放在特定的目录中。这些目录的目录名就是对应的语言和区域的代码，后缀都是lproj。以美式英语为例，针对美式英语的语言代码是en_US：其中的en代表英语，US代表美国（如果资源文件无须区分区域，就可以去掉代码中的区域部分）。这类语言和区域的代码不是iOS特有的，而是一套跨平台的标准。</p>
+
+  <p class="calibre1">　　当应用通过NSBundle对象获取某个资源文件的路径时，该对象会根据指定的文件名先在程序包的根目录下查找匹配的文件。如果没有找到，NSBundle对象就会根据设备当前的语言设置在相应的lproj目录下继续查找。因此，只要完成资源文件的本地化，应用就能根据当前的语言设置自动载入匹配的文件。</p>
+
+  <p class="calibre1">　　但是，随着需要支持的语言数量越来越多，对各个语言的资源文件进行维护也会越来越困难。例如XIB文件，假设每一种语言所对应的lproj目录下都包含独立的XIB文件，如en.lproj/BNRDetailViewController.xib和es.lproj/BNRDetailViewController. xib等，那么，一旦修改了英文版的XIB（增加新的UILabel对象或UIButton对象），就要手动更新所有其他语言版本。</p>
+
+  <p class="calibre1">　　Xcode提供了一项称为基础国际化（Base Internationalization）的功能，可以轻松为XIB文件添加多语言支持。当项目启用基础国际化之后，Xcode会自动创建一个包含主XIB文件的Base.lproj目录。这样，项目中就不需要为每一种语言都创建一个独立的XIB文件，只要在主XIB文件的基础上创建包含对应语言字符串的Localizable.string文件就可以了。当然，如果创建Localizable.string文件无法满足要求，仍然可以创建独立的XIB文件——实际上这种情况并不常见，如果只是在替换了Localizable.string文件中的字符串后界面布局发生了问题，那么可以使用自动布局系统。</p>
+
+  <p class="calibre1">　　本节要对Homepwner的BNRDetailViewController.xib文件实施本地化，创建英语（English）和西班牙语（Spanish）的本地化资源。完成后的程序包会增加一个Base.lproj目录和两个对应语言的lproj目录。一般来说，首先应该为项目启用基础国际化，再添加其他语言的本地化资源。但是，截止本书写作期间，Xcode有一个bug：必须先对项目中的至少一个XIB文件实施了本地化，才可以启用基础国际化。</p>
+
+  <p class="calibre1">　　因此，下面首先对BNRDetailViewController.xib实施本地化。在项目导航面板中选择BNRDetailViewController.xib并打开工具区域。</p>
+
+  <p class="calibre1">　　点击检视面板选择条中的按钮，打开文件检视面板（file inspector）。找到面板中名为Localization的部分，单击Localize…按钮（见图25-4）。</p>
+
+  <p class="calibre7"><img alt="tu25-4" src="../Images/image00674.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-4 开始对BNRDetailViewController.xib实施本地化</p>
+
+  <p class="calibre1">　　在弹出的下拉列表中选择English。Xcode会自动创建一个en.lproj目录，然后将BNRDetailViewController.xib文件移入该目录。</p>
+
+  <p class="calibre1">　　现在可以为项目启用基础国际化了。首先在项目导航面板顶部选择Homepwner项目文件，然后在编辑区域的项目和目标列表中选择Homepwner项目（注意不要选成了Homepwner目标），如图25-5所示。</p>
+
+  <p class="calibre7"><img alt="tu25-5" src="../Images/image00675.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-5 选择项目信息</p>
+
+  <p class="calibre1">　　接下来打开Info标签页，在底部找到Localizations部分的Use Base Internationalization（启用基础国际化）选择框并将其选中。这时Xcode会弹出下拉窗口，提示选择需要实施基础国际化的资源文件（Resource File）与参考语言（Reference Language），文件列表中应该只有BNRDetailViewController.xib与English。直接点击Finish按钮。Xcode会创建一个Base.lproj目录，然后将BNRDetailViewController.xib文件移入该目录。</p>
+
+  <p class="calibre1">　　下面添加对西班牙语的支持。点击Localizations部分下方的+按钮，选择Spanish。Xcode会弹出与之前类似的下拉窗口，在文件列表中，读者可以不选择InfoPlist.strings，只需要选择BNRDetailViewController.xib。确保参考语言是Base，文件类型是Localizable Strings，然后点击Finish按钮。Xcode会创建一个es.lproj目录，并在该目录下生成一个BNRDetailViewController.strings文件，该文件包含基础BNRDetailViewController. xib中的所有字符串。现在Localizations部分应该类似于图25-6。</p>
+
+  <p class="calibre7"><img alt="tu25-6" src="../Images/image00676.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-6 本地化</p>
+
+  <p class="calibre1">　　在项目导航面板中，点击BNRDetailViewController.xib左边的三角形按钮（见图25-7）。Xcode已经将BNRDetailViewController.xib文件移动到了Base.lproj目录中，并在es.lproj目录中创建了BNRDetailViewController.strings文件。</p>
+
+  <p class="calibre7"><img alt="tu25-7" src="../Images/image00677.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-7 项目导航面板所显示的已经本地化的XIB文件</p>
+
+  <p class="calibre1">　　选择BNRDetailViewController.xib（选择有或没有Base标识的都可以），文件检视面板应该类似于图25-8。</p>
+
+  <p class="calibre7"><img alt="tu25-8" src="../Images/image00678.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-8 对BNRDetailViewController.xib实施了本地化</p>
+
+  <p class="calibre1">　　在项目导航面板中选择西班牙语版本的BNRDetailViewController.strings，可以看到其中的文字仍然是英文。Xcode不会自动翻译文字，读者必须自己动手。</p>
+
+  <p class="calibre1">　　可以根据以下粗体文本内容编辑BNRDetailViewController.strings。其中的ObjectID和排列顺序可能会和读者生成的文件不同，可以用注释部分的text或title字段匹配翻译内容。</p>
+
+  <p class="calibre1">　　/* Class = “IBUILabel”; text = “Serial”; ObjectID = “JkL-nP-h3R”; */</p>
+
+  <p class="calibre1">　　“JkL-nP-h3R.text” = “<span class="calibre10">Numéro de serie</span>”;</p>
+
+  <p class="calibre1">　　/* Class = “IBUILabel”; text = “Label”; ObjectID = “Q5n-Bc-7IH”; */</p>
+
+  <p class="calibre1">　　“Q5n-Bc-7IH.text” = “Label”;</p>
+
+  <p class="calibre1">　　/* Class = “IBUILabel”; text = “Name”; ObjectID = “qzL-Fn-qch”; */</p>
+
+  <p class="calibre1">　　“qzL-Fn-qch.text” = “<span class="calibre10">Nombre</span>”;</p>
+
+  <p class="calibre1">　　/* Class = “IBUILabel”; text = “Value”; ObjectID = “rhE-7e-oTE”; */</p>
+
+  <p class="calibre1">　　“rhE-7e-oTE.text” = “<span class="calibre10">Valor</span>”;</p>
+
+  <p class="calibre1">　　/* Class = “IBUIBarButtonItem”; title = “Item”; ObjectID = “uNg-wM-Zcr”; */</p>
+
+  <p class="calibre1">　　“uNg-wM-Zcr.title” = “Item”;</p>
+
+  <p class="calibre1">　　因为BNRDetailViewController对象会在运行时动态设置text为Label的UILabel对象以及title为Item的UIBarButtonItem对象，所以这里没有翻译相应的字符串。保存BNRDetailViewController.strings。</p>
+
+  <p class="calibre1">　　以上完成了BNRDetailViewController.xib的本地化过程，下面做一个测试。在测试之前，要提醒读者留意Xcode的一个小问题：Xcode在构建应用时，有时会忽略某个资源文件的变化，从而导致生成的程序包没有更新相应的文件。要让Xcode彻底重新构建应用，需要先从设备或模拟器中删除应用（长按应用图标，当图标开始抖动时点击左上角的删除按钮），然后选择Product菜单中的Clean选项。这样可以强制Xcode彻底重新编译、构建并安装应用（如果还有问题，可以在按住Option键的同时打开Product菜单，然后选择Clean Build Folder…）。</p>
+
+  <p class="calibre1">　　在设置应用中，将语言修改为Español（英文界面：General⇒nternational⇒Language；中文界面：通用⇒多语言环境⇒语言）。重新启动Homepwner，选中某个BNRItem对象，应该能看到西班牙语版的界面。但是，界面中有些UILabel对象无法显示全部文字（见图25-9左）。</p>
+
+  <p class="calibre7"><img alt="tu25-9" src="../Images/image00679.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-9 西班牙语版的BNRDetailViewController.xib使用自动布局的前后对比</p>
+
+  <p class="calibre1">　　使用自动布局系统可以轻松解决这个问题。打开BNRDetailViewController.xib，先选中nameLabel，然后在工具区域中点击<img alt="25.2tubiao" src="../Images/image00680.jpeg" class="calibre8"/>图标，打开大小检视面板，并找到nameLabel的宽度约束。目前该约束限定nameLabel的宽度是55点，无法针对较长的西班牙语单词自动调整宽度。点击宽度约束的齿轮按钮，在弹出菜单中选择Select and Edit…，在约束的编辑界面将Relation由Equal（等于）改为Greater Than or Equal（大于或等于）。</p>
+
+  <p class="calibre1">　　接下来修改serialNumberLabel和valueLabel的约束。为了使三个UITextfield对象的宽度保持一致，三个UILabel对象的宽度也必须保持一致。首先选中serialNumberLabel，删除其宽度约束。然后按住Control键，将其拖曳到nameLabel，在弹出菜单中选择Equal widths（宽度相等）。接下来使用相同的步骤，确保valueLabel的宽度与nameLabel的宽度保持相等。构建并运行应用，现在UITextfield对象会自动调整宽度，为前面的UILabel对象留出足够的显示空间，因此UILabel对象可以显示全部文字了（见图25-9右）。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

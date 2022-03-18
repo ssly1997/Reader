@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">9.4 移动行</h2>
+
+  <p class="calibre1">　　要改变UITableView对象所显示的行的排列位置，需要为数据源实现另一个源自UITableViewDataSource协议的方法：tableView:moveRowAtIndexPath:。</p>
+
+  <p class="calibre1">　　9.3节已介绍了删除表格行时需要向UITableView对象发送deleteRowsAtIndexPaths: withRowAnimation:消息，以执行删除操作。但是移动表格行不需要，UITableView对象会自动执行移动操作，然后向数据源发送tableView:moveRowAtIndexPath:toIndexPath:消息，报告相关的移动信息。因此只需要为数据源实现tableView:moveRowAtIndexPath: toIndexPath:方法，然后根据传入的移动信息更新数据即可。</p>
+
+  <p class="calibre1">　　在为数据源实现tableView:moveRowAtIndexPath:toIndexPath:前，需要先为BNRItemStore增加一个方法，使BNRItemStore对象能够改变某个BNRItems对象在allItems数组中的位置。在BNRItemStore.h中声明方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)moveItemAtIndex:(NSUInteger)fromIndex</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　 toIndex:(NSUInteger)toIndex;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在BNRItemStore.m中实现该方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)moveItemAtIndex:(NSUInteger)fromIndex</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　 toIndex:(NSUInteger)toIndex</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if (fromIndex == toIndex) {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　return;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 得到要移动的对象的指针，以便稍后能将其插入新的位置</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *item = self.privateItems[fromIndex];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将item从allItems数组中移除</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.privateItems removeObjectAtIndex:fromIndex];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　//根据新的索引位置，将item插回allItems数组</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.privateItems insertObject:item atIndex:toIndex];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　接下来，在BNRItemsViewController.m中实现tableView:moveRowAtIndexPath: toIndexPath:，更新BNRItemStore对象，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)tableView:(UITableView *)tableView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　 toIndexPath:(NSIndexPath *)destinationIndexPath</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[BNRItemStore sharedStore] moveItemAtIndex:sourceIndexPath.row</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　 toIndex:destinationIndexPath.row];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用。当UITableView对象处于编辑模式时，会在每个表格行的右侧显示一个换位控件（有三条横线的控件）。按住换位控件后拖动，可以将相应的表格行移动至新的位置（见图9-9）。</p>
+
+  <p class="calibre7"><img alt="tu9-9" src="../Images/image00497.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图9-9 移动中的某个表格行</p>
+
+  <p class="calibre1">　　UITableView对象的数据源只需要实现tableView:moveRowAtIndexPath: toIndexPath:，相应的UITableView对象就会显示换位控件。借助Objective-C的语言特性，UITableView对象可以在运行时检查其数据源是否实现了tableView: moveRowAtIndexPath:toIndexPath:。如果已实现，UITableView对象就会显示换位控件，反之则不会。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

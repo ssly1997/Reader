@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">12.3 实现BNRDrawView，完成绘图功能</h2>
+
+  <p class="calibre1">　　BNRDrawView对象需要管理正在绘制的线条和绘制完成的线条。在BNRDrawView.m中，先导入BNRLine.h；然后在类扩展中添加两个属性，用于保存这两种线条；最后实现initWithFrame:，代码如下：</p>
+
+  <p class="calibre1">　　#import “BNRDrawView.h”</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRLine.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRDrawView （）</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） BNRLine *currentLine;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） NSMutableArray *finishedLines;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@end</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation BNRDrawView</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （instancetype）initWithFrame:（CGRect）r</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self = [super initWithFrame:r];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （self） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.finishedLines = [[NSMutableArray alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.backgroundColor = [UIColor grayColor];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　为了测试创建线条的代码是否正确，需要在BNRDrawView中编写绘制线条的代码。在BNRDrawView.m中实现drawRect:方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）strokeLine:（BNRLine *）line</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIBezierPath *bp = [UIBezierPath bezierPath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　bp.lineWidth = 10;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　bp.lineCapStyle = kCGLineCapRound;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[bp moveToPoint:line.begin];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[bp addLineToPoint:line.end];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[bp stroke];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）drawRect:（CGRect）rect</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 用黑色绘制已经完成的线条</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UIColor blackColor] set];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　for （BNRLine *line in self.finishedLines） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self strokeLine:line];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （self.currentLine） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 用红色绘制正在画的线条</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UIColor redColor] set];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self strokeLine:self.currentLine];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

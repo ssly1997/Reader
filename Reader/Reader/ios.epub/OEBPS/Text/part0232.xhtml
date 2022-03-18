@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">27.4 弹簧动画</h2>
+
+  <p class="calibre1">　　iOS 7提供了一套功能强大的物理引擎，可以模拟真实物理世界的各类效果，其中一个有趣的效果就是弹簧效果。如果将描述弹簧效果的时间函数曲线应用到动画中，就形成iOS 7中常见的弹簧动画。Apple提供了一个轻松为视图添加弹簧动画的方法，下面就使用该方法，为UITextfield对象添加一个从屏幕顶部降落下来的弹簧动画，使它像弹簧一样来回跳动。</p>
+
+  <p class="calibre1">　　打开BNRHypnosisViewController.m，首先在类扩展中添加一个UITextField属性textField。然后修改loadView方法，调整UITextField对象的起始位置，移动到屏幕顶部以外，再将该对象赋给textField属性，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRHypnosisViewController （） &lt;UITextFieldDelegate&gt;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, weak） UITextField *textField;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRHypnosisViewController</p>
+
+  <p class="calibre1">　　// 这里省略其他方法</p>
+
+  <p class="calibre1">　　- （void）loadView</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　CGRect frame = [UIScreen mainScreen].bounds;</p>
+
+  <p class="calibre1">　　BNRHypnosisView *backgroundView =</p>
+
+  <p class="calibre1">　　[[BNRHypnosisView alloc] initWithFrame:frame];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">CGRect textFieldRect = CGRectMake（40, 70, 240, 30）；</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect textFieldRect = CGRectMake（40, -20, 240, 30）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　UITextField *textField = [[UITextField alloc] initWithFrame:textFieldRect];</p>
+
+  <p class="calibre1">　　// 设置UITextField对象的边框样式，便于查看它在屏幕上的位置</p>
+
+  <p class="calibre1">　　textField.borderStyle = UITextBorderStyleRoundedRect;</p>
+
+  <p class="calibre1">　　[backgroundView addSubview:textField];</p>
+
+  <p class="calibre1"><span class="calibre10">　　self.textField = textField;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　self.view = backgroundView;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　UITextField对象的动画最好在视图刚出现在屏幕上时就开始执行，因此动画代码应该写在viewDidAppear:中。</p>
+
+  <p class="calibre1">　　在BNRHypnosisViewController.m中覆盖viewDidAppear:方法，使用弹簧动画将UITextField对象再移动到之前的位置，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）viewDidAppear:（BOOL）animated</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super viewDidAppear:animated];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[UIView animateWithDuration:2.0</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　delay:0.0</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　usingSpringWithDamping:0.25</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　initialSpringVelocity:0.0</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　options:0</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　animations:^{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect frame = CGRectMake（40, 70, 240, 30）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.textField.frame = frame;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　completion:NULL];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　用于添加弹簧动画的方法看起来参数较多，但实际上每个参数的含义都非常直观：</p>
+
+  <p class="calibre1">　　构建并运行应用。UITextField对象会从屏幕顶部降落下来，然后像弹簧一样来回跳动，最后停止在与之前相同的位置。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

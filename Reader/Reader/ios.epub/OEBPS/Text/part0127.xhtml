@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">13.8 深入学习：再谈UIGestureRecognizer</h2>
+
+  <p class="calibre1">　　本章只对<span class="calibre10">UIGestureRecognizer</span>做了一个简单的介绍，关于它的属性和委托方法还没有进行介绍。此外，iOS SDK还提供了若干其他的<span class="calibre10">UIGestureRecognizer</span>子类，读者也可以创建自己的<span class="calibre10">UIGestureRecognizer</span>子类。本节将对<span class="calibre10">UIGestureRecognizer</span>再做一个概要介绍，以帮助读者了解“<span class="calibre10">UIGestureRecognizer</span>可以做什么”。</p>
+
+  <p class="calibre1">　　当某个<span class="calibre10">UIGestureRecognizer</span>子类对象附着在<span class="calibre10">UIView</span>对象上时，这个子类对象会自动处理和触摸事件有关的<span class="calibre10">UIResponder</span>方法（例如<span class="calibre10">touchesBegan:withEvent:</span>）。<span class="calibre10">UIGestureRecognizer</span>子类对象都是很“贪婪的”，凡是附着了该子类对象的<span class="calibre10">UIView</span>对象，通常都不会再收到和触摸事件有关的消息，或者会延迟收到这类消息。修改<span class="calibre10">UIGestureRecognizer</span>对象的某些属性（例如<span class="calibre10">delaysTouchesBegan</span>、<span class="calibre10">delaysTouches- Ended</span>和<span class="calibre10">cancelsTouchesInView</span>），可以改变这种行为。如果要进一步修改<span class="calibre10">UIGestureRecognizer</span>对象处理触摸事件的逻辑，还可以为其实现特定的委托方法。</p>
+
+  <p class="calibre1">　　某些情况下，一个<span class="calibre10">UIView</span>对象可能会附着多个<span class="calibre10">UIGestureRecognizer</span>子类对象，并且其中的两个<span class="calibre10">UIGestureRecognizer</span>子类对象所识别的都是类似的手势。在这种情况下，通过调用<span class="calibre10">UIGestureRecognizer</span>的<span class="calibre10">requireGestureRecognizerToFail:</span>，可以将这两个<span class="calibre10">UIGestureRecognizer</span>子类对象“串”起来：只有当某个<span class="calibre10">UIGestureRecognizer</span>子类对象识别不出手势时，另一个子类对象才会开始识别。</p>
+
+  <p class="calibre1">　　掌握<span class="calibre10">UIGestureRecognizer</span>的关键是根据不同的<span class="calibre10">UIGestureRecognizer</span>子类，理解其各种状态的含义。总的来说，<span class="calibre10">UIGestureRecognizer</span>子类对象可以有以下几种状态：</p>
+
+  <p class="calibre1">　　·UIGestureRecognizerStatePossible·UIGestureRecognizerStateFailed</p>
+
+  <p class="calibre1">　　·UIGestureRecognizerStateBegan·UIGestureRecognizerStateCancelled</p>
+
+  <p class="calibre1">　　·UIGestureRecognizerStateChanged·UIGestureRecognizerStateRecognized</p>
+
+  <p class="calibre1">　　·UIGestureRecognizerStateEnded</p>
+
+  <p class="calibre1">　　多数情况下，<span class="calibre10">UIGestureRecognizer</span>子类对象会处于“可能”（<span class="calibre10">UIGestureRecognizer- StatePossible</span>）状态。当某个<span class="calibre10">UIGestureRecognizer</span>子类对象识别出特定的手势时，其状态会切换至“开始”（<span class="calibre10">UIGestureRecognizerStateBegan</span>）状态。如果某个<span class="calibre10">UIGestureRecognizer</span>子类对象的手势是可持续的（例如拖移），其状态就会切换至“变化后”（<span class="calibre10">UIGestureRecognizer- StateChanged</span>）状态，而且会保持该状态直到手势结束。在“变化后”状态中，只要手势发生了变化，<span class="calibre10">UIGestureRecognizer</span>子类对象就会向目标对象发送指定的动作消息。当手势结束时，<span class="calibre10">UIGestureRecognizer</span>子类对象会切换至“结束”（<span class="calibre10">UIGestureRecognizerStateEnded</span>）状态。</p>
+
+  <p class="calibre1">　　不是所有的<span class="calibre10">UIGestureRecognizer</span>子类对象都会有“开始”“变化后”和“结束”这三种状态。对某些识别“不连续”手势（例如按下）的<span class="calibre10">UIGestureRecognizer</span>子类，就只有一个“已识别”（<span class="calibre10">UIGestureRecognizerStateRecognized</span>）状态（<span class="calibre10">UIGesture- RecognizerStateRecognized</span>和<span class="calibre10">UIGestureRecognizerStateEnded</span>的值是相同的）。</p>
+
+  <p class="calibre1">　　<span class="calibre10">UIGestureRecognizer</span>子类对象是可以“取消的”（例如有电话进来），也可能会失败（例如根据当前的触摸事件不足以识别特定的手势）。当某个<span class="calibre10">UIGestureRecognizer</span>子类对象的状态发生变化时，该对象会向目标对象发送指定的动作消息。相应的动作方法可以根据<span class="calibre10">UIGestureRecognizer</span>子类对象的state属性执行不同的逻辑。</p>
+
+  <p class="calibre1">　　iOS SDK提供了多个<span class="calibre10">UIGestureRecognizer</span>子类，如<span class="calibre10">UIPinchGestureRecognizer</span>、<span class="calibre10">UISwipeGestureRecognizer</span>和<span class="calibre10">UIRotationGestureRecognizer</span>。这些子类对象都有自己的额外属性，可以用来调整其识别行为，具体的细节请读者参考相关文档。</p>
+
+  <p class="calibre1">　　如果iOS SDK提供的<span class="calibre10">UIGestureRecognizer</span>子类不能满足需要，读者还可以创建自己的<span class="calibre10">UIGestureRecognizer</span>子类。具体的细节请读者参考UIGestureRecognizer文档的“Subclassing Notes”（如何创建<span class="calibre10">UIGestureRecognizer</span>子类）部分。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

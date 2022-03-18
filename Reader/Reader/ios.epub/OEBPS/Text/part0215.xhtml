@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">24.7 保存视图状态</h2>
+
+  <p class="calibre1">　　现在BNRItemsViewController中还存在以下问题：</p>
+
+  <p class="calibre1">　　•UITableView没有记录用户最后选中的BNRItem和滚动位置。</p>
+
+  <p class="calibre1">　　•BNRItemsViewController没有记录用户最后是位于正常模式还是编辑模式。每次重新启动应用后，BNRItemsViewController都会恢复到正常模式。</p>
+
+  <p class="calibre1">　　类似于UIViewController，同样可以为UIView及其子类设置恢复标识，并保存需要的状态信息。iOS SDK提供的部分UIView子类可以自动保存某些状态信息，例如UICollectionView、UIImageView、UIScrollView、UITableView、UITextField、UITextView和UIWebView。</p>
+
+  <p class="calibre1">　　Xcode文档中详细介绍了这些类会保存哪些状态信息。为了记录用户最后的滚动位置，可以使用UITableView自动保存的contentOffset属性，恢复UITableView的滚动位置。</p>
+
+  <p class="calibre1">　　先打开BNRItemsViewController.m，为UITableView对象设置恢复标识，代码如下：</p>
+
+  <p class="calibre1">　　- （void）viewDidLoad</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　[super viewDidLoad];</p>
+
+  <p class="calibre1">　　// 创建UINib对象，该对象代表包含了BNRItemCell的NIB文件</p>
+
+  <p class="calibre1">　　UINib *nib = [UINib nibWithNibName:@“BNRItemCell” bundle:nil];</p>
+
+  <p class="calibre1">　　// 通过UINib对象，注册相应的NIB文件</p>
+
+  <p class="calibre1">　　[self.tableView registerNib:nib</p>
+
+  <p class="calibre1">　　forCellReuseIdentifier:@“BNRItemCell”];</p>
+
+  <p class="calibre1"><span class="calibre10">　　self.tableView.restorationIdentifier =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@“BNRItemsViewControllerTableView”;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用，多添加一些BNRItem对象，然后向下滚动UITableView对象。触发状态恢复，再重新启动应用。可以看见，UITableView对象可以正确恢复到之前滚动的位置。</p>
+
+  <p class="calibre1">　　接下来解决第二个问题，保存BNRItemsViewController的编辑状态。打开BNRItemsViewController.m，实现编码和解码方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）encodeRestorableStateWithCoder:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[coder encodeBool:self.isEditing forKey:@“TableViewIsEditing”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super encodeRestorableStateWithCoder:coder];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）decodeRestorableStateWithCoder:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.editing = [coder decodeBoolForKey:@“TableViewIsEditing”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super decodeRestorableStateWithCoder:coder];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　下面介绍如何记录用户最后选中的BNRItem。UITableView会自动记录最后选中的UITableViewCell，但无法正确找到UITableViewCell所对应的BNRItem。也就是说，UITableView只会恢复视图对象（每一行的UITableViewCell），但无法自动为其关联正确的模型对象（每一行UITableViewCell所对应的BNRItem）。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m的类扩展中，使BNRItemsViewController遵守UIDataSourceModelAssociation协议：</p>
+
+  <p class="calibre1">　　@interface BNRItemsViewController （）</p>
+
+  <p class="calibre1">　　&lt;UIPopoverControllerDelegate, <span class="calibre10">UIDataSourceModelAssociation</span>&gt;</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） UIPopoverController *imagePopover;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　UIDataSourceModelAssociation协议可以帮助系统在恢复视图对象时为其关联正确的模型对象。当系统保存视图状态时，会同时根据该视图对应模型的所在位置（NSIndexPath）保存一个唯一标识；之后，当恢复视图状态时，也会同时恢复该唯一标识，并找到模型之前的位置。这样，就可以将模型关联到对应位置的UITableViewCell。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m中，实现UIDataSourceModelAssociation协议的modelIdentifierForElementAtIndexPath:方法，为选中的BNRItem对象设置唯一标识符（unique identifier），以便系统在恢复应用状态时可以正确找到相应的BNRItem对象。可以使用BNRItem对象的itemKey属性作为唯一标识符，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （NSString *）modelIdentifierForElementAtIndexPath:（NSIndexPath *）path</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inView:（UIView *）view</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *identifier = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （path &amp;&amp; view） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 为NSIndexPath参数所对应的BNRItem对象设置唯一标识符</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *item = [[BNRItemStore sharedStore] allItems][path.row];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　identifier = item.itemKey;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return identifier;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　接下来实现该协议的另一个对应方法：indexPathForElementWithModelIdentifier:，根据BNRItem对象的唯一标识符返回其所在的NSIndexPath，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （NSIndexPath *）indexPathForElementWithModelIdentifier:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（NSString *）identifier inView:（UIView *）view</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSIndexPath *indexPath = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （identifier &amp;&amp; view） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *items = [[BNRItemStore sharedStore] allItems];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　for （BNRItem *item in items） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[identifier isEqualToString:item.itemKey]） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　int row = [items indexOfObjectIdenticalTo:item];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　indexPath = [NSIndexPath indexPathForRow:row inSection:0];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　break;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return indexPath;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用，触发状态恢复。Homepwner现在可以很好地保存和恢复整个应用的状态，提供了流畅的用户体验。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

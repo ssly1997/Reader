@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">7.5 运动效果</h2>
+
+  <p class="calibre1">　　ios设备内嵌了许多功能强大的传感器，例如加速传感器，磁场传感器和三轴陀螺仪等。应用可以通过这些感应器了解设备的速度、方向和角度，并实现有用的功能。例如，应用可以根据设备的方向自动将界面调整为横排模式或竖排模式。从iOS 7开始，Apple引入了一些新API，可以轻松为应用添加一种通过感应器实现的视差（parallax）效果。</p>
+
+  <p class="calibre1">　　读者可以想象自己坐在一辆飞驰的车中，这时向车窗外望去，会发现远处景物的倒退速度比近处的要慢很多。这是大脑对空间和速度差异产生的一种错觉，称为视差。在iOS 7中，视差效果随处可见，例如，在主屏幕中，如果稍微倾斜设备，可以发现主屏幕中的图标会随着倾斜方向相对于壁纸移动；在iOS系统其他部分和应用中，包括红色的通知标识、音量调节指示器和警告视图等，都带有一定程度的视差效果。</p>
+
+  <p class="calibre1">　　应用可以通过UIInterpolatingMotionEffect类实现相同的效果，只需要创建一个UIInterpolatingMotionEffect对象，设置其方向（垂直或水平）、键路径（key path，需要使用视差效果的属性）和相对最小/最大值（视差的范围），再将其添加到某个视图上，该视图就能获得相应的视差效果。</p>
+
+  <p class="calibre1">　　在BNRHypnosisViewController.m中，修改drawHypnoticMessage:方法，为UILabel对象分别添加水平方向和垂直方向的视差效果，使UILabel对象的中心点坐标在每个方向上最多移动25点。</p>
+
+  <p class="calibre1">　　[self.view addSubview:messageLabel];</p>
+
+  <p class="calibre1"><span class="calibre10">　　UIInterpolatingMotionEffect *motionEffect;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　motionEffect = [[UIInterpolatingMotionEffect alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　initWithKeyPath:@"center.x"</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　motionEffect.minimumRelativeValue = @(-25);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　motionEffect.maximumRelativeValue = @(25);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[messageLabel addMotionEffect:motionEffect];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　motionEffect = [[UIInterpolatingMotionEffect alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　initWithKeyPath:@"center.y"</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　motionEffect.minimumRelativeValue = @(-25);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　motionEffect.maximumRelativeValue = @(25);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[messageLabel addMotionEffect:motionEffect];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　为了测试运动效果，必须在真实iOS设备中运行应用。选择一个设备，构建并运行应用，向屏幕中添加一些UILabel对象，然后稍微倾斜屏幕，可以注意到UILabel对象会随着倾斜方向移动，具有逼真的视差效果。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

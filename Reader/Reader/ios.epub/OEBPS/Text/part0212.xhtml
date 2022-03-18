@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">24.4 状态恢复与应用生命周期</h2>
+
+  <p class="calibre1">　　由于应用已经启用了状态恢复，因此应用的生命周期多出了一环——应用启动后首先会判断是否需要恢复应用状态，如图24-3所示。目前创建UIWindow对象和rootViewController的代码都位于application:didFinishLaunchingWithOptions:方法中，需要针对状态恢复修改代码。</p>
+
+  <p class="calibre7"><img alt="tu24-3" src="../Images/image00669.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图24-3 启用状态恢复后的生命周期</p>
+
+  <p class="calibre1">　　application:willFinishLaunchingWithOptions:方法会在系统恢复应用状态之前调用。因此，需要在状态恢复触发之前执行的代码都应该写在该方法中，例如创建并设置UIWindow对象。</p>
+
+  <p class="calibre1">　　在BNRAppDelegate.m中覆盖该方法，创建并设置UIWindow对象，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （BOOL）application:（UIApplication *）application</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　willFinishLaunchingWithOptions:（NSDictionary *）launchOptions</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window.backgroundColor = [UIColor whiteColor];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　然后更新application:didFinishLaunchingWithOptions:方法，如果应用没有触发状态恢复（例如，应用第一次启动时），就需要创建并设置应用的各个视图控制器。同时，创建并设置UIWindow对象的代码已经移动到了application: willFinishLaunching- WithOptions:中，因此要删除application: didFinishLaunchingWithOptions:中的相关代码：</p>
+
+  <p class="calibre1">　　- （BOOL）application:（UIApplication *）application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:（NSDictionary *）launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window =</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds]];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果应用没有触发状态恢复，就创建并设置各个视图控制器</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！self.window.rootViewController） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　BNRItemsViewController *itemsViewController =</p>
+
+  <p class="calibre1">　　[[BNRItemsViewController alloc] init];</p>
+
+  <p class="calibre1">　　// 创建一个UINavigationController对象，</p>
+
+  <p class="calibre1">　　// 其根视图控制器是itemsViewController</p>
+
+  <p class="calibre1">　　UINavigationController *navController = [[UINavigationController alloc]</p>
+
+  <p class="calibre1">　　initWithRootViewController:itemsViewController];</p>
+
+  <p class="calibre1">　　// 将UINavigationController对象的类名设置为恢复标识</p>
+
+  <p class="calibre1">　　navController.restorationIdentifier =</p>
+
+  <p class="calibre1">　　NSStringFromClass（[navController class]）；</p>
+
+  <p class="calibre1">　　// 将UINavigationController对象设置为UIWindow的rootViewController</p>
+
+  <p class="calibre1">　　self.window.rootViewController = navController;</p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window.backgroundColor = [UIColor whiteColor];</span></del></p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

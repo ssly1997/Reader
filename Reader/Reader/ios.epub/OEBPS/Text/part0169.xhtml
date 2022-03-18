@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">18.7 模型-视图-控制器-存储设计模式</h2>
+
+  <p class="calibre1">　　本章扩充了BNRItemStore对象，它能够将其包含的全部BNRItem对象存入文件，并根据之前保存的文件重建BNRItem对象。Homepwner中的控制对象会向BNRItemStore对象查询各自需要的模型对象，并且不会关心这些模型对象的出处。Homepwner中的控制对象只会使用模型对象，所有和创建模型对象有关的工作都将由BNRItemStore对象来完成。</p>
+
+  <p class="calibre1">　　标准的模型-视图-控制器设计模式要求控制对象负责模型对象的保存和读取。但在实际情况中，这样做的效果并不是很好。控制对象的主要任务是处理模型对象和视图对象之间的交互，如果还要负责实现所有的存取细节，则可能会“不堪重负”。为此，可以将模型对象的存取逻辑移入另一类对象：存储对象。</p>
+
+  <p class="calibre1">　　通过存储对象所提供的方法，控制对象可以获取或保存模型对象。保存和读取模型对象的实现细节全部由存储对象负责。以本章中的Homepwner为例，存储对象（BNRItemStore对象）会通过某个指定的文件来创建和保存BNRItem对象。除了文件，存储对象也可以使用数据库、Web服务或其他途径来为控制对象创建模型对象。</p>
+
+  <p class="calibre1">　　除了能够简化控制器类，这种设计模式的另一个好处是：不用修改控制对象或应用的其他部分，就能修改存储对象的工作方式。这种修改可以很简单，例如修改数据的目录结构；也可以很复杂，例如修改数据的格式。因此，无论某个应用有多少个需要存取数据的控制对象，都只需要修改相应的存储对象即可。</p>
+
+  <p class="calibre1">　　本书之前介绍过模型-视图-控制器，本章将这种设计模式拓展为模型-视图-控制器-存储（Model-View-Controller-Store）。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

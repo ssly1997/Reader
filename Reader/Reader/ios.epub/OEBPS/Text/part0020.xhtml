@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">2.5 深入学习NSArray与NSMutableArray</h2>
+
+  <p class="calibre1">　　开发iOS应用时经常要用到数组，现在开始深入学习数组的相关知识。</p>
+
+  <p class="calibre1">　　Objective-C中的数组可以存储不同类型的对象，虽然items数组目前只存储BNRItem对象，但是也可以存储NSDate对象或其他对象。这一点和很多强类型（strongly-typed）语言不同，这些语言的数组只能保存一种类型的对象。</p>
+
+  <p class="calibre1">　　数组对象只能保存指向Objective-C对象的指针，所以不能将基本类型（primitive）的变量或C结构加入数组对象。如果要将基本类型的变量和C结构加入数组，可以先将它们“包装”成Objective-C对象，例如NSNumber、NSValue和NSData。</p>
+
+  <p class="calibre1">　　注意，不能将nil加入数组对象。如果要将“空洞”加入数组对象，就必须使用NSNull对象。NSNull对象的作用就是代表nil，所以可以用来解决这类问题，代码如下：</p>
+
+  <p class="calibre1">　　[items addObject:[NSNull null]];</p>
+
+  <p class="calibre1">　　访问数组中的对象时，可以向数组对象发送objectAtIndex:消息，它会返回指定索引的对象，但是这种语法非常繁琐，还有一种更简洁的下标语法：</p>
+
+  <p class="calibre1">　　NSString *foo = items[0];</p>
+
+  <p class="calibre1">　　这行代码与发送objectAtIndex:消息的效果是相同的：</p>
+
+  <p class="calibre1">　　NSString *foo = [items objectAtIndex:0];</p>
+
+  <p class="calibre1">　　下面在BNRItem.m中使用下标语法重新实现randomItem方法。</p>
+
+  <p class="calibre1">　　+ (instancetype)randomItem</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">NSString *randomName = [NSString stringWithFormat:@"%@ %@",</span></del></p>
+
+  <p class="calibre1">　　　　　<del class="calibre11"><span class="calibre10">[randomAdjectiveList objectAtIndex:adjectiveIndex],</span></del></p>
+
+  <p class="calibre1">　　　　　<del class="calibre11"><span class="calibre10">[randomNounList objectAtIndex:nounIndex]];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *randomName = [NSString stringWithFormat:@"%@ %@",</span></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　randomAdjectiveList[adjectiveIndex],</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　randomNounList[nounIndex]];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　int randomValue = arc4random() % 100;</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　return newItem;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用，检查控制台中的输出结果是否和之前的结果相同。</p>
+
+  <p class="calibre1">　　方括号的嵌套层数越多，代码的可读性就越差。因为方括号的作用可能不同，容易产生混淆：有的是发送消息，有的是存取方法，有的是访问数组中的对象。坚持使用点语法和下标语法可以清晰地突出消息发送代码，也可以避免代码过于冗长。</p>
+
+  <p class="calibre1">　　与点语法和存取方法的关系相同，下标语法和objectAtIndex:消息编译后的结果也是一样的，编译器会自动将下标语法转换为objectAtIndex:消息。</p>
+
+  <p class="calibre1">　　在NSMutableArray中，可以使用下标语法向数组中添加和修改对象。</p>
+
+  <p class="calibre1">　　NSMutableArray *items = [[NSMutableArray alloc] init];</p>
+
+  <p class="calibre1">　　items[0] = @"A"; // Add @"A"</p>
+
+  <p class="calibre1">　　items[1] = @"B"; // Add @"B"</p>
+
+  <p class="calibre1">　　items[0] = @"C"; // Replace @"A" with @"C"</p>
+
+  <p class="calibre1">　　这几行代码等价于向items发送insertObject:atIndex:和replaceObject- AtIndex:withObject:消息。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

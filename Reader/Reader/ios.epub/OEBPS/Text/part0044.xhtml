@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">4.7 深入学习：Core Graphics</h2>
+
+  <p class="calibre1">　　UIImage、UIBezierPath和NSString都提供了至少一种用于在drawRect:中绘图的方法，这些绘图方法会在drawRect:执行时分别将图像、图形和文本绘制到视图的图层上。</p>
+
+  <p class="calibre1">　　使用这些方法进行绘图既简单又方便，但是绘制方法内部封装了很多复杂的绘图代码。</p>
+
+  <p class="calibre1">　　无论绘制JPEG、PDF还是视图的图层，都是由Core Graphics框架完成的。本章使用的UIBezierPath，其实是将Core Graphics代码封装在一系列方法中，以方便开发者调用，降低了绘图难度。为了真正了解绘图的过程与原理，必须深入学习Core Graphics是如何工作的。</p>
+
+  <p class="calibre1">　　Core Hraphics是一套提供2D绘图功能的C语言API，使用C结构和C函数模拟了一套面向对象的编程机制，并没有Objective-C对象和方法。Core Graphics中最重要的“对象”是图形上下文（graphics context），图形上下文是CGContextRef的“对象”，负责存储绘画状态（例如画笔颜色和线条粗细）和绘制内容所处的内存空间。</p>
+
+  <p class="calibre1">　　视图的drawRect:方法在执行之前，系统首先为视图的图层创建一个图形上下文，然后为绘画状态设置一些默认参数。drawRect:方法开始执行时，随着图形上下文不断执行绘图操作，图层上的内容也会随之改变。drawRect:执行完毕后，系统会将图层与其他图层一起组合成完整的图像并显示在屏幕上。</p>
+
+  <p class="calibre1">　　参与绘图操作的类都定义了改变绘画状态和执行绘图操作的方法，这些方法其实调用了对应的Core Graphics函数。例如，向UIColor对象发送setStroke消息时，会调用Core Graphics中的CGContextSetRGBStrokeColor函数改变当前图形上下文中的画笔颜色。</p>
+
+  <p class="calibre1">　　以下两段代码的效果是相同的：</p>
+
+  <p class="calibre1">　　[[UIColor colorWithRed:1.0 green:0.0 blue:1.0 alpha:1.0] setStroke];</p>
+
+  <p class="calibre1">　　UIBezierPath *path = [UIBezierPath bezierPath];</p>
+
+  <p class="calibre1">　　[path moveToPoint:a];</p>
+
+  <p class="calibre1">　　[path addLineToPoint:b];</p>
+
+  <p class="calibre1">　　[path stroke];</p>
+
+  <p class="calibre1">　　直接使用Core Graphics函数完成相同的绘图操作：</p>
+
+  <p class="calibre1">　　CGContextSetRGBStrokeColor(currentContext, 1, 0, 0, 1);</p>
+
+  <p class="calibre1">　　CGMutablePathRef path = CGPathCreateMutable();</p>
+
+  <p class="calibre1">　　CGPathMoveToPoint(path, NULL, a.x, a.y);</p>
+
+  <p class="calibre1">　　CGPathAddLineToPoint(path, NULL, b.x, b.y);</p>
+
+  <p class="calibre1">　　CGContextAddPath(currentContext, path);</p>
+
+  <p class="calibre1">　　CGContextStrokePath(currentContext);</p>
+
+  <p class="calibre1">　　CGPathRelease(path);</p>
+
+  <p class="calibre1">　　像CGContextSetRGBStrokeColor这类在图形上下文中执行绘图操作的函数，第一个参数需要传入指向图形上下文的指针。可以在drawRect:方法中调用UIGraphics- GetCurrentContext函数获取当前图形上下文。视图的当前图形上下文是在drawRect:方法执行之前创建的。</p>
+
+  <p class="calibre1">　　- (void)drawRect:(CGRect)rect</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　CGContextRef currentContext = UIGraphicsGetCurrentContext();</p>
+
+  <p class="calibre1">　　CGContextSetRGBStrokeColor(currentContext, 1, 0, 0, 1);</p>
+
+  <p class="calibre1">　　CGMutablePathRef path = CGPathCreateMutable();</p>
+
+  <p class="calibre1">　　CGPathMoveToPoint(path, NULL, a.x, a.y);</p>
+
+  <p class="calibre1">　　CGPathAddLineToPoint(path, NULL, b.x, b.y);</p>
+
+  <p class="calibre1">　　CGContextAddPath(currentContext, path);</p>
+
+  <p class="calibre1">　　CGContextStrokePath(currentContext);</p>
+
+  <p class="calibre1">　　CGPathRelease(path);</p>
+
+  <p class="calibre1">　　CGContextSetStrokeColorWithColor(currentContext, color);</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　UIBezierPath和UIColor的所有绘图功能都可以通过直接调用Core Graphics函数完成。实际上，UIBezierPath和UIColor在Core Graphics中有对应的C结构：CGMutablePathRef 和CGColorRef。通常情况下，使用Objective-C类更加方便。</p>
+
+  <p class="calibre1">　　但是，有些功能只能使用Core Graphics完成，例如绘制渐变。Core Graphics中的结构和函数都具有CG前缀，如果遇到无法使用Objective-C类完成的绘图功能，可以在文档中查阅带有CG前缀的结构和函数，直接使用Core Graphics。</p>
+
+  <p class="calibre1">　　或许读者会感到疑惑，为什么很多Core Graphics类型都带有Ref后缀。带有Ref后缀的类型是Core Graphics中用来模拟面向对象机制的C结构。Core Graphics“对象”与Objective-C对象都是在堆上分配内存，因此创建一个Core Graphics“对象”时，同样会返回一个指向对象内存地址的指针。</p>
+
+  <p class="calibre1">　　使用这种分配方式的C结构都有一个用来表示结构指针（结构名后加一个“*”）的类型定义（type definition）。例如，CGColor结构（不会直接使用的类型）有一个表示CGColor *的类型定义——CGColorRef（应该使用的类型）。使用这种类型定义是为了区分指针变量，方便开发者判断指针变量是指向C结构还是可以接收消息的Objective-C对象。</p>
+
+  <p class="calibre1">　　相反，部分类型没有结构指针，因此类型名称不带Ref后缀。例如CGRect和CGPoint。这些类型的数据结构简单，可以直接在栈上分配，因此不需要使用结构指针。</p>
+
+  <p class="calibre1">　　带有Ref后缀的类型的对象可能具有指向其他Core Graphics“对象”的强引用指针，并成为这些“对象”的拥有者。但是ARC无法识别这类强引用和“对象”所有权，必须在使用完之后手动释放。规则是，如果使用名称中带有create或者copy的函数创建了一个Core Graphics“对象”，就必须调用对应的Release函数并传入该对象指针。</p>
+
+  <p class="calibre1">　　最后，Mac开发中也可以使用Core Graphics，使用该框架编写的代码在Mac和iOS平台上都能运行，例如开源项目core-plot。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

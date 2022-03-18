@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">24.3 恢复标识和恢复类</h2>
+
+  <p class="calibre1">　　系统在保存应用状态时，首先会查询UIWindow对象rootViewController的restorationIdentifier（恢复标识）属性，如果rootViewController具有restorationIdentifier属性，那么系统会保存其状态；然后，系统会遍历rootViewController的子视图控制器，并保存它们的状态；接下来继续遍历这些视图控制器的子视图控制器……直到层次结构的最后一级。如果其中某个视图控制器没有restorationIdentifier属性，那么系统不会保存该视图控制器及其所有子孙视图控制器的状态，无论子孙视图控制器是否具有restorationIdentifier属性。</p>
+
+  <p class="calibre1">　　例如，在图24-2中，应用有两个用灰色标识的视图控制器，它们没有恢复标识，因此系统无法恢复其状态，也无法恢复其子视图控制器的状态。</p>
+
+  <p class="calibre7"><img alt="tu24-2" src="../Images/image00668.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图24-2 恢复标识</p>
+
+  <p class="calibre1">　　根据Apple命名规范，通常应该将类名作为类的恢复标识。打开BNRAppDelegate.m，在application:didFinishLaunchingWithOptions:中为UINavigationController对象设置恢复标识：</p>
+
+  <p class="calibre1">　　- （BOOL）application:（UIApplication *）application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:（NSDictionary *）launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.window = [[UIWindow alloc]</p>
+
+  <p class="calibre1">　　initWithFrame:UIScreen.mainScreen.bounds]];</p>
+
+  <p class="calibre1">　　BNRItemsViewController *itemsViewController =</p>
+
+  <p class="calibre1">　　[[BNRItemsViewController alloc] init];</p>
+
+  <p class="calibre1">　　// 创建一个UINavigationController对象，</p>
+
+  <p class="calibre1">　　// 其根视图控制器是itemsViewController</p>
+
+  <p class="calibre1">　　UINavigationController *navController = [[UINavigationController alloc]</p>
+
+  <p class="calibre1">　　initWithRootViewController:itemsViewController];</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将UINavigationController对象的类名设置为恢复标识</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　navController.restorationIdentifier =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSStringFromClass（[navController class]）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　// 将UINavigationController对象设置为UIWindow的rootViewController</p>
+
+  <p class="calibre1">　　self.window.rootViewController = navController;</p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　现在UINavigationController对象已经有了恢复标识，系统会保存该对象的状态，同时，如果该对象的子孙视图控制器有恢复标识，系统也会保存它们的状态。</p>
+
+  <p class="calibre1">　　对于BNRItemsViewController和BNRDetailViewController，应该在指定初始化方法中设置其恢复标识。除此之外，还需要为两个视图控制器设置恢复类（restoration class）。系统在恢复某个对象的状态时，会要求其恢复类创建该对象。</p>
+
+  <p class="calibre1">　　打开BNRItemsViewController.m，修改init方法，设置恢复标识和恢复类：</p>
+
+  <p class="calibre1">　　- （instancetype）init</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// 调用父类的指定初始化方法</p>
+
+  <p class="calibre1">　　self = [super initWithStyle:UITableViewStylePlain];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　UINavigationItem *navItem = self.navigationItem;</p>
+
+  <p class="calibre1">　　navItem.title = @“Homepwner”;</p>
+
+  <p class="calibre1"><span class="calibre10">　　self.restorationIdentifier = NSStringFromClass（[self class]）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.restorationClass = [self class];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　 对于BNRDetailViewController，则应该在initForNewItem:方法中设置：</p>
+
+  <p class="calibre1">　　- （instancetype）initForNewItem:（BOOL）isNew</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super initWithNibName:nil bundle:nil];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1"><span class="calibre10">　　self.restorationIdentifier = NSStringFromClass（[self class]）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.restorationClass = [self class];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　if （isNew） {</p>
+
+  <p class="calibre1">　　最后，还要为添加BNRItem对象时以模态形式推入的UINavigationController对象设置恢复标识。</p>
+
+  <p class="calibre1">　　重新打开BNRItemsViewController.m，修改addNewItem:方法，代码如下：</p>
+
+  <p class="calibre1">　　- （IBAction）addNewItem:（id）sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// 通过BNRItemStore单例创建一个新的BNRItem对象</p>
+
+  <p class="calibre1">　　BNRItem *newItem = [[BNRItemStore sharedStore] createItem];</p>
+
+  <p class="calibre1">　　BNRDetailViewController *detailViewController =</p>
+
+  <p class="calibre1">　　[[BNRDetailViewController alloc] initForNewItem:YES];</p>
+
+  <p class="calibre1">　　detailViewController.item = newItem;</p>
+
+  <p class="calibre1">　　detailViewController.dismissBlock = ^{</p>
+
+  <p class="calibre1">　　[self.tableView reloadData];</p>
+
+  <p class="calibre1">　　};</p>
+
+  <p class="calibre1">　　UINavigationController *navController = [[UINavigationController alloc]</p>
+
+  <p class="calibre1">　　initWithRootViewController:detailViewController];</p>
+
+  <p class="calibre1"><span class="calibre10">　　navController.restorationIdentifier =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSStringFromClass（[navController class]）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　（请注意，以上代码并没有为两个UINavigationController对象设置恢复类，它们将由应用程序委托负责创建，下一节会介绍相关过程。）</p>
+
+  <p class="calibre1">　　现在，Homepwner中所有视图控制器都已经具有了恢复标识，当应用进入后台运行或被终止时，系统会保存所有视图控制器的状态。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

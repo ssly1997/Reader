@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">5.2 类扩展</h2>
+
+  <p class="calibre1">　　现在请读者思考，为什么要将circleColor属性声明在BNRHypnosisView的类扩展中？将属性声明在头文件中和类扩展中有什么区别？</p>
+
+  <p class="calibre1">　　在第2章中介绍过，头文件是一个类的“用户手册”，其他类可以通过头文件知道该类的功能和使用方法。使用头文件的目的是向其他类公开该类声明的属性和方法，也就是说，头文件中声明的属性和方法对其他类是可见的（visible）。</p>
+
+  <p class="calibre1">　　但是，并不是每一个属性或方法都要向其他类公开。只会在类的内部使用的属性和方法应当声明在类扩展中。circleColor属性只会被BNRHypnosisView使用，其他类不需要使用该属性，因此它应该被声明在类扩展中。</p>
+
+  <p class="calibre1">　　在类扩展中声明类的内部属性和方法是良好的编程习惯，这样做可以保持头文件的精简，避免内部实现细节的暴露，保证头文件中全部是其他类确实需要使用的属性和方法，从而让其他开发者更容易理解如何使用该类。</p>
+
+  <p class="calibre1">　　在语法上，类扩展的声明方法与头文件类似，需要使用@interface指令，后跟类名，接着为一对空括号。声明属性和方法之后，需要使用@end代表类扩展的声明至此结束。通常应将该类扩展写在实现文件顶部，位于@implementation之前：</p>
+
+  <p class="calibre1">　　#import "BNRHypnosisView.h"</p>
+
+  <p class="calibre1">　　@interface BNRHypnosisView ()</p>
+
+  <p class="calibre1">　　@property (strong, nonatomic) UIColor *circleColor;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRHypnosisView</p>
+
+  <p class="calibre1">　　子类同样无法访问父类在类扩展中声明的属性和方法。例如，BNRHypnosisView的子类无法访问circleColor属性。</p>
+
+  <p class="calibre1">　　有时需要让其他开发者了解类的某些内部属性和方法，以便更好地理解类的工作原理和使用方法。可以在另一个文件中声明类扩展，并将该文件导入类的实现文件中。</p>
+
+  <p class="calibre1">　　本书将使用类扩展声明其他类不需要访问的属性和方法，从而隐藏内部实现细节。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

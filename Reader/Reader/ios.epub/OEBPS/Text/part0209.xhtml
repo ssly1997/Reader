@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">24.1 状态恢复的工作原理</h2>
+
+  <p class="calibre1">　　读者可以将一个运行中的应用想象为一棵由众多视图控制器和视图组成的树，其中树的根是应用的根视图控制器。例如，HypnoNerd应用的“树”类似于图24-1。</p>
+
+  <p class="calibre7"><img alt="tu24-1" src="../Images/image00667.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图24-1 应用树</p>
+
+  <p class="calibre1">　　如果应用启用了状态恢复，系统在终止应用之前会遍历应用树中的每一个节点，记录每个节点的状态信息，例如，对象的唯一标识、类和需要保存的状态数据。在终止应用之后，系统会将这些信息存储到文件系统中。</p>
+
+  <p class="calibre1">　　其中，对象的唯一标识又称为对象的恢复标识（restoration identifier），通常与对象的类名相同；类称为恢复类（restoration class），通常与该对象的isa指针指向的类相同；状态数据则保存了对象状态信息，例如，UITabBarController的状态数据包括当前选中的是哪一个标签项。</p>
+
+  <p class="calibre1">　　当用户重新启动应用后，系统会读取之前保存的状态信息，重新创建应用树，依次恢复树中的每一个节点：</p>
+
+  <p class="calibre1">　　•系统通过节点的恢复类为该节点创建一个新的视图控制器。</p>
+
+  <p class="calibre1">　　•将一组恢复标识赋给新节点：包括该节点的恢复标识及其所有祖先节点的恢复标识。数组中第一个标识是根节点的恢复标识，最后一个标识是新节点的恢复标识。</p>
+
+  <p class="calibre1">　　•将对应的状态数据赋给新节点。状态数据保存在第18章介绍的NSCoder对象中。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

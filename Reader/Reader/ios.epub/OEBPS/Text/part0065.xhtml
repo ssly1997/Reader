@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">7.3 协议</h2>
+
+  <p class="calibre1">　　凡是支持委托的对象，其背后都有一个相应的协议（如果读者之前接触过Java或C#，这些语言中的“协议”称为“接口”），声明可以向该对象的委托对象发送的消息。委托对象需要根据这个协议为其“感兴趣”的事件实现相应的方法。如果一个类实现了某个协议中规定的方法，就称这个类遵守（conform）该协议。</p>
+
+  <p class="calibre1">　　针对UITextField的委托对象，相应的协议示例代码如下：</p>
+
+  <p class="calibre1">　　@protocol UITextFieldDelegate &lt;NSObject&gt;</p>
+
+  <p class="calibre1">　　@optional</p>
+
+  <p class="calibre1">　　- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (void)textFieldDidBeginEditing:(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (BOOL)textFieldShouldEndEditing:(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (void)textFieldDidEndEditing:(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (BOOL)textField:(UITextField *)textField</p>
+
+  <p class="calibre1">　　　　 shouldChangeCharactersInRange:(NSRange)range</p>
+
+  <p class="calibre1">　　　　　　replacementString:(NSString *)string;</p>
+
+  <p class="calibre1">　　- (BOOL)textFieldShouldClear:(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (BOOL)textFieldShouldReturn:(UITextField *)textField;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　声明协议的语法是，使用@protocol指令开头，后跟协议的名称（例如UITextFieldDelegate）。尖括号里的NSObject是指NSObject协议，其作用是声明UITextFieldDelegate包含NSObject协议的全部方法。接着声明新协议特有的方法，最后使用@end指令结束。</p>
+
+  <p class="calibre1">　　协议不是类，只是一组方法声明。不能为协议创建对象，或者添加实例变量。协议自身不实现方法，需要由遵守相应协议的类来实现。</p>
+
+  <p class="calibre1">　　UITextFieldDelegate协议来自iOS SDK，Xcode文档会详细介绍iOS SDK中的协议，列出协议中的所有方法。此外，读者也可以编写自己的协议，第22章会作相应的介绍。</p>
+
+  <p class="calibre1">　　协议所声明的方法可以是必需的（required）或是可选的（optional）。协议方法默认都是必需的。使用@optional指令，可以将写在该指令之后的方法全部声明为可选的。以之前列出的UITextFieldDelegate协议为例，可以发现该协议的所有方法都是可选的。委托协议中的方法通常都是可选的。</p>
+
+  <p class="calibre1">　　发送方在发送可选方法前，会先向其委托发送另一个名为respondsToSelector:的消息。所有Objective-C对象都从NSObject继承了respondsToSelector:方法，该方法能在运行时检查对象是否实现了指定的方法。@selector（）指令可以将选择器（selector）转换成数值，以便将其作为参数进行传递。例如，UITextField可以实现如下方法：</p>
+
+  <p class="calibre1">　　- (void)clearButtonTapped</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// textFieldShouldClear:是可选方法，需要先检查委托是否实现了该方法</p>
+
+  <p class="calibre1">　　SEL clearSelector = @selector(textFieldShouldClear:);</p>
+
+  <p class="calibre1">　　if ([self.delegate respondsToSelector:clearSelector]) {</p>
+
+  <p class="calibre1">　　　　if ([self.delegate textFieldShouldClear:self]) {</p>
+
+  <p class="calibre1">　　　　　　self.text = @"";</p>
+
+  <p class="calibre1">　　　　}</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　如果某个协议方法是必需的，那么发送方可以直接向其委托对象发送相应的消息，不用检查委托对象是否实现了该方法。这意味着，如果委托对象没有实现相应的方法，应用就会抛出未知选择器（unrecognized selector）异常，导致应用崩溃。</p>
+
+  <p class="calibre1">　　为了防止发生此类问题，编译器会检查某个类是否实现了相关协议的必需方法。要让编译器能够执行此类检查，必须将相应的类声明为遵守指定的协议，其语法格式为：在头文件或类扩展的@interface指令末尾，将类所遵守的协议以逗号分隔的列表形式写在尖括号里。</p>
+
+  <p class="calibre1">　　在BNRHypnosisViewController.m的类扩展中，将BNRHypnosisViewController声明为遵守UITextFieldDelegate协议，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRHypnosisViewController()&lt;UITextFieldDelegate&gt;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@end</span></p>
+
+  <p class="calibre1">　　再次构建应用，因为已将BNRHypnosisViewController声明为了遵守UITextFieldDelegate协议，所以编译器不会再针对“textField.delegate = self”这行代码发出警告。此外，如果要为BNRHypnosisViewController实现UITextFieldDelegate协议中的其他方法，那么在输入这些方法的方法名时，Xcode会自动提示完整的方法名或提供备选列表（auto-completed功能）。</p>
+
+  <p class="calibre1">　　读者可能会注意到，iOS SDK中很多类都具有委托，而几乎所有的委托都是弱引用属性。这是为了避免对象及其委托之间产生强引用循环（见图7-4）。例如，BNRHypnosisViewController是UITextfield对象的委托，而且UITextfield对象是BNRHypnosisViewController的强引用属性，如果UITextfield对象再对其委托保持强引用，就会在两者之间产生强引用循环，很可能造成内存泄露。</p>
+
+  <p class="calibre7"><img alt="tu7-4" src="../Images/image00468.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图7-4 避免强引用循环</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

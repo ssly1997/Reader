@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">6.10 深入学习：键值编码</h2>
+
+  <p class="calibre1">　　当NIB文件被载入之后，其中的插座变量是通过键值编码（Key-value coding，KVC）来设置的。键值编码是通过一系列定义在NSObject中的方法实现的，使用这些方法可以通过属性的名称存取属性的值，以下是其中的两种方法：</p>
+
+  <p class="calibre1">　　- (id)valueForKey:(NSString *)k;</p>
+
+  <p class="calibre1">　　- (void)setValue:(id)v forKey:(NSString *)k;</p>
+
+  <p class="calibre1">　　valueForKey和setValue:forKey:是通用的属性存取方法，可以获取或设置任意对象的属性。例如，selectedObj对象有一个fido属性，那么可以使用如下代码获取或设置fido属性：</p>
+
+  <p class="calibre1">　　id currentFido = [selectedObj valueForKey:@"fido"];</p>
+
+  <p class="calibre1">　　[selectedObject setValue:userChoice forKey:@"fido"];</p>
+
+  <p class="calibre1">　　如果selectedObj中定义了fido属性的存取方法，那么valueForKey:和setValue:forKey:就会调用相应的存取方法；如果没有存取方法，则会查找名为_fido或fido的实例变量并直接设置或返回实例变量的值；如果既没有相应的存取方法，也没有_fido或fido实例变量，就会抛出异常。</p>
+
+  <p class="calibre1">　　NIB文件在加载时会使用setValue:forKey:设置插座变量。例如，如果需要为某个对象设置一个名为rex的插座变量，那么该对象必须定义了setRex:方法或者具有_rex实例变量（或rex实例变量），否则在加载NIB文件时会抛出异常，类似以下提示：</p>
+
+  <p class="calibre1">　　[&lt;BNRSunsetViewController 0x68c0740&gt; setValue:forUndefinedKey:]:</p>
+
+  <p class="calibre1">　　this class is not key value coding-compliant for the key rex.'</p>
+
+  <p class="calibre1">　　如果读者看到了这类异常提示，则很有可能是因为在Interface Builder中关联好插座变量之后又更改了该插座变量的名称。</p>
+
+  <p class="calibre1">　　由此本节传达出一条最重要的编程法则：请务必遵守存取方法命名规范。其目的不仅仅是方便其他开发者阅读代码，系统也具有一套依赖于命名规范的工作机制，如果不遵守命名规范，很有可能会发生意外错误。</p>
+
+  <p class="calibre1">　　下面来看一个例子。某个视图控制器定义了clock插座变量，指向一个表示时钟的视图；同时，它还作为一个按钮的目标，为其定义了动作方法setClock:。该方法用于获取网络最新时间并更新时钟视图，方法声明如下：</p>
+
+  <p class="calibre1">　　- (IBAction)setClock:(id)sender;</p>
+
+  <p class="calibre1">　　这样就会产生一个奇怪的问题：当NIB文件被加载时，该方法会立即执行，同时也无法正确设置clock插座变量。原因是系统会使用setClock:动作方法设置clock——系统会将setClock:视为clock的存方法。因此需要重新命名该动作方法，例如updateClock:。</p>
+
+  <p class="calibre1">　　如果不遵守命名规范，就可能在这类奇怪的问题上浪费大量时间。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

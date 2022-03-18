@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">7.7 深入学习：main（）与UIApplication</h2>
+
+  <p class="calibre1">　　用C语言编写的程序，其执行入口都是main（）。用Objective-C语言编写的程序也是这样，下面对iOS应用中的main（）做一个简单的介绍。</p>
+
+  <p class="calibre1">　　在HypnoNerd的项目导航面板中选择main.m，应该能在编辑器区域看到以下代码：</p>
+
+  <p class="calibre1">　　int main(int argc, char *argv[])</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　@autoreleasepool {</p>
+
+  <p class="calibre1">　　　　return UIApplicationMain(argc, argv, nil,</p>
+
+  <p class="calibre1">　　NSStringFromClass([BNRAppDelegate class]));</p>
+
+  <p class="calibre1">　　　　}</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　这段代码中的UIApplicationMain函数会创建一个UIApplication对象。每个iOS应用都有且只有一个UIApplication对象，该对象的作用是维护运行循环。一旦程序创建了某个UIApplication对象，该对象的运行循环就会一直循环下去，main（）的执行也会因此阻塞。</p>
+
+  <p class="calibre1">　　此外，UIApplicationMain函数还会创建某个指定类的对象，并将其设置为UIApplication对象的delegate。该对象的类是由UIApplicationMain函数的最后一个实参指定的，该实参的类型是NSString对象，代表的是某个类的类名。所以在以上这段代码中，UIApplicationMain会创建一个BNRAppDelegate对象，并将其设置为UIApplication对象的delegate。</p>
+
+  <p class="calibre1">　　在应用启动运行循环并开始接收事件前，UIApplication对象会向其委托发送一个特定的消息，使应用能有机会完成相应的初始化工作。这个消息的名称是application:didFinishLaunchingWithOptions:。之前已经在BNRAppDelegate.m中实现了匹配该消息的方法，并在该方法中创建了UIWindow对象和多个视图控制对象。</p>
+
+  <p class="calibre1">　　每个iOS应用都有一个main（），完成的都是相同的任务。如果读者仍有疑问，可以打开第1章编写的Quiz项目，然后查看其main.m文件。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

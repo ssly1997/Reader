@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">2.6 异常与未知选择器</h2>
+
+  <p class="calibre1">　　在运行时，当某个对象收到消息后，会根据创建该对象的类，执行和相应消息相匹配的方法。这种特性和多数编译语言不同，在这些编译语言中，需要执行的方法在编译时就决定了。</p>
+
+  <p class="calibre1">　　Objective-C对象都有一个名为isa的实例变量。对象可以通过自己的isa知道自身的类型。类在创建了一个对象后，会为新创建的对象的isa实例变量赋值，将其指回自己，即创建该对象的类（见图2-20）。这里之所以将这个实例变量命名为isa，是因为通过该实例变量可以知道某个对象“是”哪个类的实例（英文is a的意思“是一个”），虽然在开发应用时很少直接使用isa，但是Objective-C的很多特性都源自isa实例变量。</p>
+
+  <p class="calibre7"><img alt="tu2-20" src="../Images/image00406.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图2-20 　isa实例变量</p>
+
+  <p class="calibre1">　　对象只能响应（respond）类（isa指向的类）中具有相应实现方法的消息。而对象的类型又只能在运行时才能确定，因此Xcode无法在编译时（即构建应用时）判断某个对象是否能响应特定的消息。如果Xcode判断应用会向某个对象发送其无法响应的消息，就会显示相应的警告信息，但是代码仍然能够编译通过。</p>
+
+  <p class="calibre1">　　出于某些原因（原因很多），如果应用最后还是向某个对象发送了其无法响应的消息，那么程序就会抛出异常（exception）。异常也称为运行时错误（run-time error），这是因为异常只会在应用运行时才会出现。和运行时错误相对应的是编译时错误，编译时错误只会在构建应用或编译代码时出现。</p>
+
+  <p class="calibre1">　　下面要在RandomItems中制造一处异常，让读者有机会进一步熟悉异常。</p>
+
+  <p class="calibre1">　　打开main.m，使用NSArray的lastObject方法取得数组中的最后一个BNRItem对象，然后发送一条该对象无法处理的消息：</p>
+
+  <p class="calibre1">　　#import &lt;Foundation/Foundation.h&gt;</p>
+
+  <p class="calibre1">　　#import "BNRItem.h"</p>
+
+  <p class="calibre1">　　int main (int argc, const char * argv[])</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　@autoreleasepool {</p>
+
+  <p class="calibre1">　　　　NSMutableArray *items = [[NSMutableArray alloc] init];</p>
+
+  <p class="calibre1">　　　　for (int i = 0; i &lt; 10; i++) {</p>
+
+  <p class="calibre1">　　　　　　BNRItem *item = [BNRItem randomItem];</p>
+
+  <p class="calibre1">　　　　　　[items addObject:item];</p>
+
+  <p class="calibre1">　　　　}</p>
+
+  <p class="calibre1"><span class="calibre10">　　　　id lastObj = [items lastObject];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　// lastObj是BNRItem对象，无法处理count消息</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　[lastObj count];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　　　for (BNRItem *item in items) {</p>
+
+  <p class="calibre1">　　　　　　NSLog(@"%@", item);</p>
+
+  <p class="calibre1">　　　　}</p>
+
+  <p class="calibre1">　　　　items = nil;　</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return 0;　</p>
+
+  <p class="calibre1">　 　}</p>
+
+  <p class="calibre1">　　构建并运行应用，应用能编译通过并运行，但是会马上崩溃。查看控制台的输出，能找到如下的错误提示：</p>
+
+  <p class="calibre1">　　2014-01-19 12:23:47.990 RandomItems[10288:707] ***</p>
+
+  <p class="calibre1">　　Terminating app due to uncaught exception 'NSInvalidArgumentException', reason:</p>
+
+  <p class="calibre1">　　'-[BNRItem count]: unrecognized selector sent to instance 0x100117280'</p>
+
+  <p class="calibre1">　　这里显示的是异常的描述信息。如何解读这些信息？首先，描述信息的起始部分会列出日期、时间和应用的名称。这部分信息都可以忽略，重点是“***”之后的内容，这部分内容会显示程序发生了异常，并列出相应的原因。</p>
+
+  <p class="calibre1">　　在异常的描述信息中，产生异常的原因是最重要的部分。通过RandomItems发出的异常信息可以知道，这里产生异常的原因是程序向某个对象发送了一个未知选择器（unrecognized selector）。前文介绍过，选择器和消息有关。换句话说，RandomItems向某个对象发送了一条消息，但是收到消息的对象并没有实现相应的方法。</p>
+
+  <p class="calibre1">　　在这段异常的描述信息中，还可以找到消息的接收方和消息名，即某个BNRItem对象收到了count消息。这些信息能够帮助除错。位于行首的“-”代表接收方是对象，如果是“+”则代表接收方是类。</p>
+
+  <p class="calibre1">　　通过以上这个例子，读者应该可以了解两个开发要点：首先，当应用停止响应（halt）或崩溃时，应先检查控制台的输出。运行时发生的错误和编译时发现的错误一样重要。其次，要记住未知选择器的意思是某个对象收到了其没有实现的消息。未知选择器是经常会遇到的错误，牢记这个要点能帮助读者快速地诊断这类问题。</p>
+
+  <p class="calibre1">　　有些编程语言会通过try和catch程序段来处理异常。虽然Objective-C也支持这种特性，但是在开发应用时并不常用。通常情况下，异常源自程序员所犯的错误，所以应该在代码中修正，而不是在运行时处理。</p>
+
+  <p class="calibre1">　　在main.m中删除为了制造异常所加入的代码：</p>
+
+  <p class="calibre1">　　for (int i = 0; i &lt; 10; i++) {</p>
+
+  <p class="calibre1">　　　　BNRItem *item = [BNRItem randomItem];</p>
+
+  <p class="calibre1">　　　　[items addObject:item];</p>
+
+  <p class="calibre1">　　　　}</p>
+
+  <p class="calibre1">　　　　<del class="calibre11"><span class="calibre10">id lastObj = [items lastObject];</span></del></p>
+
+  <p class="calibre1">　　　　<del class="calibre11"><span class="calibre10">// lastObj是BNRItem对象，无法处理count消息</span></del></p>
+
+  <p class="calibre1">　　　　<del class="calibre11"><span class="calibre10">[lastObj count];</span></del></p>
+
+  <p class="calibre1">　　　　for (BNRItem *item in items) {</p>
+
+  <p class="calibre1">　　　　　　NSLog(@"%@", item);</p>
+
+  <p class="calibre1">　　　　}</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

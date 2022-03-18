@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">11.1 通过UIImageView对象显示照片</h2>
+
+  <p class="calibre1">　　首先要将照片赋给BNRDetailViewController对象，才能在该对象的视图中显示。要在视图上显示照片，一种简单的途径是使用UIImageView对象。</p>
+
+  <p class="calibre1">　　打开Homepwner.xcodeproj，点击项目导航面板中的BNRDetailViewController. xib。在对象库面板中找到UIImageView对象，然后拖曳至XIB文件中的顶层视图，放在UILabel对象的下方。接下来调整UIImageView对象的大小，在水平方向基本充满屏幕，但是底部要留有一定的空间，用于之后添加UIToolbar对象（见图11-2）。</p>
+
+  <p class="calibre7"><img alt="tu11-2" src="../Images/image00516.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-2 BNRDetailViewController对象视图中的UIImageView对象</p>
+
+  <p class="calibre1">　　UIImageView对象会根据其contentMode属性显示一张指定的图片。contentMode属性的作用是确定图片在frame内的显示位置和缩放模式。contentMode的默认值是UIViewContentModeScaleToFill。当contentMode的值是UIViewContentMode- ScaleToFill时，UIImageView对象会在显示图片时缩放图片的大小，使其能够填满整个视图空间，但是可能会改变图片的宽高比。如果使用其默认值，UIImageView对象为了能在正方形的区域中显示由相机拍摄的大尺寸照片，就要改变照片的宽高比。为了获得最佳显示效果，要修改UIImageView对象的contentMode，要求其根据宽高比缩小照片。</p>
+
+  <p class="calibre1">　　选中UIImageView对象并打开属性检视面板，找到标题为Mode的下拉列表并将其值改为Aspect Fit，如图11-3所示。在Aspect Fit模式下，UIImageView对象会在显示图片时按宽高比缩放图片，使其能够填满整个视图。</p>
+
+  <p class="calibre7"><img alt="tu11-3" src="../Images/image00517.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-3 将UIImageView对象的Mode改为Aspect Fit</p>
+
+  <p class="calibre1">　　在辅助编辑器中打开BNRDetailViewController.m（按住Option键并点击项目导航面板中的BNRDetailViewController.m）。按住Control键，将UIImageView对象拖曳至BNRDetailViewController.m的类扩展中。Xcode会弹出设置窗口，在Name中输入imageView，Storage选择Weak，点击Connect按钮。</p>
+
+  <p class="calibre1">　　完成上述操作后，BNRDetailViewController的类扩展应该如下所示：</p>
+
+  <p class="calibre1">　　@interface BNRDetailViewController （）</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *nameField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *serialNumberField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *valueField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UILabel *dateLabel;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIImageView *imageView;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">添加相机按钮</h3>
+
+  <p class="calibre1">　　下面为Homepwner添加一个相机按钮，用于启动拍照过程。为此，需要先创建一个UIToolbar对象，然后将该对象放置在BNRDetailViewController对象的视图底部，最后将按钮放置在UIToolbar对象上（虽然可以将这个按钮直接放在UINavigationBar对象上，但是因为稍后还要在该对象上放置另外一个按钮，所以改用UIToolbar对象）。</p>
+
+  <p class="calibre1">　　在BNRDetailViewController.xib中，拖曳一个UIToolbar对象至顶层视图的底部。</p>
+
+  <p class="calibre1">　　UIToolbar对象的工作方式和UINavigationBar非常相似，同样可以加入UIBarButtonItem对象。区别是UINavigationBar只能在左右两端分别放置一个UIBarButtonItem对象，而UIToolbar对象可以有一组UIBarButtonItem对象。只要屏幕能够容纳，UIToolbar对象自身并没有限制可以存放的UIBarButtonItem对象个数。</p>
+
+  <p class="calibre1">　　加入XIB的UIToolbar对象默认自带一个UIBarButtonItem对象。选中该对象，打开属性检视面板并在Identifier下拉菜单中选择Camera，相应的按钮会显示一个相机图标（见图11-4）。</p>
+
+  <p class="calibre7"><img alt="tu11-4" src="../Images/image00518.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-4 带有一个UIBarButtonItem对象的UIToolbar</p>
+
+  <p class="calibre1">　　下面需要为相机按钮设置目标和动作。本章之前的例子都是通过以下两步来创建动作关联的：首先在代码中声明动作方法；然后在XIB文件中创建相应的关联。与插座变量类似，动作方法也可以通过一步直接创建并关联。</p>
+
+  <p class="calibre1">　　按住Option键并点击项目导航面板中的BNRDetailViewController.m，在辅助编辑器中打开该文件。</p>
+
+  <p class="calibre1">　　在BNRDetailViewController.xib中，选中相机按钮，按住Control键，将其拖曳至BNRDetailViewController.m的方法实现区域（见图11-5）。</p>
+
+  <p class="calibre7"><img alt="tu11-5" src="../Images/image00519.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-5 通过XIB创建并关联动作方法</p>
+
+  <p class="calibre1">　　松开鼠标，Xcode会显示一个设置窗口。选择Connection下拉菜单中的Action，在Name输入框中输入takePicture:，点击Connect按钮（见图11-6）。</p>
+
+  <p class="calibre7"><img alt="tu11-6" src="../Images/image00520.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-6 创建动作方法并建立关联</p>
+
+  <p class="calibre1">　　完成上述步骤后，Xcode会在BNRDetailViewController.m中添加一个名为takePicture:的空方法，并将UIBarButtonItem对象的目标设置为BNRDetailViewController对象，动作方法设置为takePicture:，空的takePicture:代码如下：</p>
+
+  <p class="calibre1">　　- （IBAction）takePicture:（id）sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　此外，Xcode会在代码中提示动作方法的关联状态。注意takePicture:方法左侧的行号区域，这里有一个圆圈图标（见图11-7）。如果这个圆圈是实心的，表示XIB文件已经包含针对该动作方法的关联；如果是空心的，则表示尚未创建关联。</p>
+
+  <p class="calibre7"><img alt="tu11-7" src="../Images/image00521.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-7 源代码编辑器所显示的关联状态</p>
+
+  <p class="calibre1">　　本章稍后还需要引用UIToolbar对象，下面为该对象设置插座变量。选中UIToolbar对象（注意不要选成了UIToolbar对象上的相机按钮）。然后按住Control键，将UIToolbar对象拖曳到BNRDetailViewController.m的类扩展中。在弹出窗口中，将插座变量命名为toolbar，Storage选择Weak，最后点击Connect按钮。</p>
+
+  <p class="calibre1">　　现在BNRDetailViewController.m类扩展中的代码应该如下所示：</p>
+
+  <p class="calibre1">　　@interface BNRDetailViewController （）</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *nameField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *serialNumberField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *valueField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UILabel *dateLabel;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIImageView *imageView;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIToolbar *toolbar;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　和插座变量关联一样，也要保证XIB文件中动作方法的关联都是正确的。如果在BNRDetailViewController.xib中发现任何错误的动作方法关联（查看关联检视面板，找出带感叹号图标的关联），就必须删除重建。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

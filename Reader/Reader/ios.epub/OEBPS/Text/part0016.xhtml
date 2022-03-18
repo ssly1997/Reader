@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">2.1 对象</h2>
+
+  <p class="calibre1">　　假设读者需要通过某种方式在程序中描述一场聚会。该聚会有若干特有的属性，例如聚会名称、日期和一份受邀者清单。此外，还需要让“聚会”做些事情，例如向所有受邀者发送一封提醒电邮、打印名牌或取消聚会。</p>
+
+  <p class="calibre1">　　如果使用C语言，则可以定义一个结构（structure），用于保存描述聚会的数据。这个结构会有数据成员，和聚会的属性一一对应。每个数据成员都有名称和类型。创建聚会时，可以通过malloc函数分配一块足够大的内存，存放相应的结构。</p>
+
+  <p class="calibre1">　　如果使用Objective-C语言，则要使用类（class）而不是结构来展现一场聚会。类就像是制造对象的饼干模子。通过Party类可以创建特定的对象，这些对象都是Party类的实例（instance）。每个Party对象都能为某一个特定的聚会保存数据（见图2-1）。</p>
+
+  <p class="calibre1">　　所有的对象，包括Party对象，都是内存中的一块数据。对象通过实例变量（instance variable）保存属性的值。（本书有时会将实例变量简称为“ivars”。）在Objective-C语言中，实例变量的变量名之前通常会加上一个下画线。因此，可以为Party对象定义以下实例变量：_name（名称）、_date（日期）和_budget（预算）。</p>
+
+  <p class="calibre7"><img alt="tu2-1" src="../Images/image00386.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图2-1 Party类及其对象</p>
+
+  <p class="calibre1">　　C结构是一块内存，对象也是一块内存。C结构有数据成员，每个数据成员有名称和类型。与之类似，对象有实例变量，每个实例变量也有名称和类型。</p>
+
+  <p class="calibre1">　　C结构和Objective-C类之间有一个重要差别：类有方法（method）。方法和函数类似，也有名称、返回类型和一组期望传入的参数。此外，方法还可以访问对象的实例变量。要调用某个对象的方法，可以向该对象发送相应的消息（message）。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

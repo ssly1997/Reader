@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">20.1 使用用户首选字体</h2>
+
+  <p class="calibre1">　　动态字体的使用方法非常简单，首先根据文本样式创建一个UIFont对象，然后将其设置为文本控件的字体就可以了（例如UILabel和UITextField的font属性）。下面就更新BNRDetailViewController，在代码中使用动态字体。</p>
+
+  <p class="calibre1">　　由于本章会设置界面中所有UILabel对象和UITextField对象的font属性，而其中三个UILabel对象没有对应的插座变量，因此需要在BNRDetailViewController.m的类扩展中为三个UILabel对象设置插座变量，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRDetailViewController （）</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） UIPopoverController *imagePickerPopover;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *nameField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *serialNumberField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UITextField *valueField;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UILabel *dateLabel;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIImageView *imageView;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIToolbar *toolbar;</p>
+
+  <p class="calibre1">　　@property （weak, nonatomic） IBOutlet UIBarButtonItem *cameraButton;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （weak, nonatomic） IBOutlet UILabel *nameLabel;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （weak, nonatomic） IBOutlet UILabel *serialNumberLabel;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （weak, nonatomic） IBOutlet UILabel *valueLabel;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　然后添加一个方法，为正文（UIFontTextStyleBody）的UIFont对象创建文本样式，再赋给所有UILabel对象和UITextField对象的font属性，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）updateFonts</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.nameLabel.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.serialNumberLabel.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.valueLabel.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.dateLabel.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.nameField.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.serialNumberField.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.valueField.font = font;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　接下来在viewWillAppear:中调用updateFonts方法，当UILabel对象将要出现在屏幕上时，修改它们的字体：</p>
+
+  <p class="calibre1">　　self.imageView.image = imageToDisplay;</p>
+
+  <p class="calibre1"><span class="calibre10">　　[self updateFonts];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　preferredFontForTextStyle:方法会根据用户首选字体和传入的文本样式返回对应的UIFont对象。构建并运行应用，这时界面还不会发生变化。</p>
+
+  <p class="calibre1">　　下面修改用户首选字体。按下iOS设备的Home键（如果是iOS模拟器，选择硬件→首页），然后打开设置应用，选择通用（General）→文字大小（Text Size），将滑块拖曳到最左端，设置用户首选字体为最小值（见图20-3）。</p>
+
+  <p class="calibre7"><img alt="tu20-3" src="../Images/image00633.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图20-3 修改用户首选字体大小</p>
+
+  <p class="calibre1">　　现在回到Homepwner的BNRDetailViewController界面，可以发现，界面中的文本控件并没有根据用户首选字体调整文字大小。这是因为，当应用从后台返回到前台运行时，BNRDetailViewController没有再次收到viewWillAppear:消息，所以没有及时更新文本控件的字体。为了解决该问题，必须设法观察并响应用户首选字体的改变。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

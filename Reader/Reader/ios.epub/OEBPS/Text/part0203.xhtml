@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">23.4 Faults</h2>
+
+  <p class="calibre1">　　Core Data在创建实体对象时，不会根据实体中的关系立刻获取相应的对象。也就是说，在获取带关系的NSManagedObject对象时，Core Data会使用一种轻量级的占位符对象——faults（触发对象）代替关系另一端的对象，直到确实需要访问重量级的真实对象。</p>
+
+  <p class="calibre1">　　faults分为一对多faults（代替NSSet对象）和一对一faults（代替NSManagedObject对象）。以BNRItem为例，当Homepwner应用通过Core Data取回BNRItem对象时，Core Data不会立刻创建这些BNRItem对象的BNRAssetType对象，而是创建faults并代替BNRAssetType对象（见图23-13）。当Homepwner需要使用BNRAssetType对象时，Core Data才会创建相应的对象。</p>
+
+  <p class="calibre7"><img alt="tu23-13" src="../Images/image00662.jpeg" class="calibre8"/><br class="calibre2"/></p>
+
+  <p class="calibre7">图23-13 替换faults前</p>
+
+  <p class="calibre1">　　faults知道自己所代表的实体和主键（primary key）。以BNRItem为例，当应用向某个代表BNRAssetType对象的faults查询类型名称（label属性）时，Core Data所执行的SQL语句如下：</p>
+
+  <p class="calibre1">　　SELECT t0.Z_PK, t0.Z_OPT, t0.ZLABEL FROM ZBNRASSETTYPE t0 WHERE t0.Z_PK = 2</p>
+
+  <p class="calibre1">　　字段名的前缀Z_及OPT都属于Core Data的实现细节，本书不做讨论。Core Data在替换faults时，会将包含真实数据的NSManagedObject对象放置在完全相同的内存位置上（见图23-14）。</p>
+
+  <p class="calibre7"><img alt="tu23-14" src="../Images/image00663.jpeg" class="calibre8"/><br class="calibre2"/></p>
+
+  <p class="calibre7">图23-14 替换faults后</p>
+
+  <p class="calibre1">　　这种“延迟获取”机制使Core Data更容易使用，效率也更高。</p>
+
+  <p class="calibre1">　　下面介绍一对多类型的faults。还是以Homepwner为例，假设它要以另一种模式工作：先显示一组BNRAssetType对象供用户选择，然后根据选中的BNRAssetType对象获取相应的BNRItem对象，最后显示这些BNRItem对象。如何通过Core Data完成这项任务？对Core Data第一次取回的BNRAssetType对象，都会有一个一对多类型的faults，代替包含BNRItem对象的NSSet对象（见图23-15）。</p>
+
+  <p class="calibre7"><img alt="tu23-15" src="../Images/image00664.jpeg" class="calibre8"/><br class="calibre2"/></p>
+
+  <p class="calibre7">图23-15 一对多faults</p>
+
+  <p class="calibre1">　　当一对多faults收到特定的消息，要求返回BNRItem对象时，Core Data就会取回相应的对象，并用一个NSSet对象替换掉这个faults（见图23-16）。</p>
+
+  <p class="calibre7"><img alt="tu23-16" src="../Images/image00665.jpeg" class="calibre8"/><br class="calibre2"/></p>
+
+  <p class="calibre7">图23-16 替换一对多faults后</p>
+
+  <p class="calibre1">　　Core Data是一套功能强大、使用灵活的数据存取框架，本章只针对其主要功能做了一个简单的介绍，详细信息请参阅Apple提供的开发文档《Core Data Programming Guide》。本章没有涉及的Core Data内容包括：</p>
+
+  <p class="calibre1">　　lNSFetchRequest提供了一套功能强大的机制，可以用来指定需要获取的数据。本章只使用了它的一小部分功能，读者应该对其有一个更深入的了解。此外，还应该了解这些和其有关的类：NSPredicate、NSSortOrdering、NSExpressionDescription和NSExpression。最后，还可以在模型文件中创建NSFetchRequest模板。</p>
+
+  <p class="calibre1">　　生成属性（fetched property）。生成属性有点类似一对多关系，也有点类似NSFetchRequest对象。通常可以在模型文件中设置生成属性。</p>
+
+  <p class="calibre1">　　随着应用的更新和升级，需要经常修改数据模型。修改数据模型不是一个简单的问题，这也是为什么Apple编写了《Data Model Versioning and Data Migration Programming Guide》一整本书来介绍这个问题。</p>
+
+  <p class="calibre1">　　Core Data支持数据验证，可以在数据转成NSManagedObject对象时进行验证，也可以在保存NSManagedObject对象时进行验证。</p>
+
+  <p class="calibre1">　　一个NSManagedObjectContext对象可以同时配合多个NSPersistentStoreCoordinator对象使用，也可以将模型分割成不同的配置，并为每个配置分配不同的NSPersistentStoreCoordinator对象。在实体对象之间，如果NSPersistentStore- Coordinator对象不同，就不能建立关系（但是可以通过生成属性达到类似的效果）。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

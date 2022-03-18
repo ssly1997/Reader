@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">12.9 深入学习：UIControl</h2>
+
+  <p class="calibre1">　　<span class="calibre10">UIControl</span>是部分Cocoa Touch类的父类，例如<span class="calibre10">UIButton</span>和<span class="calibre10">UISlider</span>。前面已经介绍过如何为这类<span class="calibre10">UIControl</span>对象设置目标对象和动作方法。学习完触摸事件与<span class="calibre10">UIResponder</span>的相关知识后，本节将进一步介绍<span class="calibre10">UIControl</span>是如何覆盖前面所介绍的那些<span class="calibre10">UIResponder</span>方法的。</p>
+
+  <p class="calibre1">　　对于UIControl对象，每个可能触发的控件事件（control event）都有一个对应的常量。以UIButton对象为例，该对象的常用控件事件是UIControlEventTouchUpInside。如果某个目标对象是针对UIControlEventTouchUpInside注册的，那么只有当用户触摸了这个UIControl对象，并且手指是在该对象的frame区域内离开屏幕时，目标对象才会收到指定的动作消息。因此，可以将控件事件UIControlEventTouchUpInside视为按下操作。</p>
+
+  <p class="calibre1">　　对于UIButton对象，除了UIControlEventTouchUpInside，还可以针对其他事件注册动作消息。例如，假设要完成以下任务：无论用户的手指是在frame区域内离开屏幕，还是在frame区域外离开屏幕，都要触发指定的方法。为了完成这项任务，可以同时注册两个控件事件，示例代码如下：</p>
+
+  <p class="calibre1">　　[rButton addTarget:tempController</p>
+
+  <p class="calibre1">　　action:@selector（resetTemperature:）</p>
+
+  <p class="calibre1">　　forControlEvents:UIControlEventTouchUpInside</p>
+
+  <p class="calibre1">　　| UIControlEventTouchUpOutside];</p>
+
+  <p class="calibre1">　　下面列出UIControl处理UIControlEventTouchUpInside的示例代码。</p>
+
+  <p class="calibre1">　　// 和实际代码不同，实际代码会更复杂一点！</p>
+
+  <p class="calibre1">　　- （void）touchesEnded:（NSSet *）touches withEvent:（UIEvent *）event</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// 指针指向已经结束的触摸对象</p>
+
+  <p class="calibre1">　　UITouch *touch = [touches anyObject];</p>
+
+  <p class="calibre1">　　// 触摸结束时的位置（使用当前UIControl对象的坐标系）</p>
+
+  <p class="calibre1">　　CGPoint touchLocation = [touch locationInView:self];</p>
+
+  <p class="calibre1">　　// 结束时的位置是否在视图的bounds区域内？</p>
+
+  <p class="calibre1">　　if （CGRectContainsPoint（self.bounds, touchLocation））</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// 向注册了UIControlEventTouchUpInside事件的所有目标对象发送动作消息</p>
+
+  <p class="calibre1">　　[self sendActionsForControlEvents:UIControlEventTouchUpInside];</p>
+
+  <p class="calibre1">　　} else {</p>
+
+  <p class="calibre1">　　// 触摸事件是在bounds区域外结束的，</p>
+
+  <p class="calibre1">　　// 所以要向注册了UIControlEventTouchUpOutside事件的所有目标对象发送动作消息</p>
+
+  <p class="calibre1">　　[self sendActionsForControlEvents:UIControlEventTouchUpOutside];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　那么<span class="calibre10">UIControl</span>对象是如何将这些动作消息发送给相应的目标对象的？在上面这段<span class="calibre10">touchesEnded:withEvent:</span>方法的末尾，<span class="calibre10">UIControl</span>对象会向自己发送<span class="calibre10">sendActions- ForControlEvents:</span>消息。该消息会遍历<span class="calibre10">UIControl</span>对象的所有目标-动作对，根据传入的控件事件类型进行查找，然后向匹配的目标对象发送对应的动作消息。</p>
+
+  <p class="calibre1">　　但是，<span class="calibre10">UIControl</span>对象绝对不是直接向目标对象发送消息，而是要通过<span class="calibre10">UIApplication</span>转发。为什么<span class="calibre10">UIControl</span>对象不能直接向目标对象发送动作消息？这是因为在<span class="calibre10">UIControl</span>对象所拥有的目标-动作对中，目标对象可以是nil。<span class="calibre10">UIApplication</span>在转发源自<span class="calibre10">UIControl</span>对象的消息时，会先判断目标对象是不是nil。如果是nil，<span class="calibre10">UIApplication</span>就会先找出<span class="calibre10">UIWindow</span>对象的第一响应对象，然后向第一响应对象发送相应的动作消息。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

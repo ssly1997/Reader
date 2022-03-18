@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">6.3 UITabBarController　　</h2>
+
+  <p class="calibre1">　　当应用为了响应用户的操作，需要将当前显示的视图切换为另一个时，使用视图控制器的好处就越加明显。本书将介绍多种显示视图控制器的途径。本节先介绍如何通过一个UITabBarController对象，使应用能够在BNRHypnosisViewController对象和BNRReminderViewController对象之间自由地切换。</p>
+
+  <p class="calibre1">　　UITabBarController对象可以保存一组视图控制器。此外，UITabBarController对象还会在屏幕底部显示一个标签栏（tab bar），标签栏会有多个标签项（tab item），分别对应UITabBarController对象所保存的每一个视图控制器。单击某个标签项，UITabBarController对象就会显示该标签项所对应的视图控制器的视图。</p>
+
+  <p class="calibre1">　　在BNRAppDelegate.m中创建一个UITabBarController对象，将之前创建的两个视图控制器加入该对象，最后将UITabBarController对象设置为UIWindow对象的rootViewController，代码如下：</p>
+
+  <p class="calibre1">　　- (BOOL)application:(UIApplication *)application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.window = [[UIWindow alloc] initWithFrame:</p>
+
+  <p class="calibre1">　　　　　　　　[[UIScreen mainScreen] bounds]];</p>
+
+  <p class="calibre1">　　// 在这里添加应用启动后的初始化代码</p>
+
+  <p class="calibre1">　　BNRHypnosisViewController *hvc = [[BNRHypnosisViewController alloc] init];</p>
+
+  <p class="calibre1">　　// 获取指向NSBundle对象的指针，该对象代表应用的主程序包</p>
+
+  <p class="calibre1">　　NSBundle *appBundle = [NSBundle mainBundle];</p>
+
+  <p class="calibre1">　　// 告诉初始化方法在appBundle中查找BNRReminderViewController.xib文件</p>
+
+  <p class="calibre1">　　BNRReminderViewController *rvc = [[BNRReminderViewController alloc]</p>
+
+  <p class="calibre1">　　initWithNibName:@"BNRReminderViewController"</p>
+
+  <p class="calibre1">　　　　　　　　 bundle:appBundle];</p>
+
+  <p class="calibre1"><span class="calibre10">　　UITabBarController *tabBarController = [[UITabBarController alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　tabBarController.viewControllers = @[hvc, rvc];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window.rootViewController = rvc;</span></del></p>
+
+  <p class="calibre1">　　self.window.rootViewController = tabBarController;</p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用，底部的标签栏中其实有两个标签项，点击标签栏的左边和右边可以在两个不同的视图控制器之间切换，下一节中会为标签项设置标题和图标，可以让用户清楚地知道每个标签项的功能。</p>
+
+  <p class="calibre1">　　UITabBarController也是UIViewController的子类，也有一个名为view的属性。UITabBarController对象的view指向一个包含两个子视图的UIView对象，分别是标签栏和当前选中的视图控制器的视图（见图6-15）。</p>
+
+  <p class="calibre7"><img alt="tu6-15" src="../Images/image00457.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图6-15 UITabBarController的对象图</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">设置标签项</h3>
+
+  <p class="calibre1">　　标签栏上的每一个标签项都可以显示标题和图片，具体数据需要由视图控制器的tabBarItem属性提供。当UITabBarController对象加入一个视图控制器时，就会为标签栏增加一个标签项，并根据新加入的视图控制器的tabBarItem属性设置该标签项的标题和图片。以iPhone自带的电话应用为例，UITabBarController对象和其包含的视图控制器的关系如图6-16所示。</p>
+
+  <p class="calibre7"><img alt="tu6-16" src="../Images/image00458.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图6-16 UITabBarItem示例</p>
+
+  <p class="calibre1">　　首先，读者需要将标签项的图像文件加入项目中。在项目导航面板打开Images.xcassets，然后打开之前从http://www.bignerdranch.com/solutions/iOSProgramming4ed.zip下载的压缩包，将压缩包中Resources目录下的Hypno.png、Time.png、Hypno@2x.png和Time@2x.png拖曳至资源目录左边的图像文件列表。</p>
+
+  <p class="calibre1">　　接下来打开BNRHypnosisViewController.m，覆盖UIViewController的指定初始化方法initWithNibName:bundle:，设置BNRHypnosisViewController的标签项：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (instancetype)initWithNibName:(NSString *)nibNameOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　bundle:(NSBundle *)nibBundleOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self = [super initWithNibName:nibNameOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　 bundle:nibBundleOrNil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if (self) {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 设置标签项的标题</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.tabBarItem.title = @"Hypnotize";</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 从图像文件创建一个UIImage对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 在Retina显示屏上会加载Hypno@2x.png，而不是Hypno.png</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImage *i = [UIImage imageNamed:@"Hypno.png"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将UIImage对象赋给标签项的image属性</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.tabBarItem.image = i;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　打开BNRReminderViewController.m，重复上述代码：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (instancetype)initWithNibName:(NSString *)nibNameOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　　　bundle:(NSBundle *)nibBundleOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self = [super initWithNibName:nibNameOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　 bundle:nibBundleOrNil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if (self) {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　// 获取tabBarItem属性所指向的UITabBarItem对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　UITabBarItem *tbi = self.tabBarItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　// 设置UITabBarItem对象的标题</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　tbi.title = @"Reminder";</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　// 设置UITabBarItem对象的图像</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　UIImage *i = [UIImage imageNamed:@"Time.png"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　tbi.image = i;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用，可以看到标签栏上有两个带有标题和图标的标签项（见图6-17），用户可以通过标题和图标清楚地知道每个标签项的功能。</p>
+
+  <p class="calibre7"><img alt="tu6-17" src="../Images/image00459.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图6-17 带标题和图标的标签项</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

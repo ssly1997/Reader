@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>14. History and Compatibility</title>
+<link rel="stylesheet" type="text/css" href="9780133549003.css"/>
+</head>
+<body>
+<h2 id="ch14"><a id="page_153"/><span class="pd_blue">14.</span> History and Compatibility</h2>
+<p class="blockquote"><em>Hurry Slowly<br/>(festina lente).</em></p>
+<p class="attribution"><em>&#8211; Octavius, Caesar Augustus</em></p>
+<p class="indenthangingB">&#8226; <a href="ch14.html#ch14lev1sec1">History</a></p>
+<p class="indenthangingBP"><a href="ch14.html#ch14lev2sec1">Timeline</a>; <a href="ch14.html#ch14lev2sec2">The Early Years</a>; <a href="ch14.html#ch14lev2sec3">The ISO C++ Standards</a></p>
+<p class="indenthangingB">&#8226; <a href="ch14.html#ch14lev1sec2">C++11 Extensions</a></p>
+<p class="indenthangingBP"><a href="ch14.html#ch14lev2sec4">Language Features</a>; <a href="ch06.html#ch06lev1sec2">Standard-Library Components</a>; <a href="ch14.html#ch14lev2sec6">Deprecated Features</a>; <a href="ch14.html#ch14lev2sec7">Casts</a></p>
+<p class="indenthangingB">&#8226; <a href="ch14.html#ch14lev1sec3">C/C++ Compatibility</a></p>
+<p class="indenthangingBP"><a href="ch14.html#ch14lev2sec8">C and C++ Are Siblings</a>; <a href="ch14.html#ch14lev2sec9">Compatibility Problems</a></p>
+<p class="indenthangingB">&#8226; <a href="ch14.html#ch14lev1sec4">Bibliography</a></p>
+<p class="indenthangingB">&#8226; <a href="ch14.html#ch14lev1sec5">Advice</a></p>
+<div class="heading">
+<h3 id="ch14lev1sec1">14.1. History</h3>
+<p class="noindent">I invented C++, wrote its early definitions, and produced its first implementation. I chose and formulated the design criteria for C++, designed its major language features, developed or helped to develop many of the early libraries, and was responsible for the processing of extension proposals in the C++ standards committee.</p>
+</div>
+<p class="indent">C++ was designed to provide Simula&#8217;s facilities for program organization [<a href="#ch14bib08">Dahl,1970</a>] together with C&#8217;s efficiency and flexibility for systems programming [<a href="#ch14bib15">Kernighan,1978</a>]. Simula is the initial source of C++&#8217;s abstraction mechanisms. The class concept (with derived classes and virtual functions) was borrowed from it. However, templates and exceptions came to C++ later with different sources of inspiration.</p>
+<p class="indent">The evolution of C++ was always in the context of its use. I spent a lot of time listening to users and seeking out the opinions of experienced programmers. In particular, my colleagues at AT&#38;T Bell Laboratories were essential for the growth of C++ during its first decade.</p>
+<p class="indent"><a id="page_154"/>This section is a brief overview; it does not try to mention every language feature and library component. Furthermore, it does not go into details. For more information, and in particular for more names of people who contributed, see [<a href="#ch14bib31">Stroustrup,1993</a>], [<a href="#ch14bib35">Stroustrup,2007</a>], and [<a href="#ch14bib32">Stroustrup,1994</a>]. My two papers from the ACM History of Programming Languages conference and my <em>Design and Evolution of C++</em> book (known as &#8220;D&#38;E&#8221;) describe the design and evolution of C++ in detail and document influences from other programming languages.</p>
+<p class="indent">Most of the documents produced as part of the ISO C++ standards effort are available online [<a href="#ch14bib42">WG21</a>]. In my FAQ, I try to maintain a connection between the standard facilities and the people who proposed and refined those facilities [<a href="#ch14bib37">Stroustrup,2010</a>]. C++ is not the work of a faceless, anonymous committee or of a supposedly omnipotent &#8220;dictator for life&#8221;; it is the work of many dedicated, experienced, hard-working individuals.</p>
+<div class="heading">
+<h4 id="ch14lev2sec1">14.1.1. Timeline</h4>
+<p class="noindent">The work that led to C++ started in the fall of 1979 under the name &#8220;C with Classes.&#8221; Here is a simplified timeline:</p>
+</div>
+<p class="uln-indent"><em>1979</em> Work on &#8220;C with Classes&#8221; started. The initial feature set included classes and derived classes, public/private access control, constructors and destructors, and function declarations with argument checking. The first library supported non-preemptive concurrent tasks and random number generators.</p>
+<p class="uln-indent"><em>1984</em> &#8220;C with Classes&#8221; was renamed to C++. By then, C++ had acquired virtual functions, function and operator overloading, references, and the I/O stream and complex number libraries.</p>
+<p class="uln-indent"><em>1985</em> First commercial release of C++ (October 14). The library included I/O streams, complex numbers, and tasks (non-preemptive scheduling).</p>
+<p class="uln-indent"><em>1985 The C++ Programming Language</em> (&#8220;TC++PL,&#8221; October 14) [<a href="#ch14bib26">Stroustrup,1986</a>].</p>
+<p class="uln-indent"><em>1989 The Annotated C++ Reference Manual</em> (&#8220;the ARM&#8221;) [<a href="#ch14bib11">Ellis,1989</a>].</p>
+<p class="uln-indent"><em>1991 The C++ Programming Language, Second Edition</em> [<a href="#ch14bib30">Stroustrup,1991</a>], presenting generic programming using templates and error handling based on exceptions (including the &#8220;Resource Acquisition Is Initialization&#8221; general resource management idiom).</p>
+<p class="uln-indent"><em>1997 The C++ Programming Language, Third Edition</em> [<a href="#ch14bib33">Stroustrup,1997</a>] introduced ISO C++, including namespaces, <span class="EmpStrong">dynamic_cast</span>, and many refinements of templates. The standard library added the STL framework of generic containers and algorithms.</p>
+<p class="uln-indent"><em>1998</em> ISO C++ standard [<a href="#ch14bib04">C++,1998</a>].</p>
+<p class="uln-indent"><em>2002</em> Work on a revised standard, colloquially named C++0x, started.</p>
+<p class="uln-indent"><em>2003</em> A &#8220;bug fix&#8221; revision of the ISO C++ standard was issued. A C++ Technical Report introduced new standard-library components, such as regular expressions, unordered containers (hash tables), and resource management pointers, which later became part of C++0x.</p>
+<p class="uln-indent"><em>2006</em> An ISO C++ Technical Report on Performance was issued to answer questions of cost, predictability, and techniques, mostly related to embedded systems programming [<a href="#ch14bib05">C++,2004</a>].</p>
+<p class="uln-indent"><em>2009</em> C++0x was feature complete. It provided uniform initialization, move semantics, variadic template arguments, lambda expressions, type aliases, a memory model suitable for <a id="page_155"/>concurrency, and much more. The standard library added several components, including threads, locks, and most of the components from the 2003 Technical Report.</p>
+<p class="uln-indent"><em>2011</em> ISO C++11 standard was formally approved [<a href="#ch14bib06">C++,2011</a>].</p>
+<p class="uln-indent"><em>2012</em> Work on future ISO C++ standards (referred to as C++14 and C++17) started.</p>
+<p class="uln-indent"><em>2013</em> The first complete C++11 implementations emerged.</p>
+<p class="uln-indent"><em>2013 The C++ Programming Language, Fourth Edition</em> introduced C++11.</p>
+<p class="noindent">During development, C++11 was known as C++0x. As is not uncommon in large projects, we were overly optimistic about the completion date.</p>
+<div class="heading">
+<h4 id="ch14lev2sec2">14.1.2. The Early Years</h4>
+<p class="noindent">I originally designed and implemented the language because I wanted to distribute the services of a UNIX kernel across multiprocessors and local-area networks (what are now known as multicores and clusters). For that, I needed some event-driven simulations for which Simula would have been ideal, except for performance considerations. I also needed to deal directly with hardware and provide high-performance concurrent programming mechanisms for which C would have been ideal, except for its weak support for modularity and type checking. The result of adding Simula-style classes to C (Classic C; &#167;<a href="ch14.html#ch14lev2sec8">14.3.1</a>), &#8220;C with Classes,&#8221; was used for major projects in which its facilities for writing programs that use minimal time and space were severely tested. It lacked operator overloading, references, virtual functions, templates, exceptions, and many, many details [<a href="#ch14bib24">Stroustrup,1982</a>]. The first use of C++ outside a research organization started in July 1983.</p>
+</div>
+<p class="indent">The name C++ (pronounced &#8220;see plus plus&#8221;) was coined by Rick Mascitti in the summer of 1983 and chosen as the replacement for &#8220;C with Classes&#8221; by me. The name signifies the evolutionary nature of the changes from C; &#8220;++&#8221; is the C increment operator. The slightly shorter name &#8220;C+&#8221; is a syntax error; it had also been used as the name of an unrelated language. Connoisseurs of C semantics find C++ inferior to ++C. The language was not called D, because it was an extension of C, because it did not attempt to remedy problems by removing features, and because there already existed several would-be C successors named D. For yet another interpretation of the name C++, see the appendix of [<a href="#ch14bib20">Orwell,1949</a>].</p>
+<p class="indent">C++ was designed primarily so that my friends and I would not have to program in assembler, C, or various then-fashionable high-level languages. Its main purpose was to make writing good programs easier and more pleasant for the individual programmer. In the early years, there was no C++ paper design; design, documentation, and implementation went on simultaneously. There was no &#8220;C++ project&#8221; either, or a &#8220;C++ design committee.&#8221; Throughout, C++ evolved to cope with problems encountered by users and as a result of discussions among my friends, my colleagues, and me.</p>
+<p class="indent">The very first design of C++ (then called &#8220;C with Classes&#8221;) included function declarations with argument type checking and implicit conversions, classes with the <span class="EmpStrong">public</span>/<span class="EmpStrong">private</span> distinction between the interface and the implementation, derived classes, and constructors and destructors. I used macros to provide primitive parameterization. This was in non-experimental use by mid-1980. Late that year, I was able to present a set of language facilities supporting a coherent set of programming styles. In retrospect, I consider the introduction of constructors and destructors most significant. In the terminology of the time, &#8220;a constructor creates the execution environment for the member functions and the destructor reverses that.&#8221; Here is the root of C++&#8217;s strategies for <a id="page_156"/>resource management (causing a demand for exceptions) and the key to many techniques for making user code short and clear. If there were other languages at the time that supported multiple constructors capable of executing general code, I didn&#8217;t (and don&#8217;t) know of them. Destructors were new in C++.</p>
+<p class="indent">C++ was released commercially in October 1985. By then, I had added inlining (&#167;<a href="ch01.html#ch01lev1sec4">1.4</a>, &#167;<a href="ch04.html#ch04lev2sec1">4.2.1</a>), <span class="EmpStrong">const</span>s (&#167;<a href="ch01.html#ch01lev1sec7">1.7</a>), function overloading (&#167;<a href="ch01.html#ch01lev1sec4">1.4</a>), references (&#167;<a href="ch01.html#ch01lev1sec8">1.8</a>), operator overloading (&#167;<a href="ch04.html#ch04lev2sec1">4.2.1</a>), and virtual functions (&#167;<a href="ch04.html#ch04lev1sec4">4.4</a>). Of these features, support for run-time polymorphism in the form of virtual functions was by far the most controversial. I knew its worth from Simula but found it impossible to convince most people in the systems programming world of its value. Systems programmers tended to view indirect function calls with suspicion, and people acquainted with other languages supporting object-oriented programming had a hard time believing that <span class="EmpStrong">virtual</span> functions could be fast enough to be useful in systems code. Conversely, many programmers with an object-oriented background had (and many still have) a hard time getting used to the idea that you use virtual function calls only to express a choice that must be made at run time. The resistance to virtual functions may be related to a resistance to the idea that you can get better systems through more regular structure of code supported by a programming language. Many C programmers seem convinced that what really matters is complete flexibility and careful individual crafting of every detail of a program. My view was (and is) that we need every bit of help we can get from languages and tools: the inherent complexity of the systems we are trying to build is always at the edge of what we can express.</p>
+<p class="indent">Much of the design of C++ was done on the blackboards of my colleagues. In the early years, the feedback from Stu Feldman, Alexander Fraser, Steve Johnson, Brian Kernighan, Doug McIlroy, and Dennis Ritchie was invaluable.</p>
+<p class="indent">In the second half of the 1980s, I continued to add language features in response to user comments. The most important of those were templates [<a href="#ch14bib29">Stroustrup,1988</a>] and exception handling [<a href="#ch14bib18">Koenig,1990</a>], which were considered experimental at the time the standards effort started. In the design of templates, I was forced to decide among flexibility, efficiency, and early type checking. At the time, nobody knew how to simultaneously get all three. To compete with C-style code for demanding systems applications, I felt that I had to choose the first two properties. In retrospect, I think the choice was the correct one, and the search for better type checking of templates continues [<a href="#ch14bib10">DosReis,2006</a>] [<a href="#ch14bib13">Gregor,2006</a>] [<a href="#ch14bib41">Sutton,2011</a>] [<a href="#ch14bib38">Stroustrup,2012a</a>]. The design of exceptions focused on multilevel propagation of exceptions, the passing of arbitrary information to an error handler, and the integration between exceptions and resource management by using local objects with destructors to represent and release resources (what I clumsily called <em>Resource Acquisition Is Initialization</em>; &#167;<a href="ch04.html#ch04lev2sec2">4.2.2</a>).</p>
+<p class="indent">I generalized C++&#8217;s inheritance mechanisms to support multiple base classes [<a href="#ch14bib27">Stroustrup,1987a</a>]. This was called <em>multiple inheritance</em> and was considered difficult and controversial. I considered it far less important than templates or exceptions. Multiple inheritance of abstract classes (often called <em>interfaces</em>) is now universal in languages supporting static type checking and object-oriented programming.</p>
+<p class="indent">The C++ language evolved hand in hand with some of the key library facilities presented in this book. For example, I designed the complex [<a href="#ch14bib24a">Stroustrup,1984</a>], vector, stack, and (I/O) stream [<a href="#ch14bib25">Stroustrup,1985</a>] classes together with the operator overloading mechanisms. The first string and list classes were developed by Jonathan Shopiro and me as part of the same effort. Jonathan&#8217;s <a id="page_157"/>string and list classes were the first to see extensive use as part of a library. The string class from the standard C++ library has its roots in these early efforts. The task library described in [<a href="#ch14bib28">Stroustrup,1987b</a>] was part of the first &#8220;C with Classes&#8221; program ever written in 1980. I wrote it and its associated classes to support Simula-style simulations. Unfortunately, we had to wait until 2011 (30 years!) to get concurrency support standardized and universally available (<a href="ch13.html#ch13">Chapter 13</a>). The development of the template facility was influenced by a variety of <span class="EmpStrong">vector</span>, <span class="EmpStrong">map</span>, <span class="EmpStrong">list</span>, and <span class="EmpStrong">sort</span> templates devised by Andrew Koenig, Alex Stepanov, me, and others.</p>
+<p class="indent">The most important innovation in the 1998 standard library was the inclusion of the STL, a framework of algorithms and containers, in the standard library (<a href="ch09.html#ch09">Chapter 9</a>, <a href="ch10.html#ch10">Chapter 10</a>). It was the work of Alex Stepanov (with Dave Musser, Meng Lee, and others) based on more than a decade&#8217;s work on generic programming. The STL has been massively influential within the C++ community and beyond.</p>
+<p class="indent">C++ grew up in an environment with a multitude of established and experimental programming languages (e.g., Ada [<a href="#ch14bib14">Ichbiah,1979</a>], Algol 68 [<a href="#ch14bib44">Woodward,1974</a>], and ML [<a href="#ch14bib21">Paulson,1996</a>]). At the time, I was comfortable in about 25 languages, and their influences on C++ are documented in [<a href="#ch14bib32">Stroustrup,1994</a>] and [<a href="#ch14bib35">Stroustrup,2007</a>]. However, the determining influences always came from the applications I encountered. That was a deliberate policy to have the development of C++ &#8220;problem driven&#8221; rather than imitative.</p>
+<div class="heading">
+<h4 id="ch14lev2sec3">14.1.3. The ISO C++ Standards</h4>
+<p class="noindent">The explosive growth of C++ use caused some changes. Sometime during 1987, it became clear that formal standardization of C++ was inevitable and that we needed to start preparing the ground for a standardization effort [<a href="#ch14bib32">Stroustrup,1994</a>]. The result was a conscious effort to maintain contact between implementers of C++ compilers and major users. This was done through paper and electronic mail and through face-to-face meetings at C++ conferences and elsewhere.</p>
+</div>
+<p class="indent">AT&#38;T Bell Labs made a major contribution to C++ and its wider community by allowing me to share drafts of revised versions of the C++ reference manual with implementers and users. Because many of those people worked for companies that could be seen as competing with AT&#38;T, the significance of this contribution should not be underestimated. A less enlightened company could have caused major problems of language fragmentation simply by doing nothing. As it happened, about a hundred individuals from dozens of organizations read and commented on what became the generally accepted reference manual and the base document for the ANSI C++ standardization effort. Their names can be found in <em>The Annotated C++ Reference Manual</em> (&#8220;the ARM&#8221;) [<a href="#ch14bib11">Ellis,1989</a>]. The X3J16 committee of ANSI was convened in December 1989 at the initiative of Hewlett-Packard. In June 1991, this ANSI (American national) standardization of C++ became part of an ISO (international) standardization effort for C++ and named WG21. From 1990, these joint C++ standards committees have been the main forum for the evolution of C++ and the refinement of its definition. I served on these committees throughout. In particular, as the chairman of the working group for extensions (later called the evolution group), I was directly responsible for handling proposals for major changes to C++ and the addition of new language features. An initial draft standard for public review was produced in April 1995. The first ISO C++ standard (ISO/IEC 14882-1998) [<a href="#ch14bib04">C++,1998</a>] was ratified by a 22-0 national vote in 1998. A &#8220;bug fix release&#8221; of this standard was issued in 2003, so you sometimes hear people refer to C++03, but <a id="page_158"/>that is essentially the same language as C++98.</p>
+<p class="indent">The current C++, C++11, known for years as C++0x, is the work of the members of WG21. The committee worked under increasingly onerous self-imposed processes and procedures. These processes probably led to a better (and more rigorous) specification, but they also limited innovation [<a href="#ch14bib35">Stroustrup,2007</a>]. An initial draft standard for public review was produced in 2009. The second ISO C++ standard (ISO/IEC 14882-2011) [<a href="#ch14bib06">C++,2011</a>] was ratified by a 21-0 national vote in August 2011.</p>
+<p class="indent">One reason for the long gap between the two standards is that most members of the committee (including me) were under the mistaken impression that the ISO rules required a &#8220;waiting period&#8221; after a standard was issued before starting work on new features. Consequently, serious work on new language features did not start until 2002. Other reasons included the increased size of modern languages and their foundation libraries. In terms of pages of standards text, the language grew by about 30% and the standard library by about 100%. Much of the increase was due to more detailed specification, rather than new functionality. Also, the work on a new C++ standard obviously had to take great care not to compromise older code through incompatible changes. There are billions of lines of C++ code in use that the committee must not break.</p>
+<p class="indent">C++11 added massively to the standard library and pushed to complete the feature set needed for a programming style that is a synthesis of the &#8220;paradigms&#8221; and idioms that have proven successful with C++98. The overall aims for the C++11 effort were:</p>
+<p class="indenthangingB">&#8226; Make C++ a better language for systems programming and library building.</p>
+<p class="indenthangingB">&#8226; Make C++ easier to teach and learn.</p>
+<p class="noindent">The aims are documented and detailed in [<a href="#ch14bib35">Stroustrup,2007</a>].</p>
+<p class="indent">A major effort was made to make concurrent systems programming type-safe and portable. This involved a memory model (&#167;<a href="ch13.html#ch13lev1sec1">13.1</a>) and a set of facilities for lock-free programming, which is primarily the work of Hans Boehm, Brian McKnight, and others. On top of that, we added the <span class="EmpStrong">thread</span>s library.</p>
+<div class="heading">
+<h3 id="ch14lev1sec2">14.2. C++11 Extensions</h3>
+<p class="noindent">Here, I list the language features and standard-library components that have been added to C++ for the C++11 standard.</p>
+</div>
+<div class="heading">
+<h4 id="ch14lev2sec4">14.2.1. Language Features</h4>
+<p class="noindent">Looking at a list of language features can be quite bewildering. Remember that a language feature is not meant to be used in isolation. In particular, most features that are new in C++11 make no sense in isolation from the framework provided by older features.</p>
+</div>
+<p class="ref">[1] Uniform and general initialization using <span class="EmpStrong">{}</span>-lists (&#167;<a href="ch01.html#ch01lev1sec5">1.5</a>, &#167;<a href="ch04.html#ch04lev2sec3">4.2.3</a>)</p>
+<p class="ref">[2] Type deduction from initializer: <span class="EmpStrong">auto</span> (&#167;<a href="ch01.html#ch01lev1sec5">1.5</a>)</p>
+<p class="ref">[3] Prevention of narrowing (&#167;<a href="ch01.html#ch01lev1sec5">1.5</a>)</p>
+<p class="ref">[4] Generalized and guaranteed constant expressions: <span class="EmpStrong">constexpr</span> (&#167;<a href="ch01.html#ch01lev1sec7">1.7</a>)</p>
+<p class="ref">[5] Range-<span class="EmpStrong">for</span>-statement (&#167;<a href="ch01.html#ch01lev1sec8">1.8</a>)</p>
+<p class="ref">[6] Null pointer keyword: <span class="EmpStrong">nullptr</span> (&#167;<a href="ch01.html#ch01lev1sec8">1.8</a>)</p>
+<p class="ref"><a id="page_159"/>[7] Scoped and strongly typed <span class="EmpStrong">enums</span>: <span class="EmpStrong">enum class</span> (&#167;<a href="ch02.html#ch02lev1sec5">2.5</a>)</p>
+<p class="ref">[8] Compile-time assertions: <span class="EmpStrong">static_assert</span> (&#167;<a href="ch03.html#ch03lev2sec3">3.4.3</a>)</p>
+<p class="ref">[9] Language mapping of <span class="EmpStrong">{}</span>-list to <span class="EmpStrong">std::initializer_list</span> (&#167;<a href="ch04.html#ch04lev2sec3">4.2.3</a>)</p>
+<p class="ref1">[10] Rvalue references (enabling move semantics; &#167;<a href="ch04.html#ch04lev2sec9">4.6.2</a>)</p>
+<p class="ref1">[11] Nested template arguments ending with <span class="EmpStrong">&gt;&gt;</span> (no space between the <span class="EmpStrong">&gt;</span>s)</p>
+<p class="ref1">[12] Lambdas (&#167;<a href="ch05.html#ch05lev1sec5">5.5</a>)</p>
+<p class="ref1">[13] Variadic templates (&#167;<a href="ch05.html#ch05lev1sec6">5.6</a>)</p>
+<p class="ref1">[14] Type and template aliases (&#167;<a href="ch05.html#ch05lev1sec7">5.7</a>)</p>
+<p class="ref1">[15] Unicode characters</p>
+<p class="ref1">[16] <span class="EmpStrong">long long</span> integer type</p>
+<p class="ref1">[17] Alignment controls: <span class="EmpStrong">alignas</span> and <span class="EmpStrong">alignof</span></p>
+<p class="ref1">[18] The ability to use the type of an expression as a type in a declaration: <span class="EmpStrong">decltype</span></p>
+<p class="ref1">[19] Raw string literals (&#167;<a href="ch07.html#ch07lev1sec3">7.3</a>)</p>
+<p class="ref1">[20] Generalized POD (&#8220;Plain Old Data&#8221;)</p>
+<p class="ref1">[21] Generalized <span class="EmpStrong">union</span>s</p>
+<p class="ref1">[22] Local classes as template arguments</p>
+<p class="ref1">[23] Suffix return type syntax</p>
+<p class="ref1">[24] A syntax for attributes and two standard attributes: <span class="EmpStrong">[[carries_dependency]]</span> and <span class="EmpStrong">[[noreturn]]</span></p>
+<p class="ref1">[25] Preventing exception propagation: the <span class="EmpStrong">noexcept</span> specifier (&#167;<a href="ch03.html#ch03lev2sec1">3.4.1</a>)</p>
+<p class="ref1">[26] Testing for the possibility of a <span class="EmpStrong">throw</span> in an expression: the <span class="EmpStrong">noexcept</span> operator.</p>
+<p class="ref1">[27] C99 features: extended integral types (i.e., rules for optional longer integer types); concatenation of narrow/wide strings; <span class="EmpStrong">__STDC_HOSTED__</span>; <span class="EmpStrong">_Pragma(X)</span>; vararg macros and empty macro arguments</p>
+<p class="ref1">[28] <span class="EmpStrong">__func__</span> as the name of a string holding the name of the current function</p>
+<p class="ref1">[29] <span class="EmpStrong">inline</span> namespaces</p>
+<p class="ref1">[30] Delegating constructors</p>
+<p class="ref1">[31] In-class member initializers</p>
+<p class="ref1">[32] Control of defaults: <span class="EmpStrong">default</span> and <span class="EmpStrong">delete</span> (&#167;<a href="ch04.html#ch04lev2sec12">4.6.5</a>)</p>
+<p class="ref1">[33] Explicit conversion operators</p>
+<p class="ref1">[34] User-defined literals</p>
+<p class="ref1">[35] More explicit control of <span class="EmpStrong">template</span> instantiation: <span class="EmpStrong">extern template</span> s</p>
+<p class="ref1">[36] Default template arguments for function templates</p>
+<p class="ref1">[37] Inheriting constructors</p>
+<p class="ref1">[38] Override controls: <span class="EmpStrong">override</span> and <span class="EmpStrong">final</span> (&#167;<a href="ch04.html#ch04lev2sec4">4.5.1</a>)</p>
+<p class="ref1">[39] Simpler and more general SFINAE rule</p>
+<p class="ref1">[40] Memory model (&#167;<a href="ch13.html#ch13lev1sec1">13.1</a>)</p>
+<p class="ref1">[41] Thread-local storage: <span class="EmpStrong">thread_local</span></p>
+<p class="noindent">For a more complete description of the changes to C++98 in C++11, see [<a href="#ch14bib40">Stroustrup,2013</a>].</p>
+<div class="heading">
+<h4 id="ch14lev2sec5">14.2.2. Standard-Library Components</h4>
+<p class="noindent">The C++11 additions to the standard library come in two forms: new components (such as the regular expression matching library) and improvements to C++98 components (such as move constructors for containers).</p>
+</div>
+<p class="ref"><a id="page_160"/>[1] <span class="EmpStrong">initializer_list</span> constructors for containers (&#167;<a href="ch04.html#ch04lev2sec3">4.2.3</a>)</p>
+<p class="ref">[2] Move semantics for containers (&#167;<a href="ch04.html#ch04lev2sec9">4.6.2</a>, &#167;<a href="ch09.html#ch09lev1sec2">9.2</a>)</p>
+<p class="ref">[3] A singly-linked list: <span class="EmpStrong">forward_list</span> (&#167;<a href="ch09.html#ch09lev1sec6">9.6</a>)</p>
+<p class="ref">[4] Hash containers: <span class="EmpStrong">unordered_map</span>, <span class="EmpStrong">unordered_multimap</span>, <span class="EmpStrong">unordered_set</span>, and <span class="EmpStrong">unordered_multiset</span> (&#167;<a href="ch09.html#ch09lev1sec6">9.6</a>, &#167;<a href="ch09.html#ch09lev1sec5">9.5</a>)</p>
+<p class="ref">[5] Resource management pointers: <span class="EmpStrong">unique_ptr</span>, <span class="EmpStrong">shared_ptr</span>, and <span class="EmpStrong">weak_ptr</span> (&#167;<a href="ch11.html#ch11lev2sec1">11.2.1</a>)</p>
+<p class="ref">[6] Concurrency support: <span class="EmpStrong">thread</span> (&#167;<a href="ch13.html#ch13lev1sec2">13.2</a>), mutexes (&#167;<a href="ch13.html#ch13lev1sec5">13.5</a>), locks (&#167;<a href="ch13.html#ch13lev1sec5">13.5</a>), and condition variables (&#167;<a href="ch13.html#ch13lev1sec6">13.6</a>)</p>
+<p class="ref">[7] Higher-level concurrency support: <span class="EmpStrong">packaged_task</span>, <span class="EmpStrong">future</span>, <span class="EmpStrong">promise</span>, and <span class="EmpStrong">async()</span> (&#167;<a href="ch13.html#ch13lev1sec7">13.7</a>)</p>
+<p class="ref">[8] <span class="EmpStrong">tuple</span>s (&#167;<a href="ch11.html#ch11lev2sec4">11.3.3</a>)</p>
+<p class="ref">[9] Regular expressions: <span class="EmpStrong">regex</span> (&#167;<a href="ch07.html#ch07lev1sec3">7.3</a>)</p>
+<p class="ref1">[10] Random numbers: <span class="EmpStrong">uniform_int_distribution</span>, <span class="EmpStrong">normal_distribution, random_engine</span>, etc. (&#167;<a href="ch12.html#ch12lev1sec5">12.5</a>)</p>
+<p class="ref1">[11] Integer type names, such as <span class="EmpStrong">int16_t</span>, <span class="EmpStrong">uint32_t</span>, and <span class="EmpStrong">int_fast64_t</span></p>
+<p class="ref1">[12] A fixed-sized contiguous sequence container: <span class="EmpStrong">array</span> (&#167;<a href="ch11.html#ch11lev2sec2">11.3.1</a>)</p>
+<p class="ref1">[13] Copying and rethrowing exceptions (&#167;<a href="ch13.html#ch13lev2sec1">13.7.1</a>)</p>
+<p class="ref1">[14] Error reporting using error codes: <span class="EmpStrong">system_error</span></p>
+<p class="ref1">[15] <span class="EmpStrong">emplace()</span> operations for containers</p>
+<p class="ref1">[16] Wide use of <span class="EmpStrong">constexpr</span> functions</p>
+<p class="ref1">[17] Systematic use of <span class="EmpStrong">noexcept</span> functions</p>
+<p class="ref1">[18] Improved function adaptors: <span class="EmpStrong">function</span> and <span class="EmpStrong">bind()</span> (&#167;<a href="ch11.html#ch11lev1sec5">11.5</a>)</p>
+<p class="ref1">[19] <span class="EmpStrong">string</span> to numeric value conversions</p>
+<p class="ref1">[20] Scoped allocators</p>
+<p class="ref1">[21] Type traits, such as <span class="EmpStrong">is_integral</span> and <span class="EmpStrong">is_base_of</span> (&#167;<a href="ch11.html#ch11lev2sec9">11.6.2</a>)</p>
+<p class="ref1">[22] Time utilities: <span class="EmpStrong">duration</span> and <span class="EmpStrong">time_point</span> (&#167;<a href="ch11.html#ch11lev1sec4">11.4</a>)</p>
+<p class="ref1">[23] Compile-time rational arithmetic: <span class="EmpStrong">ratio</span></p>
+<p class="ref1">[24] Abandoning a process: <span class="EmpStrong">quick_exit</span></p>
+<p class="ref1">[25] More algorithms, such as <span class="EmpStrong">move()</span>, <span class="EmpStrong">copy_if()</span>, and <span class="EmpStrong">is_sorted()</span> (<a href="ch10.html#ch10">Chapter 10</a>)</p>
+<p class="ref1">[26] Garbage collection ABI (&#167;<a href="ch04.html#ch04lev2sec11">4.6.4</a>)</p>
+<p class="ref1">[27] Low-level concurrency support: <span class="EmpStrong">atomic</span>s</p>
+<div class="heading">
+<h4 id="ch14lev2sec6">14.2.3. Deprecated Features</h4>
+<p class="noindent">By deprecating a feature, the standards committee expresses the wish that the feature will go away. However, the committee does not have a mandate to immediately remove a heavily used feature &#8211; however redundant or dangerous it may be. Thus, a deprecation is a strong hint to avoid the feature. It may disappear in the future. Compilers are likely to issue warnings for uses of deprecated features. However, deprecated features are part of the standard and history shows that unfortunately they tend to remain supported &#8220;forever&#8221; for reasons of compatibility.</p>
+</div>
+<p class="indenthangingB">&#8226; Generation of the copy constructor and the copy assignment is deprecated for a class with a destructor.</p>
+<p class="indenthangingB">&#8226; It is no longer allowed to assign a string literal to a <span class="EmpStrong">char</span> <code>*</code>. Instead of <span class="EmpStrong">char</span> <code>*</code> as a target for assignment and initializations with string literals, use <span class="EmpStrong">const char</span> <code>*</code> or <span class="EmpStrong">auto</span>.</p>
+<p class="indenthangingB"><a id="page_161"/>&#8226; C++98 exception specifications are deprecated:</p>
+<p class="codelink"><a id="p161pro01" href="ch14_images.html#p161pro01a">Click here to view code image</a></p>
+<p class="pre1"><span class="EmpStrong">void f() throw(X,Y); //</span> <span class="EmpItalic">C++98; now deprecated</span></p>
+<p class="indenthangingBP">The support facilities for exception specifications, <span class="EmpStrong">unexcepted_handler</span>, <span class="EmpStrong">set_unexpected()</span>, <span class="EmpStrong">get_unexpected()</span>, and <span class="EmpStrong">unexpected()</span>, are similarly deprecated. Instead, use <span class="EmpStrong">noexcept</span> (&#167;<a href="ch03.html#ch03lev2sec1">3.4.1</a>).</p>
+<p class="indenthangingB">&#8226; Some C++ standard-library function objects and associated functions are deprecated. Most relate to argument binding. Instead use lambdas, <span class="EmpStrong">bind</span>, and <span class="EmpStrong">function</span> (&#167;<a href="ch11.html#ch11lev1sec5">11.5</a>).</p>
+<p class="indenthangingB">&#8226; The <span class="EmpStrong">auto_ptr</span> is deprecated. Instead, use <span class="EmpStrong">unique_ptr</span> (&#167;<a href="ch11.html#ch11lev2sec1">11.2.1</a>).</p>
+<p class="indenthangingB">&#8226; The use of the storage specifier <span class="EmpStrong">register</span> is deprecated.</p>
+<p class="indenthangingB">&#8226; The use of <span class="EmpStrong">++</span> on a <span class="EmpStrong">bool</span> is deprecated.</p>
+<p class="noindent">In addition, the committee did remove the essentially unused <span class="EmpStrong">export</span> feature, because it was complex and not shipped by the major vendors.</p>
+<div class="heading">
+<h4 id="ch14lev2sec7">14.2.4. Casts</h4>
+<p class="noindent">C-style casts should have been deprecated in favor of <em>named casts</em>. The named casts are:</p>
+</div>
+<p class="indenthangingB">&#8226; <span class="EmpStrong">static_cast</span>: for reasonably well-behaved conversions, such as from a pointer to a base to its derived class.</p>
+<p class="indenthangingB">&#8226; <span class="EmpStrong">reinterpret_cast</span>: For really nasty, non-portable conversions, such as conversion of an <span class="EmpStrong">int</span> to a pointer type.</p>
+<p class="indenthangingB">&#8226; <span class="EmpStrong">const_cast</span>: For casting away <span class="EmpStrong">const</span>.</p>
+<p class="noindent">For example:</p>
+<p class="codelink"><a id="p161pro02" href="ch14_images.html#p161pro02a">Click here to view code image</a></p>
+<p class="pre"><span class="EmpStrong">Widget* pw = static_cast&lt;Widget*&gt;(pv);</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="EmpStrong">//</span> <span class="EmpItalic">pv is a void* supposed to point to a Widget</span><br/><span class="EmpStrong">auto dd = reintrepret_cast&lt;Device_driver*&gt;(0xFF00);</span>&#160;&#160;&#160;<span class="EmpStrong">//</span> <span class="EmpItalic">0xFF is supposed to point to a device driver</span><br/><span class="EmpStrong">char* pc = const_cast&lt;char*&gt;("Casts are inherently dangerous");</span></p>
+<p class="noindent">A literal starting with <span class="EmpStrong">0x</span> is a hexadecimal (base 16) integer.</p>
+<p class="indent">Programmers should seriously consider banning C-style casts from their own programs. Where explicit type conversion is necessary, a combination of named casts can do what a C-style cast can. The named casts should be preferred because they are more explicit and more visible.</p>
+<p class="indent">Expricit type conversion can be completely avoided in most high-level code, so consider every cast (however expressed) a blemish on your design. Consider defining a function <span class="EmpStrong">narrow_cast&lt;T&gt;(v)</span> that checks if the value <span class="EmpStrong">v</span> can be represented as a <span class="EmpStrong">T</span> without loss of information (without <em>narrowing</em>) and throws an exception if it cannot For class hierachy navigation, prefer the checked <span class="EmpStrong">dynamic_cast</span> (&#167;<a href="ch04.html#ch04lev2sec6">4.5.3</a>).</p>
+<div class="heading">
+<h3 id="ch14lev1sec3">14.3. C/C++ Compatibility</h3>
+<p class="noindent">With minor exceptions, C++ is a superset of C (meaning C11; [C11]). Most differences stem from C++&#8217;s greater emphasis on type checking. Well-written C programs tend to be C++ programs as well. A compiler can diagnose every difference between C++ and C. The C99/C++11 incompatibilities are listed in &#167;iso.C. At the time of writing, C11 is still very new and most C code is Classic C or C99 [C99].</p>
+</div>
+<div class="heading">
+<h4 id="ch14lev2sec8"><a id="page_162"/>14.3.1. C and C++ Are Siblings</h4>
+<p class="noindent">Classic C has two main descendants: ISO C and ISO C++. Over the years, these languages have evolved at different paces and in different directions. One result of this is that each language provides support for traditional C-style programming in slightly different ways. The resulting incompatibilities can make life miserable for people who use both C and C++, for people who write in one language using libraries implemented in the other, and for implementers of libraries and tools for C and C++.</p>
+</div>
+<p class="indent">How can I call C and C++ siblings? Clearly, C++ is a descendant of C. However, look at a simplified family tree:</p>
+<div class="image"><img src="graphics/162fig01.jpg" alt="Image"/></div>
+<p class="noindent">A solid line means a massive inheritance of features, a dashed line a borrowing of major features, and a dotted line a borrowing of minor features. From this, ISO C and ISO C++ emerge as the two major descendants of K&#38;R C [<a href="#ch14bib15">Kernighan,1978</a>], and as siblings. Each carries with it the key aspects of Classic C, and neither is 100% compatible with Classic C. I picked the term &#8220;Classic C&#8221; from a sticker that used to be affixed to Dennis Ritchie&#8217;s terminal. It is K&#38;R C plus enumerations and <span class="EmpStrong">struct</span> assignment. BCPL is defined by [<a href="#ch14bib22">Richards,1980</a>] and C89 by [C90].</p>
+<p class="indent">Incompatibilities are nasty for programmers in part because they create a combinatorial explosion of alternatives. Consider a simple Venn diagram:</p>
+<div class="image"><a id="page_163"/><img src="graphics/163fig01.jpg" alt="Image"/></div>
+<p class="noindent">The areas are not to scale. Both C++11 and C11 have most of K&#38;R C as a subset. C++11 has most of C11 as a subset. There are features belonging to most of the distinct areas. For example:</p>
+<div class="image"><img src="graphics/163tab01.jpg" alt="Image"/></div>
+<p class="noindent">Note that differences between C and C++ are not necessarily the result of changes to C made in C++. In several cases, the incompatibilities arise from features adopted incompatibly into C long after they were common in C++. Examples are the ability to assign a <span class="EmpStrong">T</span> <code>*</code> to a <span class="EmpStrong">void</span> <code>*</code> and the linkage of global <span class="EmpStrong">const</span>s [<a href="#ch14bib34">Stroustrup,2002</a>]. Sometimes, a feature was even incompatibly adopted into C after it was part of the ISO C++ standard, such as details of the meaning of <span class="EmpStrong">inline</span>.</p>
+<div class="heading">
+<h4 id="ch14lev2sec9">14.3.2. Compatibility Problems</h4>
+<p class="noindent">There are many minor incompatibilities between C and C++. All can cause problems for a programmer, but all can be coped with in the context of C++. If nothing else, C code fragments can be compiled as C and linked to using the <span class="EmpStrong">extern "C"</span> mechanism.</p>
+</div>
+<p class="indent">The major problems for converting a C program to C++ are likely to be:</p>
+<p class="indenthangingB">&#8226; Suboptimal design and programming style.</p>
+<p class="indenthangingB">&#8226; A <span class="EmpStrong">void</span> <code>*</code> implicitly converted to a <span class="EmpStrong">T</span> <code>*</code> (that is, converted without a cast).</p>
+<p class="indenthangingB">&#8226; C++ keywords used as identifiers in C code.</p>
+<p class="indenthangingB">&#8226; Incomparible linkage between code fragments compiled as C and code fragments compiled as C++.</p>
+<div class="heading">
+<h5 id="ch14lev2sec10"><a id="page_164"/>14.3.2.1. Style Problems</h5>
+<p class="noindent">Natually, a C program is written in a C style, such as the style used in K&#38;R [<a href="#ch14bib16">Kernighan,1988</a>]. This implies widespread use of pointers and arrays, and probably many macros. These facilities are hard to use reliably in a large program. Resource management and error handling are often ad hoc, documented (rather than language and tool supported), and often incompletely documented and adhered to. A simple line-for-line conversion of a C program into a C++ program yields a program that is often a bit better checked. In fact, I have never converted a C program into C++ without finding some bug. However, the fundamental structure is unchanged, and so are the fundamental sources of errors. If you had incomplete error handling, resource leaks, or buffer overflows in the original C program, they will still be there in the C++ version. To obtain major benefits, you must make changes to the fundamental structure of the code:</p>
+</div>
+<p class="uln-indent">[1] Don&#8217;t think of C++ as C with a few features added. C++ can be used that way, but only suboptimally. To get really major advantages from C++ as compared to C, you need to apply different design and implementation styles.</p>
+<p class="uln-indent">[2] Use the C++ standard library as a teacher of new techniques and programming styles. Note the difference from the C standard library (e.g., <span class="EmpStrong">=</span> rather than <span class="EmpStrong">strcpy()</span> for copying and <span class="EmpStrong">==</span> rather than <span class="EmpStrong">strcmp()</span> for comparing).</p>
+<p class="uln-indent">[3] Macro substitution is almost never necessary in C++. Use <span class="EmpStrong">const</span> (&#167;<a href="ch01.html#ch01lev1sec7">1.7</a>), <span class="EmpStrong">constexpr</span> (&#167;<a href="ch01.html#ch01lev1sec7">1.7</a>), <span class="EmpStrong">enum</span> or <span class="EmpStrong">enum class</span> (&#167;<a href="ch02.html#ch02lev1sec5">2.5</a>) to define manifest constants, <span class="EmpStrong">inline</span> (&#167;<a href="ch04.html#ch04lev2sec1">4.2.1</a>) to avoid function-calling overhead, <span class="EmpStrong">template</span>s (<a href="ch05.html#ch05">Chapter 5</a>) to specify families of functions and types, and <span class="EmpStrong">namespace</span>s (&#167;<a href="ch03.html#ch03lev1sec3">3.3</a>) to avoid name clashes.</p>
+<p class="uln-indent">[4] Don&#8217;t declare a variable before you need it, and initialize it immediately. A declaration can occur anywhere a statement can (&#167;<a href="ch01.html#ch01lev1sec9">1.9</a>), in <span class="EmpStrong">for</span>-statement initializers (&#167;<a href="ch01.html#ch01lev1sec8">1.8</a>), and in conditions (&#167;<a href="ch04.html#ch04lev2sec6">4.5.3</a>).</p>
+<p class="uln-indent">[5] Don&#8217;t use <span class="EmpStrong">malloc()</span>. The <span class="EmpStrong">new</span> operator (&#167;<a href="ch04.html#ch04lev2sec2">4.2.2</a>) does the same job better, and instead of <span class="EmpStrong">realloc()</span>, try a <span class="EmpStrong">vector</span> (&#167;<a href="ch04.html#ch04lev2sec3">4.2.3</a>, &#167;<a href="ch10.html#ch10lev1sec1">10.1</a>). Don&#8217;t just replace <span class="EmpStrong">malloc()</span> and <span class="EmpStrong">free()</span> with &#8220;naked&#8221; <span class="EmpStrong">new</span> and <span class="EmpStrong">delete</span> (&#167;<a href="ch04.html#ch04lev2sec2">4.2.2</a>).</p>
+<p class="uln-indent">[6] Avoid <span class="EmpStrong">void</span> <code>*</code>, unions, and casts, except deep within the implementation of some function or class. Their use limits the support you can get from the type system and can harm performance. In most cases, a cast is an indication of a design error.</p>
+<p class="uln-indent">[7] If you must use an explicit type conversion, use an appropriate named cast (e.g., <span class="EmpStrong">static_cast</span>; &#167;<a href="ch14.html#ch14lev2sec6">14.2.3</a>) for a more precise statement of what you are trying to do.</p>
+<p class="uln-indent">[8] Minimize the use of arrays and C-style strings. C++ standard-library <span class="EmpStrong">string</span>s (&#167;<a href="ch07.html#ch07lev1sec2">7.2</a>), <span class="EmpStrong">array</span>s (&#167;<a href="ch11.html#ch11lev2sec2">11.3.1</a>), and <span class="EmpStrong">vector</span>s (&#167;<a href="ch09.html#ch09lev1sec2">9.2</a>) can often be used to write simpler and more maintainable code compared to the traditional C style. In general, try not to build yourself what has already been provided by the standard library.</p>
+<p class="uln-indent">[9] Avoid pointer arithmetic except in very specialized code (such as a memory manager) and for simple array traversal (e.g., <span class="EmpStrong">++p</span>).</p>
+<p class="uln-indent">[10] Do not assume that something laboriously written in C style (avoiding C++ features such as classes, templates, and exceptions) is more efficient than a shorter alternative (e.g., using standard-library facilities). Often (but of course not always), the opposite is true.</p>
+<div class="heading">
+<h5 id="ch14lev3sec1"><a id="page_165"/>14.3.2.2. <span class="EmpStrong">void</span> <code>*</code></h5>
+<p class="noindent">In C, a <span class="EmpStrong">void</span> <code>*</code> may be used as the right-hand operand of an assignment to or initialization of a variable of any pointer type; in C++ it may not. For example:</p>
+</div>
+<p class="codelink"><a id="p165pro01" href="ch14_images.html#p165pro01a">Click here to view code image</a></p>
+<p class="pre"><span class="EmpStrong">void f(int n)</span><br/><span class="EmpStrong">{</span><br/>&#160;&#160;&#160;&#160;&#160;<span class="EmpStrong">int* p = malloc(n*sizeof(int));</span>&#160;&#160;<span class="EmpItalic">/* not C++; in C++, allocate using "new" */</span><br/>&#160;&#160;&#160;&#160;&#160;<span class="EmpStrong">//</span> <span class="EmpItalic">...</span><br/><span class="EmpStrong">}</span></p>
+<p class="noindent">This is probably the single most difficult incompatibility to deal with. Note that the implicit conversion of a <span class="EmpStrong">void</span> <code>*</code> to a different pointer type is <em>not</em> in general harmless:</p>
+<p class="codelink"><a id="p165pro02" href="ch14_images.html#p165pro02a">Click here to view code image</a></p>
+<p class="pre"><span class="EmpStrong">char ch;</span><br/><span class="EmpStrong">void* pv = &#38;ch;</span><br/><span class="EmpStrong">int* pi = pv;</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="EmpStrong">//</span> <span class="EmpItalic">not C++</span><br/><span class="EmpStrong">*pi = 666;</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="EmpStrong">//</span> <span class="EmpItalic">overwrite ch and other bytes near ch</span></p>
+<p class="noindent">If you use both languages, cast the result of <span class="EmpStrong">malloc()</span> to the right type. If you use only C++, avoid <span class="EmpStrong">malloc()</span>.</p>
+<div class="heading">
+<h5 id="ch14lev3sec2">14.3.2.3. C++ Keywords</h5>
+<p class="noindent">C++ provides many more keywords than C does. If one of these appears as an identifier in a C program, that program must be modified to make it a C++ program:</p>
+</div>
+<div class="image"><img src="graphics/165tab01.jpg" alt="Image"/></div>
+<p class="noindent">In addition, the word <span class="EmpStrong">export</span> is reserved for future use. C99 adopted <span class="EmpStrong">inline</span>.</p>
+<p class="indent">In C, some of the C++ keywords are macros defined in standard headers:</p>
+<div class="image"><img src="graphics/165tab02.jpg" alt="Image"/></div>
+<p class="noindent">This implies that in C they can be tested using <span class="EmpStrong">#ifdef</span>, redefined, etc.</p>
+<div class="heading">
+<h5 id="ch14lev3sec3"><a id="page_166"/>14.3.2.4. Linkage</h5>
+<p class="noindent">C and C++ can (and often is) implemented to use different linkage conventions. The most basic reason for that is C++&#8217;s greater emphasis on type checking. A practical reason is that C++ supports overloading, so that there can be two global functions called <span class="EmpStrong">open()</span>. This has to be reflected in the way the linker works.</p>
+</div>
+<p class="indent">To give a C++ function C linkage (so that it can be called from a C program fragment) or to allow a C function to be called from a C++ program fragment, declare it <span class="EmpStrong">extern "C"</span>. For example:</p>
+<p class="codelink"><a id="p166pro01" href="ch14_images.html#p166pro01a">Click here to view code image</a></p>
+<p class="pre"><span class="EmpStrong">extern "C" double sqrt(double);</span></p>
+<p class="noindent">Now <span class="EmpStrong">sqrt(double)</span> can be called from a C or a C++ code fragment. The definition of <span class="EmpStrong">sqrt(double)</span> can also be compiled as a C function or as a C++ function.</p>
+<p class="indent">Only one function of a given name in a scope can have C linkage (because C doesn&#8217;t allow function overloading). A linkage specification does not affect type checking, so the C++ rules for function calls and argument checking still apply to a function declared <span class="EmpStrong">extern"C"</span>.</p>
+<div class="heading">
+<h3 id="ch14lev1sec4">14.4. Bibliography</h3>
+<p class="bib"><a id="ch14bib01"/><em>[C,1990]</em></p>
+<p class="bib1">X3 Secretariat: <em>Standard &#8211; The C Language</em>. X3J11/90-013. ISO Standard ISO/IEC 9899-1990. Computer and Business Equipment Manufacturers Association. Washington, DC.</p>
+</div>
+<p class="bib"><a id="ch14bib02"/><em>[C,1999]</em></p>
+<p class="bib1">ISO/IEC 9899. <em>Standard &#8211; The C Language</em>. X3J11/90-013-1999.</p>
+<p class="bib"><a id="ch14bib03"/><em>[C,2011]</em></p>
+<p class="bib1">ISO/IEC 9899. <em>Standard &#8211; The C Language</em>. X3J11/90-013-2011.</p>
+<p class="bib"><a id="ch14bib04"/><em>[C++,1998]</em></p>
+<p class="bib1">ISO/IEC JTC1/SC22/WG21 (editor: Andrew Koenig): <em>International Standard &#8211; The C++ Language</em>. ISO/IEC 14882:1998.</p>
+<p class="bib"><a id="ch14bib05"/><em>[C++,2004]</em></p>
+<p class="bib1">ISO/IEC JTC1/SC22/WG21 (editor: Lois Goldtwaite): <em>Technical Report on C++ Performance</em>. ISO/IEC TR 18015:2004(E) <em>[C++Math,2010] International Standard &#8211; Extensions to the C++ Library to Support Mathematical Special Functions</em>. ISO/IEC 29124:2010.</p>
+<p class="bib"><a id="ch14bib06"/><em>[C++,2011]</em></p>
+<p class="bib1">ISO/IEC JTC1/SC22/WG21 (editor: Pete Pecker): <em>International Standard &#8211; The C++ Language</em>. ISO/IEC 14882:2011.</p>
+<p class="bib"><a id="ch14bib07"/><em>[Cox,2007]</em></p>
+<p class="bib1">Russ Cox: <em>Regular Expression Matching Can Be Simple And Fast</em>. January 2007. <a href="http://swtch.com/~rsc/regexp/regexp1.html">swtch.com/~rsc/regexp/regexp1.html</a>.</p>
+<p class="bib"><a id="ch14bib08"/><em>[Dahl,1970]</em></p>
+<p class="bib1">O-J. Dahl, B. Myrhaug, and K. Nygaard: <em>SIMULA Common Base Language.</em> Norwegian Computing Center S-22. Oslo, Norway. 1970.</p>
+<p class="bib"><a id="ch14bib09"/><em>[Dechev,2010]</em></p>
+<p class="bib1">D. Dechev, P. Pirkelbauer, and B. Stroustrup: <em>Understanding and Effectively Preventing the ABA Problem in Descriptor-based Lock-free Designs</em>. 13th IEEE Computer Society ISORC 2010 Symposium. May 2010.</p>
+<p class="bib"><a id="ch14bib10"/><em>[DosReis,2006]</em></p>
+<p class="bib1">Gabriel Dos Reis and Bjarne Stroustrup: <em>Specifying C++ Concepts</em>. POPL06. January 2006.</p>
+<p class="bib"><a id="ch14bib11"/><em>[Ellis,1989]</em></p>
+<p class="bib1">Margaret A. Ellis and Bjarne Stroustrup: <em>The Annotated C++ Reference Manual</em>. Addison-Wesley. Reading, Mass. 1990. ISBN 0-201-51459-1.</p>
+<p class="bib"><a id="ch14bib12"/><em>[Friedl,1997]:</em></p>
+<p class="bib1">Jeffrey E. F. Friedl: <em>Mastering Regular Expressions</em>. O&#8217;Reilly Media. Sebastopol, California. 1997. ISBN 978-1565922570.</p>
+<p class="bib"><a id="page_167"/><a id="ch14bib13"/><em>[Gregor,2006]</em></p>
+<p class="bib1">Douglas Gregor et al.: <em>Concepts: Linguistic Support for Generic Programming in C++</em>. OOPSLA&#8217;06.</p>
+<p class="bib"><a id="ch14bib14"/><em>[Ichbiah,1979]</em></p>
+<p class="bib1">Jean D. Ichbiah et al.: <em>Rationale for the Design of the ADA Programming Language</em>. SIGPLAN Notices. Vol. 14, No. 6. June 1979.</p>
+<p class="bib"><a id="ch14bib15"/><em>[Kernighan,1978]</em></p>
+<p class="bib1">Brian W. Kernighan and Dennis M. Ritchie: <em>The C Programming Language.</em> Prentice Hall. Englewood Cliffs, New Jersey. 1978.</p>
+<p class="bib"><a id="ch14bib16"/><em>[Kernighan,1988]</em></p>
+<p class="bib1">Brian W. Kernighan and Dennis M. Ritchie: <em>The C Programming Language, Second Edition.</em> Prentice-Hall. Englewood Cliffs, New Jersey. 1988. ISBN 0-13-110362-8.</p>
+<p class="bib"><a id="ch14bib17"/><em>[Knuth,1968]</em></p>
+<p class="bib1">Donald E. Knuth: <em>The Art of Computer Programming</em>. Addison-Wesley. Reading, Massachusetts. 1968.</p>
+<p class="bib"><a id="ch14bib18"/><em>[Koenig,1990]</em></p>
+<p class="bib1">A. R. Koenig and B. Stroustrup: <em>Exception Handling for C++ (revised)</em>. Proc USENIX C++ Conference. April 1990.</p>
+<p class="bib"><a id="ch14bib19"/><em>[Maddock,2009]</em></p>
+<p class="bib1">John Maddock: <em>Boost.Regex</em>. <a href="http://www.boost.org">www.boost.org</a>. 2009.</p>
+<p class="bib"><a id="ch14bib20"/><em>[Orwell,1949]</em></p>
+<p class="bib1">George Orwell: <em>1984.</em> Secker and Warburg. London. 1949.</p>
+<p class="bib"><a id="ch14bib21"/><em>[Paulson,1996]</em></p>
+<p class="bib1">Larry C. Paulson: <em>ML for the Working Programmer</em>. Cambridge University Press. Cambridge. 1996. ISBN 0-521-56543-X.</p>
+<p class="bib"><a id="ch14bib22"/><em>[Richards,1980]</em></p>
+<p class="bib1">Martin Richards and Colin Whitby-Strevens: <em>BCPL &#8211; The Language and Its Compiler.</em> Cambridge University Press. Cambridge. 1980. ISBN 0-521-21965-5.</p>
+<p class="bib"><a id="ch14bib23"/><em>[Stepanov,1994]</em></p>
+<p class="bib1">Alexander Stepanov and Meng Lee: <em>The Standard Template Library</em>. HP Labs Technical Report HPL-94-34 (R. 1). 1994.</p>
+<p class="bib"><a id="ch14bib24"/><em>[Stroustrup,1982]</em></p>
+<p class="bib1">B. Stroustrup: <em>Classes: An Abstract Data Type Facility for the C Language</em>. Sigplan Notices. January 1982. The first public description of &#8220;C with Classes.&#8221;</p>
+<p class="bib"><a id="ch14bib24a"/><em>[Stroustrup,1984]</em> B. Stroustrup: <em>Operator Overloading in C++</em>. Proc. IFIP WG2.4 Conference on System Implementation Languages: Experience &#38; Assessment. September 1984.</p>
+<p class="bib"><a id="ch14bib25"/><em>[Stroustrup,1985]</em></p>
+<p class="bib1">B. Stroustrup: <em>An Extensible I/O Facility for C++</em>. Proc. Summer 1985 USENIX Conference.</p>
+<p class="bib"><a id="ch14bib26"/><em>[Stroustrup,1986]</em></p>
+<p class="bib1">B. Stroustrup: <em>The C++ Programming Language</em>. Addison-Wesley. Reading, Massachusetts. 1986. ISBN 0-201-12078-X.</p>
+<p class="bib"><a id="ch14bib27"/><em>[Stroustrup,1987]</em></p>
+<p class="bib1">B. Stroustrup: <em>Multiple Inheritance for C++</em>. Proc. EUUG Spring Conference. May 1987.</p>
+<p class="bib"><a id="ch14bib28"/><em>[Stroustrup,1987b]</em></p>
+<p class="bib1">B. Stroustrup and J. Shopiro: <em>A Set of C Classes for Co-Routine Style Programming</em>. Proc. USENIX C++ Conference. Santa Fe, New Mexico. November 1987.</p>
+<p class="bib"><a id="ch14bib29"/><em>[Stroustrup,1988]</em></p>
+<p class="bib1">B. Stroustrup: <em>Parameterized Types for C++</em>. Proc. USENIX C++ Conference, Denver. 1988.</p>
+<p class="bib"><a id="ch14bib30"/><em>[Stroustrup,1991]</em></p>
+<p class="bib1">B. Stroustrup: <em>The C++ Programming Language (Second Edition)</em>. Addison-Wesley. Reading, Massachusetts. 1991. ISBN 0-201-53992-6.</p>
+<p class="bib"><a id="ch14bib31"/><em>[Stroustrup,1993]</em></p>
+<p class="bib1">B. Stroustrup: <em>A History of C++: 1979-1991</em>. Proc. ACM History of Programming Languages conference (HOPL-2). ACM Sigplan Notices. Vol 28, No 3. 1993.</p>
+<p class="bib"><a id="page_168"/><a id="ch14bib32"/><em>[Stroustrup,1994]</em></p>
+<p class="bib1">B. Stroustrup: <em>The Design and Evolution of C++</em>. Addison-Wesley. Reading, Mass. 1994. ISBN 0-201-54330-3.</p>
+<p class="bib"><a id="ch14bib33"/><em>[Stroustrup,1997]</em></p>
+<p class="bib1">B. Stroustrup: <em>The C++ Programming Language, Third Edition</em>. Addison-Wesley. Reading, Massachusetts. 1997. ISBN 0-201-88954-4. Hardcover (&#8220;Special&#8221;) Edition. 2000. ISBN 0-201-70073-5.</p>
+<p class="bib"><a id="ch14bib34"/><em>[Stroustrup,2002]</em></p>
+<p class="bib1">B. Stroustrup: <em>C and C++: Siblings</em>, <em>C and C++: A Case for Compatibility</em>, and <em>C and C++: Case Studies in Compatibility</em>. The C/C++ Users Journal. July-September 2002. <a href="http://www.stroustrup.com/papers.html">www.stroustrup.com/papers.html</a>.</p>
+<p class="bib"><a id="ch14bib35"/><em>[Stroustrup,2007]</em></p>
+<p class="bib1">B. Stroustrup: <em>Evolving a language in and for the real world: C++ 1991-2006</em>. ACM HOPL-III. June 2007.</p>
+<p class="bib"><a id="ch14bib36"/><em>[Stroustrup,2009]</em></p>
+<p class="bib1">B. Stroustrup: <em>Programming &#8211; Principles and Practice Using C++</em>. Addison-Wesley. 2009. ISBN 0-321-54372-6.</p>
+<p class="bib"><a id="ch14bib37"/><em>[Stroustrup,2010]</em></p>
+<p class="bib1">B. Stroustrup: <em>The C++11 FAQ</em>. <a href="http://www.stroustrup.com/C++11FAQ.html">www.stroustrup.com/C++11FAQ.html</a>.</p>
+<p class="bib"><a id="ch14bib38"/><em>[Stroustrup,2012a]</em></p>
+<p class="bib1">B. Stroustrup and A. Sutton: <em>A Concept Design for the STL</em>. WG21 Technical Report N3351==12-0041. January 2012.</p>
+<p class="bib"><a id="ch14bib39"/><em>[Stroustrup,2012b]</em></p>
+<p class="bib1">B. Stroustrup: <em>Software Development for Infrastructure</em>. Computer. January 2012. doi:10.1109/MC.2011.353.</p>
+<p class="bib"><a id="ch14bib40"/><em>[Stroustrup,2013]</em></p>
+<p class="bib1">B. Stroustrup: <em>The C++ Programming Language (Fourth Edition)</em>. Addison-Wesley. 2013. ISBN 0-321-56384-0.</p>
+<p class="bib"><a id="ch14bib41"/><em>[Sutton,2011]</em></p>
+<p class="bib1">A. Sutton and B. Stroustrup: <em>Design of Concept Libraries for C++</em>. Proc. SLE 2011 (International Conference on Software Language Engineering). July 2011.</p>
+<p class="bib"><a id="ch14bib42"/><em>[WG21]</em></p>
+<p class="bib1">ISO SC22/WG21 The C++ Programming Language Standards Committee: <em>Document Archive</em>. <a href="http://www.open-std.org/jtc1/sc22/wg21">www.open-std.org/jtc1/sc22/wg21</a>.</p>
+<p class="bib"><a id="ch14bib43"/><em>[Williams,2012]</em></p>
+<p class="bib1">Anthony Williams: <em>C++ Concurrency in Action &#8211; Practical Multithreading</em>. Manning Publications Co. ISBN 978-1933988771.</p>
+<p class="bib"><a id="ch14bib44"/><em>[Woodward,1974]</em></p>
+<p class="bib1">P. M. Woodward and S. G. Bond: <em>Algol 68-R Users Guide.</em> Her Majesty&#8217;s Stationery Office. London. 1974.</p>
+<div class="heading">
+<h3 id="ch14lev1sec5">14.5. Advice</h3>
+<p class="ref">[1] The material in this chapter roughly corresponds to what is described in much greater detail in <a href="ch01.html#ch01">Chapters 1</a> and 44 of [Stroustrup,2013].</p>
+</div>
+<p class="ref">[2] The ISO C++ standard [C++,2011] defines C++.</p>
+<p class="ref">[3] When learning C++, don&#8217;t focus on language features in isolation; &#167;<a href="ch14.html#ch14lev2sec4">14.2.1</a>.</p>
+<p class="ref">[4] By now, many people have been using C++ for a decade or two. Many more are using C++ in a single environment and have learned to live with the restrictions imposed by early compilers and first-generation libraries. Often, what an experienced C++ programmer has failed to notice over the years is not the introduction of new features as such, but rather the changes in relationships between features that make fundamental new programming techniques feasible. In other words, what you didn&#8217;t think of when first learning C++ or found impractical just might be a superior approach today. You find out only by reexamining the basics. Take the opportunity offered by the new C++11 facilities to modernize your design and <a id="page_169"/>programming techniques:</p>
+<p class="refa">[1] Use constructors to establish invariants (&#167;<a href="ch03.html#ch03lev2sec2">3.4.2</a>).</p>
+<p class="refa">[2] Use constructor/destructor pairs to simplify resource management (RAII; &#167;<a href="ch04.html#ch04lev2sec2">4.2.2</a>).</p>
+<p class="refa">[3] Avoid &#8220;naked&#8221; <span class="EmpStrong">new</span> and <span class="EmpStrong">delete</span> (&#167;<a href="ch04.html#ch04lev2sec2">4.2.2</a>).</p>
+<p class="refa">[4] Use containers and algorithms rather than built-in arrays and ad hoc code (<a href="ch09.html#ch09">Chapter 9</a>, <a href="ch10.html#ch10">Chapter 10</a>).</p>
+<p class="refa">[5] Prefer standard-library facilities to locally developed code (<a href="ch06.html#ch06">Chapter 6</a>).</p>
+<p class="refa">[6] Use exceptions, rather than error codes, to report errors that cannot be handled locally (&#167;<a href="ch03.html#ch03lev1sec4">3.4</a>).</p>
+<p class="refa">[7] Use move semantics to avoid copying large objects (&#167;<a href="ch04.html#ch04lev1sec6">4.6</a>).</p>
+<p class="refa">[8] Use <span class="EmpStrong">unique_ptr</span> to reference objects of polymorphic type (&#167;<a href="ch11.html#ch11lev2sec1">11.2.1</a>).</p>
+<p class="refa">[9] Use <span class="EmpStrong">shared_ptr</span> to reference shared objects, that is, objects without a single owner that is responsible for their destruction (&#167;<a href="ch11.html#ch11lev2sec1">11.2.1</a>).</p>
+<p class="refa1">[10] Use templates to maintain static type safety (eliminate casts) and avoid unnecessary use of class hierarchies (<a href="ch05.html#ch05">Chapter 5</a>).</p>
+<p class="ref">[5] Before using a new feature in production code, try it out by writing small programs to test the standards conformance and performance of the implementations you plan to use.</p>
+<p class="ref">[6] For learning C++, use the most up-to-date and complete implementation of Standard C++ that you can get access to.</p>
+<p class="ref">[7] The common subset of C and C++ is not the best initial subset of C++ to learn; &#167;<a href="ch14.html#ch14lev2sec10">14.3.2.1</a>.</p>
+<p class="ref">[8] Prefer named casts, such as <span class="EmpStrong">static_cast</span> over C-style casts; &#167;<a href="ch14.html#ch14lev2sec6">14.2.3</a>.</p>
+<p class="ref">[9] When converting a C program to C++, first make sure that function declarations (prototypes) and standard headers are used consistently; &#167;<a href="ch14.html#ch14lev2sec9">14.3.2</a>.</p>
+<p class="ref1">[10] When converting a C program to C++, rename variables that are C++ keywords; &#167;<a href="ch14.html#ch14lev3sec2">14.3.2.3</a>.</p>
+<p class="ref1">[11] For portability and type safety, if you must use C, write in the common subset of C and C++; &#167;<a href="ch14.html#ch14lev2sec10">14.3.2.1</a>.</p>
+<p class="ref1">[12] When converting a C program to C++, cast the result of <span class="EmpStrong">malloc()</span> to the proper type or change all uses of <span class="EmpStrong">malloc()</span> to uses of <span class="EmpStrong">new</span>; &#167;<a href="ch14.html#ch14lev3sec1">14.3.2.2</a>.</p>
+<p class="ref1">[13] When converting from <span class="EmpStrong">malloc()</span> and <span class="EmpStrong">free()</span> to <span class="EmpStrong">new</span> and <span class="EmpStrong">delete</span>, consider using <span class="EmpStrong">vector</span>, <span class="EmpStrong">push_back()</span>, and <span class="EmpStrong">reserve()</span> instead of <span class="EmpStrong">realloc()</span>; &#167;<a href="ch14.html#ch14lev2sec10">14.3.2.1</a>.</p>
+<p class="ref1">[14] In C++, there are no implicit conversions from <span class="EmpStrong">int</span>s to enumerations; use explicit type conversion where necessary.</p>
+<p class="ref1">[15] Use <span class="EmpStrong">&lt;string&gt;</span> to get <span class="EmpStrong">std::string</span> (<span class="EmpStrong">&lt;string.h&gt;</span> holds the C-style string functions).</p>
+<p class="ref1">[16] For each standard C header <span class="EmpStrong">&lt;X.h&gt;</span> that places names in the global namespace, the header <span class="EmpStrong">&lt;cX&gt;</span> places the names in namespace <span class="EmpStrong">std</span>.</p>
+<p class="ref1">[17] Use <span class="EmpStrong">extern "C"</span> when declaring C functions; &#167;<a href="ch14.html#ch14lev3sec3">14.3.2.4</a>.</p>
+<p class="ref1">[18] Prefer <span class="EmpStrong">string</span> over C-style strings (direct manipulation of zero-terminated arrays of <span class="EmpStrong">char</span>).</p>
+<p class="ref1">[19] Prefer <span class="EmpStrong">iostream</span>s over <span class="EmpStrong">stdio</span>.</p>
+<p class="ref1">[20] Prefer containers (e.g., <span class="EmpStrong">vector</span>) over built-in arrays.</p>
+</body>
+</html>

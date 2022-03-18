@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">11.3 创建BNRImageStore</h2>
+
+  <p class="calibre1">　　BNRImageStore对象将负责保存用户所拍的所有照片。创建一个名为BNRImageStore的NSObject子类，然后在BNRImageStore.h中添加以下代码：</p>
+
+  <p class="calibre1">　　#import &lt;Foundation/Foundation.h&gt;</p>
+
+  <p class="calibre1">　　@interface BNRImageStore : NSObject</p>
+
+  <p class="calibre1"><span class="calibre10">　　+ （instancetype）sharedStore;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）setImage:（UIImage *）image forKey:（NSString *）key;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　-<span class="calibre10">（UIImage *）imageForKey:（NSString *）key;</span></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）deleteImageForKey:（NSString *）key;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　接下来在BNRImageStore.m的类扩展中声明一个属性，用于存储照片。</p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRImageStore （）</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） NSMutableDictionary *dictionary;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@end</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@implementation BNRImageStore</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　和BNRItemStore类似，BNRImageStore也是单例。在BNRImageStore.m中加入以下代码，确保BNRImageStore的单例状态。</p>
+
+  <p class="calibre1">　　@implementation BNRImageStore</p>
+
+  <p class="calibre1"><span class="calibre10">　　+ （instancetype）sharedStore</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　static BNRImageStore *sharedStore = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！sharedStore） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　sharedStore = [[self alloc] initPrivate];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return sharedStore;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 不允许直接调用init方法</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （instancetype）init</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@throw [NSException exceptionWithName:@“Singleton”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　reason:@“Use +[BNRImageStore sharedStore]”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　userInfo:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 私有初始化方法</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （instancetype）initPrivate</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self = [super init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （self） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_dictionary = [[NSMutableDictionary alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　然后实现其他三个新方法，代码如下：</p>
+
+  <p class="calibre1">　<span class="calibre10">　- （void）setImage:（UIImage *）image forKey:（NSString *）key</span></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.dictionary setObject:image forKey:key];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （UIImage *）imageForKey:（NSString *）key</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [self.dictionary objectForKey:key];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）deleteImageForKey:（NSString *）key</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！key） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.dictionary removeObjectForKey:key];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

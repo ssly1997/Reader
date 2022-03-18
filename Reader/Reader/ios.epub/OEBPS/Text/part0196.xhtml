@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">22.1 在Nerdfeed中使用UISplitViewController</h2>
+
+  <p class="calibre1">　　前面已介绍过UINavigationController和UITabBarController。和这些视图控制器类似，当初始化UISplitViewController时，也需要传入一组视图控制器。不同的是，UISplitViewController对象只能包含两个视图控制器：一个主视图控制器和一个从视图控制器。某个视图控制器是主还是从，是由该对象在数组中的位置决定的。数组中的第一项是主视图控制器，第二项是从视图控制器。</p>
+
+  <p class="calibre1">　　用Xcode打开Nerdfeed.xcodeproj，然后在项目导航面板中选中BNRAppDelegate.m。</p>
+
+  <p class="calibre1">　　更新application:didFinishLaunchingWithOptions:，检查当前运行的设备是否是iPad，是就创建UISplitViewController对象。iPhone不支持UISplitViewController，如果当前的设备是iPhone，创建UISplitViewController对象则会导致应用抛出异常。代码如下：</p>
+
+  <p class="calibre1">　　- （BOOL）application:（UIApplication *）application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:（NSDictionary *）launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self.window</p>
+
+  <p class="calibre1">　　= [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];</p>
+
+  <p class="calibre1">　　BNRCoursesViewController *lvc = [[BNRCoursesViewController alloc]</p>
+
+  <p class="calibre1">　　initWithStyle:UITableViewStylePlain];</p>
+
+  <p class="calibre1">　　UINavigationController *masterNav =</p>
+
+  <p class="calibre1">　　[[UINavigationController alloc] initWithRootViewController:lvc];</p>
+
+  <p class="calibre1">　　BNRWebViewController *wvc = [[BNRWebViewController alloc] init];</p>
+
+  <p class="calibre1">　　lvc.webViewController = wvc;</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window.rootViewController = masterNav;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 检查当前设备是否是iPad</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[[UIDevice currentDevice] userInterfaceIdiom] ==</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIUserInterfaceIdiomPad） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 必须将webViewController包含在导航视图控制器中，稍后会解释原因</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UINavigationController *detailNav =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UINavigationController alloc] initWithRootViewController:wvc];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UISplitViewController *svc = [[UISplitViewController alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将从视图控制器设置为UISplitViewController对象的委托对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 稍后会用到（暂时忽略Xcode对这行代码发出的警告信息）</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　svc.delegate = wvc;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　svc.viewControllers = @[masterNav, detailNav];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将UISplitViewController对象设置为UIWindow对象的根视图控制器</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window.rootViewController = svc;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 对于非iPad设备，仍然使用导航视图控制器</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window.rootViewController = masterNav;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　self.window.backgroundColor = [UIColor whiteColor];</p>
+
+  <p class="calibre1">　　[self.window makeKeyAndVisible];</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　这段代码将创建UISplitViewController对象的代码放入了if子句，这是为将Nerdfeed修改为通用应用做准备。基于同样的原因，读者现在应该明白为什么要在UIApplication的委托中创建BNRWebViewController对象，而不是使用常见的模式（由UINavigationController对象的当前视图控制器创建下一个需要压入UINavigationController栈的对象）。创建UISplitViewController对象时，必需设置主、从视图控制器，缺一不可。图22-2显示的是Nerdfeed的UISplitViewController对象图。</p>
+
+  <p class="calibre7"><img alt="tu22-2" src="../Images/image00645.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图22-2 UISplitViewController对象图</p>
+
+  <p class="calibre1">　　构建并运行应用，如果设备处于竖排模式，应用界面将没有任何内容；将设备旋转至横排模式，就可以在屏幕上看到两个视图控制器。下一节就会解决这个问题，让Nerdfeed在任何方向都可以正确显示。</p>
+
+  <p class="calibre1">　　如果现在按下UITableView对象中的某个表格行，Nerdfeed并不会在右侧面板（从面板）处显示BNRWebViewController对象，而是会将BNRWebViewController对象压入位于左侧面板（主面板）的UINavigationController栈，以替换掉BNRCoursesViewController对象。要解决该问题，需要在用户按下某个表格行时，检查BNRCoursesViewController对象是否属于某个UISplitViewController对象。如果是，就要执行不同的逻辑。</p>
+
+  <p class="calibre1">　　向某个UIViewController对象发送splitViewController消息，可以得到一个指针，并指向该对象所属的UISplitViewController对象。如果UIViewController对象不属于任何UISplitViewController对象，那么splitViewController方法会返回nil（见图22-3）。实际情况要稍微复杂一点，如果某个视图控制器A是某个UISplitViewController对象B的主/从对象之一，对象A的splitViewController方法就会返回对象B。如果某个视图控制器C不是对象B的主/从对象之一，但是对象A包含对象C，那么对象C的splitViewController方法也会返回对象B（本章的BNRCoursesViewController和BNRWebViewController都属于后一种情况）。</p>
+
+  <p class="calibre7"><img alt="tu22-3" src="../Images/image00646.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图22-3 UIViewController的splitViewController属性</p>
+
+  <p class="calibre1">　　更新BNRCoursesViewController.m中的tableView:didSelectRowAtIndexPath:，在该方法顶部，在将BNRWebViewController对象压入UINavigationController栈前，检查当前的BNRCoursesViewController对象是否属于某个UISplitViewController对象。代码如下：</p>
+
+  <p class="calibre1">　　- （void）tableView:（UITableView *）tableView</p>
+
+  <p class="calibre1">　　didSelectRowAtIndexPath:（NSIndexPath *）indexPath</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSDictionary *course = self.courses[indexPath.row];</p>
+
+  <p class="calibre1">　　NSURL *URL = [NSURL URLWithString:course[@“url”]];</p>
+
+  <p class="calibre1">　　self.webViewController.title = course[@“title”];</p>
+
+  <p class="calibre1">　　self.webViewController.URL = URL;</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[self.navigationController pushViewController:self.webViewController</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">animated:YES];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！self.splitViewController） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.navigationController pushViewController:self.webViewController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　animated:YES];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　如果BNRCoursesViewController对象不属于任何UISplitViewController对象，就可以认为当前的设备不是iPad，应该将BNRWebViewController对象压入UINavigation- Controller栈。如果BNRCoursesViewController对象属于某个UISplitViewController对象，就应该由这个UISplitViewController对象负责显示BNRWebViewController对象。</p>
+
+  <p class="calibre1">　　构建并运行应用，转动设备至横屏模式，按下UITableView对象中的某个表格行，Nerdfeed应该会在右侧面板载入相应的课程页面。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

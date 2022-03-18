@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">18.10 深入学习：文件系统的读取和写入</h2>
+
+  <p class="calibre1">　　除了固化和NSData，还有其他一些途径可以实现数据的存取。下面介绍其中几种主要途径（Core Data会在第23章介绍）。</p>
+
+  <p class="calibre1">　　编写iOS应用时，也可以使用C语言库的标准I/O函数，代码如下：</p>
+
+  <p class="calibre1">　　FILE *inFile = fopen（“textfile”, “rt”）；</p>
+
+  <p class="calibre1">　　char *buffer = malloc（someSize）；</p>
+
+  <p class="calibre1">　　fread（buffer, byteCount, 1, inFile）；</p>
+
+  <p class="calibre1">　　FILE *outFile = fopen（“binaryfile”, “w”）；</p>
+
+  <p class="calibre1">　　fwrite（buffer, byteCount, 1, outFile）；</p>
+
+  <p class="calibre1">　　但是在编写iOS应用时，标准I/O函数并不常用。这是因为还有其他的途径可以读/写二进制数据或文本数据，而且更方便。如果要读/写二进制数据，则可以使用NSData。如果要读/写文本数据，则可以分别使用NSString的实例方法initWithContentsOfFile:和writeToFile:atomically:encoding:error:，代码如下：</p>
+
+  <p class="calibre1">　　// 用于保存NSError对象地址的局部指针变量</p>
+
+  <p class="calibre1">　　NSError *err;</p>
+
+  <p class="calibre1">　　NSString *someString = @“Text Data”;</p>
+
+  <p class="calibre1">　　BOOL success = [someString writeToFile:@“/some/path/file”</p>
+
+  <p class="calibre1">　　atomically:YES</p>
+
+  <p class="calibre1">　　encoding:NSUTF8StringEncoding</p>
+
+  <p class="calibre1">　　error:&amp;err];</p>
+
+  <p class="calibre1">　　if （！success） {</p>
+
+  <p class="calibre1">　　NSLog（@“Error writing file: %@”, [err localizedDescription]）；</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　NSString *myEssay</p>
+
+  <p class="calibre1">　　= [[NSString alloc] initWithContentsOfFile:@“/some/path/file”</p>
+
+  <p class="calibre1">　　encoding:NSUTF8StringEncoding</p>
+
+  <p class="calibre1">　　error:&amp;err];</p>
+
+  <p class="calibre1">　　if （！myEssay） {</p>
+
+  <p class="calibre1">　　NSLog（@“Error reading file: %@”, [err localizedDescription]）；</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　先介绍这段代码中的NSError。应用在执行方法时，可能会因为各种原因而导致失败。例如，将数据写入文件时会因为路径无效而失败，也可能会因为没有足够的权限而失败。NSError对象的作用是保存失败的原因。向NSError对象发送localizedDescription消息，可以得到相应错误的描述信息。因为这些信息是给人看的（human-readable），所以可以向用户显示或通过控制台输出。</p>
+
+  <p class="calibre1">　　在这段代码中，获取NSError对象的语法看上去有些奇怪。通常情况下，只有当某个方法在执行代码时发生了错误，才有必要创建NSError对象。也就是说，负责创建NSError对象的应该是被调用的方法，而不是调用方。为了能让调用方得到被调用的方法所创建的NSError对象，需要将指针变量的地址（&amp;err）作为实参传给相应的方法。假设有某个方法（方法A），该方法的某个实参可以返回一个NSError对象，那么在调用方法A前，需要先创建一个类型为NSError *的指针变量（局域变量）。注意，这里不需要创建NSError对象，因为这是方法A的任务。然后将这个局部变量的地址（&amp;err）传给可能会出错的方法A。如果方法A在执行代码时发生了错误，就会创建一个NSError对象，并将新创建的对象的地址赋给传入的指针。如果调用方不关心NSError对象，则可以传入nil。</p>
+
+  <p class="calibre1">　　如果要向用户显示错误，通常可以使用UIAlertView对象（见图18-10）。</p>
+
+  <p class="calibre7"><img alt="tu18-10" src="../Images/image00612.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图18-10 UIAlertView示例</p>
+
+  <p class="calibre1">　　可以使用如下代码创建并显示UIAlertView：</p>
+
+  <p class="calibre1">　　NSString *myEssay</p>
+
+  <p class="calibre1">　　= [[NSString alloc] initWithContentsOfFile:@“/some/path/file”</p>
+
+  <p class="calibre1">　　encoding:NSUTF8StringEncoding</p>
+
+  <p class="calibre1">　　error:&amp;err];</p>
+
+  <p class="calibre1">　　if （！myEssay） {</p>
+
+  <p class="calibre1">　　UIAlertView *a</p>
+
+  <p class="calibre1">　　= [[UIAlertView alloc] initWithTitle:@“Read Failed”</p>
+
+  <p class="calibre1">　　message:[err localizedDescription]</p>
+
+  <p class="calibre1">　　delegate:nil</p>
+
+  <p class="calibre1">　　cancelButtonTitle:@“OK”</p>
+
+  <p class="calibre1">　　otherButtonTitles:nil];</p>
+
+  <p class="calibre1">　　[a show];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　很多语言将所有非预期（unexpected）错误作为异常抛出，但是Objective-C的异常只用来处理程序错误。当异常抛出时，详细信息都封装在NSException对象中。这些信息主要用来帮助程序员调试代码，例如“试图在只有两个对象的数组中访问第七个对象。”NSException中还包括方法调用栈信息，指明了抛出异常的代码位置。</p>
+
+  <p class="calibre1">　　NSException和NSError的使用场景不同。如果需要指出程序员的编码错误，则应该使用NSException。例如，一个方法只能接受奇数作为参数，但是程序员在调用该方法时传入了偶数，这时应该抛出异常，以方便程序员解决代码错误。相反，对于预期（expected）错误，如用户错误和设备环境错误，应该使用NSError。例如，一个方法需要读取用户照片，但是没有访问用户相册的权限，这时应该向方法调用者返回一个NSError对象，指出不能执行本次操作的原因。</p>
+
+  <p class="calibre1">　　现在继续讨论文件读/写。和NSString类似，NSDictionary和NSArray也有writeToFile:和initWithContentsOfFile:。只有当collection对象包含可序列化（property list serializable）对象时，才能通过writeToFile:这类方法将数据存入文件。可序列化对象包括NSString、NSNumber、NSDate、NSData、NSArray和NSDictionary。NSArray对象或NSDictionary对象这类文件的写入方法生成的都是XML格式的property list文件，代码如下：</p>
+
+  <p class="calibre1">　　&lt;?xml version=“1.0” encoding=“UTF-8”?&gt;</p>
+
+  <p class="calibre1">　　&lt;!DOCTYPE plist PUBLIC “-//Apple//DTD PLIST 1.0//EN”</p>
+
+  <p class="calibre1">　　“http://www.apple.com/DTDs/PropertyList-1.0.dtd”&gt;</p>
+
+  <p class="calibre1">　　&lt;plist version=“1.0”&gt;</p>
+
+  <p class="calibre1">　　&lt;array&gt;</p>
+
+  <p class="calibre1">　　&lt;dict&gt;</p>
+
+  <p class="calibre1">　　&lt;key&gt;firstName&lt;/key&gt;</p>
+
+  <p class="calibre1">　　&lt;string&gt;Christian&lt;/string&gt;</p>
+
+  <p class="calibre1">　　&lt;key&gt;lastName&lt;/key&gt;</p>
+
+  <p class="calibre1">　　&lt;string&gt;Keur&lt;/string&gt;</p>
+
+  <p class="calibre1">　　&lt;/dict&gt;</p>
+
+  <p class="calibre1">　　&lt;dict&gt;</p>
+
+  <p class="calibre1">　　&lt;key&gt;firstName&lt;/key&gt;</p>
+
+  <p class="calibre1">　　&lt;string&gt;Joe&lt;/string&gt;</p>
+
+  <p class="calibre1">　　&lt;key&gt;lastName&lt;/key&gt;</p>
+
+  <p class="calibre1">　　&lt;string&gt;Conway&lt;/string&gt;</p>
+
+  <p class="calibre1">　　&lt;/dict&gt;</p>
+
+  <p class="calibre1">　　&lt;dict&gt;</p>
+
+  <p class="calibre1">　　&lt;key&gt;firstName&lt;/key&gt;</p>
+
+  <p class="calibre1">　　&lt;string&gt;Aaron&lt;/string&gt;</p>
+
+  <p class="calibre1">　　&lt;key&gt;lastName&lt;/key&gt;</p>
+
+  <p class="calibre1">　　&lt;string&gt;Hillegass&lt;/string&gt;</p>
+
+  <p class="calibre1">　　&lt;/dict&gt;</p>
+
+  <p class="calibre1">　　&lt;/array&gt;</p>
+
+  <p class="calibre1">　　&lt;/plist&gt;</p>
+
+  <p class="calibre1">　　几乎所有的操作系统都能读取XML格式的property list文件，所以使用这种格式存储数据会很方便。很多Web服务程序会采用这种格式的文件作为输入和输出。读/写property list文件的代码如下：</p>
+
+  <p class="calibre1">　　NSMutableDictionary *d = [NSMutableDictionary dictionary];</p>
+
+  <p class="calibre1">　　d[@“String”] = @“A string”;</p>
+
+  <p class="calibre1">　　[d writeToFile:@“/some/path/file” atomically:YES];</p>
+
+  <p class="calibre1">　　NSMutableDictionary *anotherD = [[NSMutableDictionary alloc]</p>
+
+  <p class="calibre1">　　initWithContentsOfFile:@“/some/path/file”];</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">28.3 Segue</h2>
+
+  <p class="calibre1">　　编写iOS应用时，通常需要实现某种导航界面，让用户能够在多个视图控制器之间切换。使用Storyboards时，可以通过UIStoryboardSegue对象来设置这类互动操作，一样不用编写任何代码。</p>
+
+  <p class="calibre1">　　当应用触发某个UIStoryboardSegue对象时，该对象会将另一个视图控制器移入屏幕。该对象的设置包含样式（style）、动作控件（action item）和标识（identifier），其中的样式决定应用将怎样显示目标视图控制器（是推入UINavigationController栈还是以模态的形式显示）。动作控件是触发UIStoryboardSegue对象的视图对象，必须和触发的UIStoryboardSegue对象属于同一个Storyboard文件，例如UIButton对象或UIBarButtonItem对象等。标识用来获取相应的UIStoryboardSegue对象。当应用需要主动触发某个UIStoryboardSegue对象时（例如处理摇动事件，或者当触发动作的界面元素无法在Storyboard文件中设置时），就可以通过标识获取需要的UIStoryboardSegue对象。</p>
+
+  <p class="calibre1">　　下面要为Colorboard.storyboard增加两个push（压入）样式的UIStoryboardSegue对象。push样式的UIStoryboardSegue对象会将目标视图控制器压入相应的UINavigationController栈。在增加UIStoryboardSegue对象前，需要先为Colorboard.storyboard创建并设置两个视图控制器，将其中一个视图控制器的背景颜色设置为红色，另一个设置为绿色。新增加的UIStoryboardSegue对象将位于UITableViewController对象和这两个视图控制器之间。这两个UIStoryboardSegue对象的动作控件都是UITableView对象所包含的UITableViewCell对象。按下某个UITableViewCell对象，Colorboard应该将相应的UIViewController对象压入UINavigationController栈。</p>
+
+  <p class="calibre1">　　从对象库面板中拖曳两个UIViewController对象至画布。选择UIViewController对象的视图，打开属性检视面板，然后将它们的背景颜色分别改为红色和绿色。</p>
+
+  <p class="calibre1">　　选中标题为Red的UITableViewCell对象，按住Control键并拖曳至红色的UIViewController对象，松开鼠标。Xcode会显示一个标题为Storyboard Segues的面板，列出当前UIStoryboardSegue对象可用的全部样式，选择push。</p>
+
+  <p class="calibre1">　　同样，将标题为Green的UITableViewCell对象拖曳至绿色的UIViewController对象，仍然选择push。完成后的画布如图28-12所示。</p>
+
+  <p class="calibre7"><img alt="tu28-12" src="../Images/image00701.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-12 设置两个UIStoryboardSegue对象</p>
+
+  <p class="calibre1">　　Xcode会在UITableViewController对象和两个UIViewController对象之间显示两个箭头，分别代表一个UIStoryboardSegue对象。箭头中间的图标代表相应UIStoryboardSegue对象的样式，图28-12中显示的都是push样式。</p>
+
+  <p class="calibre1">　　构建并运行应用，按下某个表格行，Colorboard应该会显示相应的UIViewController对象。点击Back按钮则可以退回至UITableViewController对象。至此，没有为Colorboard编写任何代码就实现了上述功能。</p>
+
+  <p class="calibre1">　　对push样式的UIStoryboardSegue对象，起始的UIViewController对象必须位于某个UINavigationController对象内，否则将无法正常工作。本例中的两个UIStoryboardSegue对象都符合上述条件。</p>
+
+  <p class="calibre1">　　下面再介绍另一种UIStoryboardSegue样式：modal（模态）样式。首先从对象库面板中拖曳一个UIViewController对象至画布，将其背景颜色设置为蓝色。下面为该对象创建一个UIStoryboardSegue对象，并将UIBarButtonItem对象设置为UIStoryboardSegue对象的动作控件。</p>
+
+  <p class="calibre1">　　在UITableViewController对象的视图顶部找到UINavigationBar对象，然后从对象库面板拖曳一个UIBarButtonItem对象至UINavigationBar对象的右侧。同时，打开属性检视面板，在Identifier下拉菜单中选择Add（“＋”）。接下来按住Control键，将UIBarButtonItem对象拖曳至新创建的UITableViewController对象，在黑色面板中选择modal。完成后的画布如图28-13所示（modal样式的UIStoryboardSegue对象和push样式的图标不同）。</p>
+
+  <p class="calibre7"><img alt="tu28-13" src="../Images/image00702.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-13 modal样式的UIStoryboardSegue对象</p>
+
+  <p class="calibre1">　　构建并运行应用。点击UIBarButtonItem对象，蓝色背景的UIViewController对象应该会滑入窗口。唯一的缺点是无法关闭UIViewController对象。</p>
+
+  <p class="calibre1">　　下面需要在UIViewController对象的UINavigationBar对象中添加一个Done按钮，用于关闭UIViewController对象。但是，目前UIViewController对象并没有加入UINavigationController栈中，因此其顶部也没有UINavigationBar对象。</p>
+
+  <p class="calibre1">　　首先要为UIViewController对象添加一个UINavigationController对象。拖曳一个UINavigationController对象至画布，然后删除Storyboards自动添加的根视图控制器。</p>
+
+  <p class="calibre1">　　删除当前modal样式的UIStoryboardSegue对象，然后按住Control键，将“＋”按钮拖曳至该UINavigationController对象，选择modal样式。同时，需要将UIViewController对象设置为该UINavigationController对象的根视图控制器（见图28-14）。</p>
+
+  <p class="calibre7"><img alt="tu28-14" src="../Images/image00703.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-14 添加UINavigationController对象</p>
+
+  <p class="calibre1">　　现在UIViewController对象已经加入到UINavigationController栈中，顶部有一个UINavigationBar对象。下面将一个UIBarButtonItem对象拖曳至UINavigationBar对象的右侧，然后打开属性检视面板，在Identifier下拉菜单中选择Done。这时UIViewController对象看起来应该类似于图28-15。</p>
+
+  <p class="calibre7"><img alt="tu28-15" src="../Images/image00704.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-15 Done按钮</p>
+
+  <p class="calibre1">　　接下来编写关闭UIViewController对象的方法，并将其与Done按钮关联。</p>
+
+  <p class="calibre1">　　在Colorboard.storyboard文件中，所有的视图控制器都是UIViewController对象，或者是iOS SDK自带的UIViewController子类对象（例如UITableViewController）。这些对象的类是无法修改的。如果需要修改Storyboard文件中的某个视图控制器，必须创建一个UIViewController自定义子类。同时，还需要在Storyboard文件中将视图控制器的类设置为自定义子类。</p>
+
+  <p class="calibre1">　　下面就为Colorboard创建一个新的UIViewController子类。创建一个NSObject子类，命名为BNRColorViewController。</p>
+
+  <p class="calibre1">　　在BNRColorViewController.h中，将父类修改为UIViewController，代码如下：</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@interface BNRColorViewController : NSObject</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　@interface BNRColorViewController : UIViewController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@end</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在BNRColorViewController.m中实现关闭自身的方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （IBAction）dismiss:（id）sender</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.presentingViewController dismissViewControllerAnimated:YES</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　completion:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　重新打开Colorboard.storyboard，选中Colorboard以模态形式显示的蓝色UIViewController对象，然后打开标识检视面板，找到标题为Class的文本框，将UIViewController修改为BNRColorViewController（见图28-16）。</p>
+
+  <p class="calibre7"><img alt="tu28-16" src="../Images/image00705.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-16 将视图控制器的类修改为BNRColorViewController</p>
+
+  <p class="calibre1">　　注意这时的画布不能处于缩放状态，选中Done按钮，然后在黑色工具条中找到代表BNRColorViewController对象的那个图标。按住Control，将Done按钮拖曳至刚才找到的那个图标，松开鼠标。在新出现的面板中选择dismiss:方法（见图28-17）。</p>
+
+  <p class="calibre7"><img alt="tu28-17" src="../Images/image00706.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-17 在Storyboard文件中设置插座变量和动作方法</p>
+
+  <p class="calibre1">　　完成上述步骤后，当用户按下Done按钮时，BNRColorViewController对象就会收到dismiss:消息。构建并运行应用，进入BNRColorViewController对象，然后按下Done按钮。Colorboard应该会关闭BNRColorViewController对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

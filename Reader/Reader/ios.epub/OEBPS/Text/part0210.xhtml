@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">24.2 启用状态恢复</h2>
+
+  <p class="calibre1">　　状态恢复在默认情况下是禁用的，如果需要启用，必须手动在应用程序委托中设置。</p>
+
+  <p class="calibre1">　　打开BNRAppDelegate.m，实现保存和恢复应用状态的两个委托方法，代码如下：</p>
+
+  <p class="calibre1">　　@implementation BNRAppDelegate</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （BOOL）application:（UIApplication *）application</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　shouldSaveApplicationState:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- （BOOL）application:（UIApplication *）application</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　shouldRestoreApplicationState:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　这样，当应用进入后台运行时，系统会保存应用状态；而当应用恢复到前台运行或重新启动时，系统会恢复应用状态。为了理解系统恢复应用状态的过程，下一节将详细介绍恢复标识和恢复类。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

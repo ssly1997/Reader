@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">21.3 认证信息</h2>
+
+  <p class="calibre1">　　Web服务可以在返回HTTP响应时附带认证要求（authentication challenge），其作用是询问“HTTP请求的发起方是谁？”这时发起方应该提供相应的用户名和密码（即认证信息），只有当认证通过后，Web服务才会返回真正的HTTP响应。</p>
+
+  <p class="calibre1">　　当应用收到认证要求时，NSURLSession的委托会收到URLSession:task: didReceiveChallenge:completionHandler:消息，可以在该消息中发送用户名和密码，完成认证。</p>
+
+  <p class="calibre1">　　打开BNRCoursesViewController.m，更新fetchFeed方法，访问安全度更高的Big Nerd Ranch在线课程Web服务（注意将http改为https），代码如下：</p>
+
+  <p class="calibre1">　　- （void）fetchFeed</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">NSString *requestString =</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">@“http://bookapi.bignerdranch.com/courses.json”;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *requestString =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@“https://bookapi.bignerdranch.com/private/courses.json”;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　NSURL *url = [NSURL URLWithString:requestString];</p>
+
+  <p class="calibre1">　　NSURLRequest *req = [NSURLRequest requestWithURL:url];</p>
+
+  <p class="calibre1">　　下面需要在初始化BNRCoursesViewController时为NSURLSession设置委托。更新initWithStyle:方法，代码如下：</p>
+
+  <p class="calibre1">　　- （instancetype）initWithStyle:（UITableViewStyle）style</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super initWithStyle:style];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　self.navigationItem.title = @“BNR Courses”;</p>
+
+  <p class="calibre1">　　NSURLSessionConfiguration *config =</p>
+
+  <p class="calibre1">　　[NSURLSessionConfiguration defaultSessionConfiguration];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">_session = [NSURLSession sessionWithConfiguration:config</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">delegate:nil</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">delegateQueue:nil];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　_session = [NSURLSession sessionWithConfiguration:config</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　delegate:self</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　delegateQueue:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self fetchFeed];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　然后在BNRCoursesViewController.m的类扩展中，使BNRCoursesViewController遵守NSURLSessionDataDelegate协议：</p>
+
+  <p class="calibre1">　　@interface BNRCoursesViewController （）<span class="calibre10">&lt;NSURLSessionDataDelegate&gt;</span></p>
+
+  <p class="calibre1">　　@property （nonatomic） NSURLSession *session;</p>
+
+  <p class="calibre1">　　@property （nonatomic, copy） NSArray *courses;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　构建并运行应用，Web服务会返回一条错误消息：未认证的访问请求（unauthorized access）。因此，Web服务不会返回任何数据，UITableView对象中也没有显示任何在线课程信息。</p>
+
+  <p class="calibre1">　　为了通过Web服务认证，需要实现NSURLSession收到认证要求的委托方法。该方法会提供一个Block对象，可以将认证信息传入这个Block对象，完成认证。</p>
+
+  <p class="calibre1">　　在BNRCoursesViewController.m中，实现URLSession:task:didReceiveChallenge: completionHandler:方法，处理Web服务的认证要求：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）URLSession:（NSURLSession *）session task:（NSURLSessionTask *）task</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　didReceiveChallenge:（NSURLAuthenticationChallenge *）challenge</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　completionHandler:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（void （^）（NSURLSessionAuthChallengeDisposition,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSURLCredential *））completionHandler</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSURLCredential *cred = [NSURLCredential</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　credentialWithUser:@“BigNerdRanch”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　password:@“AchieveNerdvana”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　persistence:NSURLCredentialPersistenceForSession];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　completionHandler（NSURLSessionAuthChallengeUseCredential, cred）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　completionHandler有两个参数。第一个参数是认证类型，由于<span class="calibre10">NSURLCredential</span>对象中提供了用户名和密码，因此类型是NSURLSessionAuthChallengeUseCredential。第二个参数是认证信息，即NSURLCredential对象。以上代码使用NSURLCredential的工厂方法credentialWithUser:password:persistence:创建NSURLCredential对象，该方法需要提供用户名、密码和认证信息的有效期限（有效期限是一个枚举值）。</p>
+
+  <p class="calibre1">　　构建并运行应用，运行结果与之前的相同。但是现在应用访问的是安全度更高的Big Nerd Ranch在线课程Web服务。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

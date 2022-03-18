@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">13.7 深入学习：UIMenuController与UIResponderStandardEditActions　　</h2>
+
+  <p class="calibre1">　　<span class="calibre10">UIMenuController</span>对象拥有一组默认的<span class="calibre10">UIMenuItem</span>对象，专门负责为用户显示“编辑”菜单。以<span class="calibre10">UITextField</span>或<span class="calibre10">UITextText</span>为例，当用户按下上述两种对象时，<span class="calibre10">UIMenuController</span>对象就会显示这类<span class="calibre10">UIMenuItem</span>对象（例如剪切、拷贝和粘贴等）。这类<span class="calibre10">UIMenuItem</span>对象都有固定的动作消息。以剪切菜单项为例，当用户选中“剪切”项后，相应的<span class="calibre10">UIMenuItem</span>对象就会向显示该菜单项的<span class="calibre10">UIView</span>对象发送<span class="calibre10">cut:</span>消息。</p>
+
+  <p class="calibre1">　　如果某个<span class="calibre10">UIResponder</span>子类需要实现特定的“编辑”功能，就可以实现相应的方法。以<span class="calibre10">UITextField</span>为例，为了能够剪切当前选中的文字，<span class="calibre10">UITextField</span>实现了<span class="calibre10">cut:</span>方法。UIResponderStandardEditActions协议声明了所有这类“编辑”方法。</p>
+
+  <p class="calibre1">　　如果某个<span class="calibre10">UIView</span>子类实现了UIResponderStandardEditActions协议中的方法，那么当这个子类对象显示<span class="calibre10">UIMenuController</span>对象时，就会出现和这些方法相对应的菜单项。这是因为该对象会在显示前枚举所有的“编辑”菜单项，然后根据其动作消息向视图发送<span class="calibre10">canPerformAction:withSender:</span>消息。如果视图实现了指定的方法，该消息就会返回YES，否则返回NO。<span class="calibre10">UIMenuController</span>对象会根据<span class="calibre10">canPerformAction:withSender:</span>的返回结果判断是否应该显示相应的菜单项。</p>
+
+  <p class="calibre1">　　如果读者要实现某个UIResponderStandardEditActions协议中的方法，又不希望<span class="calibre10">UIMenuController</span>对象显示相应的菜单项，可以覆盖<span class="calibre10">canPerformAction:withSender:</span>，然后针对特定的方法返回NO，代码如下：</p>
+
+  <p class="calibre1">　　- （BOOL）canPerformAction:（SEL）action withSender:（id）sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　if （action == @selector（copy:））</p>
+
+  <p class="calibre1">　　return NO;</p>
+
+  <p class="calibre1">　　// 父类的实现会根据目标对象是否实现了特定的动作方法，返回YES或NO</p>
+
+  <p class="calibre1">　　return [super canPerformAction:action withSender:sender];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">11.11 深入学习：导航实现文件</h2>
+
+  <p class="calibre1">　　UIViewController的头文件和实现文件中可能有很多方法，为了在阅读或编写代码时快速找到需要的方法，Xcode在代码编辑器中设置了一个跳转栏，其位置如图11-14所示。</p>
+
+  <p class="calibre7"><img alt="tu11-14" src="../Images/image00528.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-14 代码编辑器中的跳转栏</p>
+
+  <p class="calibre1">　　跳转栏会显示完整的导航路径：项目？文件组？文件？方法（见图11-15），其中，“方法”表示文件中光标所在的方法。</p>
+
+  <p class="calibre7"><img alt="tu11-15" src="../Images/image00529.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-15 导航路径</p>
+
+  <p class="calibre1">　　导航路径完全对应于项目层次结构，点击任何一级路径，Xcode都会弹出项目中的同级层次结构，可以非常方便地导航到项目中的任意部分。例如，点击文件路径，Xcode就会弹出同级文件列表（见图11-16）。</p>
+
+  <p class="calibre7"><img alt="tu11-16" src="../Images/image00530.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-16 同级文件列表</p>
+
+  <p class="calibre1">　　下面介绍跳转栏最常用也是最重要的一项功能：在实现文件中导航。点击方法路径，Xcode会弹出当前文件中的所有方法列表。这时可以输入关键词，在方法列表中搜索需要的方法；还可以使用上下方向键选择列表中的方法，然后按下Enter键跳转到选择的方法。图11-17显示了在BNRItemsViewController.m中搜索“indexpath”的方法列表。</p>
+
+  <p class="calibre7"><img alt="tu11-17" src="../Images/image00531.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-17 搜索“indexpath”的方法列表</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">#pragma mark</h3>
+
+  <p class="calibre1">　　随着类中的方法越来越多，在冗长的方法列表中查找需要的方法也会越来越困难。优秀的iOS开发者的一个习惯是使用#pragma mark预处理指令将方法按照功能分组，写在文件中的特定区域，这样，方法列表中就会分组显示各项功能的方法，查找起来非常方便。</p>
+
+  <p class="calibre1"><span class="calibre10">　　#pragma mark - View life cycle</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　- （void）viewDidLoad {…}</p>
+
+  <p class="calibre1">　　- （void）viewWillAppear:（BOOL）animated {…}</p>
+
+  <p class="calibre1"><span class="calibre10">　　#pragma mark - Actions</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　- （void）addNewItem:（id）sender {…}</p>
+
+  <p class="calibre1">　　#pragma mark不会对代码本身起任何作用，但是Xcode会根据#pragma mark组织文件中的方法。图11-18显示了在BNRItemsViewController.m中添加#pragma mark后的方法列表。</p>
+
+  <p class="calibre7"><img alt="tu11-18" src="../Images/image00532.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图11-18 代码编辑器中的跳转栏</p>
+
+  <p class="calibre1">　　可以通过#pragma mark为一组方法添加分割线和功能说明：</p>
+
+  <p class="calibre1">　　// 添加分割线</p>
+
+  <p class="calibre1">　　#pragma mark -</p>
+
+  <p class="calibre1">　　// 添加功能说明</p>
+
+  <p class="calibre1">　　#pragma mark My Awesome Methods</p>
+
+  <p class="calibre1">　　// 同时添加分割线和功能说明</p>
+
+  <p class="calibre1">　　#pragma mark - My Awesome Methods</p>
+
+  <p class="calibre1">　　经常使用#pragma mark，可以使代码更加清晰有条理。一旦之后需要重新审查代码，就会感受到事先使用了#pragma mark的好处。久而久之，读者也会养成使用#pragma mark分组方法的好习惯，成为优秀的iOS开发者。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

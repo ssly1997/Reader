@@ -1,0 +1,729 @@
+<?xml version="1.0"?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+<ncx version="2005-1" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+<head>
+<meta name="dtb:uid" content="9780133549003"/>
+<meta name="dtb:depth" content="1"/>
+<meta name="dtb:totalPageCount" content="0"/>
+<meta name="dtb:maxPageNumber" content="0"/>
+</head>
+<docTitle>
+<text>A Tour of C++</text>
+</docTitle>
+<navMap>
+<navPoint id="pref00" playOrder="1">
+<navLabel>
+<text>About This eBook</text>
+</navLabel>
+<content src="pref00.html"/>
+</navPoint>
+<navPoint id="title" playOrder="2">
+<navLabel>
+<text>Title Page</text>
+</navLabel>
+<content src="title.html"/>
+</navPoint>
+<navPoint id="copy" playOrder="3">
+<navLabel>
+<text>Copyright Page</text>
+</navLabel>
+<content src="copyright.html"/>
+</navPoint>
+<navPoint id="pref01" playOrder="4">
+<navLabel>
+<text>The C++ In-Depth Series</text>
+</navLabel>
+<content src="pref01.html"/>
+</navPoint>
+<navPoint id="toc" playOrder="5">
+<navLabel>
+<text>Contents</text>
+</navLabel>
+<content src="toc.html"/>
+</navPoint>
+<navPoint id="pref02" playOrder="6">
+<navLabel>
+<text>Preface</text>
+</navLabel>
+<content src="pref02.html"/>
+<navPoint id="pref02lev1sec1" playOrder="7">
+<navLabel>
+<text>Acknowledgments</text>
+</navLabel>
+<content src="pref02.html#pref02lev1sec1"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch01" playOrder="8">
+<navLabel>
+<text>1. The Basics</text>
+</navLabel>
+<content src="ch01.html"/>
+<navPoint id="ch01lev1sec1" playOrder="9">
+<navLabel>
+<text>1.1. Introduction</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec1"/>
+</navPoint>
+<navPoint id="ch01lev1sec2" playOrder="10">
+<navLabel>
+<text>1.2. Programs</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec2"/>
+</navPoint>
+<navPoint id="ch01lev1sec3" playOrder="11">
+<navLabel>
+<text>1.3. Hello, World!</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec3"/>
+</navPoint>
+<navPoint id="ch01lev1sec4" playOrder="12">
+<navLabel>
+<text>1.4. Functions</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec4"/>
+</navPoint>
+<navPoint id="ch01lev1sec5" playOrder="13">
+<navLabel>
+<text>1.5. Types, Variables, and Arithmetic</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec5"/>
+</navPoint>
+<navPoint id="ch01lev1sec6" playOrder="14">
+<navLabel>
+<text>1.6. Scope and Lifetime</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec6"/>
+</navPoint>
+<navPoint id="ch01lev1sec7" playOrder="15">
+<navLabel>
+<text>1.7. Constants</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec7"/>
+</navPoint>
+<navPoint id="ch01lev1sec8" playOrder="16">
+<navLabel>
+<text>1.8. Pointers, Arrays, and References</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec8"/>
+</navPoint>
+<navPoint id="ch01lev1sec9" playOrder="17">
+<navLabel>
+<text>1.9. Tests</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec9"/>
+</navPoint>
+<navPoint id="ch01lev1sec10" playOrder="18">
+<navLabel>
+<text>1.10. Advice</text>
+</navLabel>
+<content src="ch01.html#ch01lev1sec10"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch02" playOrder="19">
+<navLabel>
+<text>2. User-Defined Types</text>
+</navLabel>
+<content src="ch02.html"/>
+<navPoint id="ch02lev1sec1" playOrder="20">
+<navLabel>
+<text>2.1. Introduction</text>
+</navLabel>
+<content src="ch02.html#ch02lev1sec1"/>
+</navPoint>
+<navPoint id="ch02lev1sec2" playOrder="21">
+<navLabel>
+<text>2.2. Structures</text>
+</navLabel>
+<content src="ch02.html#ch02lev1sec2"/>
+</navPoint>
+<navPoint id="ch02lev1sec3" playOrder="22">
+<navLabel>
+<text>2.3. Classes</text>
+</navLabel>
+<content src="ch02.html#ch02lev1sec3"/>
+</navPoint>
+<navPoint id="ch02lev1sec4" playOrder="23">
+<navLabel>
+<text>2.4. Unions</text>
+</navLabel>
+<content src="ch02.html#ch02lev1sec4"/>
+</navPoint>
+<navPoint id="ch02lev1sec5" playOrder="24">
+<navLabel>
+<text>2.5. Enumerations</text>
+</navLabel>
+<content src="ch02.html#ch02lev1sec5"/>
+</navPoint>
+<navPoint id="ch02lev1sec6" playOrder="25">
+<navLabel>
+<text>2.6. Advice</text>
+</navLabel>
+<content src="ch02.html#ch02lev1sec6"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch03" playOrder="26">
+<navLabel>
+<text>3. Modularity</text>
+</navLabel>
+<content src="ch03.html"/>
+<navPoint id="ch03lev1sec1" playOrder="27">
+<navLabel>
+<text>3.1. Introduction</text>
+</navLabel>
+<content src="ch03.html#ch03lev1sec1"/>
+</navPoint>
+<navPoint id="ch03lev1sec2" playOrder="28">
+<navLabel>
+<text>3.2. Separate Compilation</text>
+</navLabel>
+<content src="ch03.html#ch03lev1sec2"/>
+</navPoint>
+<navPoint id="ch03lev1sec3" playOrder="29">
+<navLabel>
+<text>3.3. Namespaces</text>
+</navLabel>
+<content src="ch03.html#ch03lev1sec3"/>
+</navPoint>
+<navPoint id="ch03lev1sec4" playOrder="30">
+<navLabel>
+<text>3.4. Error Handling</text>
+</navLabel>
+<content src="ch03.html#ch03lev1sec4"/>
+</navPoint>
+<navPoint id="ch03lev1sec5" playOrder="31">
+<navLabel>
+<text>3.5. Advice</text>
+</navLabel>
+<content src="ch03.html#ch03lev1sec5"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch04" playOrder="32">
+<navLabel>
+<text>4. Classes</text>
+</navLabel>
+<content src="ch04.html"/>
+<navPoint id="ch04lev1sec1" playOrder="33">
+<navLabel>
+<text>4.1. Introduction</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec1"/>
+</navPoint>
+<navPoint id="ch04lev1sec2" playOrder="34">
+<navLabel>
+<text>4.2. Concrete Types</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec2"/>
+</navPoint>
+<navPoint id="ch04lev1sec3" playOrder="35">
+<navLabel>
+<text>4.3. Abstract Types</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec3"/>
+</navPoint>
+<navPoint id="ch04lev1sec4" playOrder="36">
+<navLabel>
+<text>4.4. Virtual Functions</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec4"/>
+</navPoint>
+<navPoint id="ch04lev1sec5" playOrder="37">
+<navLabel>
+<text>4.5. Class Hierarchies</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec5"/>
+</navPoint>
+<navPoint id="ch04lev1sec6" playOrder="38">
+<navLabel>
+<text>4.6. Copy and Move</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec6"/>
+</navPoint>
+<navPoint id="ch04lev1sec7" playOrder="39">
+<navLabel>
+<text>4.7. Advice</text>
+</navLabel>
+<content src="ch04.html#ch04lev1sec7"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch05" playOrder="40">
+<navLabel>
+<text>5. Templates</text>
+</navLabel>
+<content src="ch05.html"/>
+<navPoint id="ch05lev1sec1" playOrder="41">
+<navLabel>
+<text>5.1. Introduction</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec1"/>
+</navPoint>
+<navPoint id="ch05lev1sec2" playOrder="42">
+<navLabel>
+<text>5.2. Parameterized Types</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec2"/>
+</navPoint>
+<navPoint id="ch05lev1sec3" playOrder="43">
+<navLabel>
+<text>5.3. Function Templates</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec3"/>
+</navPoint>
+<navPoint id="ch05lev1sec4" playOrder="44">
+<navLabel>
+<text>5.4. Concepts and Generic Programming</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec4"/>
+</navPoint>
+<navPoint id="ch05lev1sec5" playOrder="45">
+<navLabel>
+<text>5.5. Function Objects</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec5"/>
+</navPoint>
+<navPoint id="ch05lev1sec6" playOrder="46">
+<navLabel>
+<text>5.6. Variadic Templates</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec6"/>
+</navPoint>
+<navPoint id="ch05lev1sec7" playOrder="47">
+<navLabel>
+<text>5.7. Aliases</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec7"/>
+</navPoint>
+<navPoint id="ch05lev1sec8" playOrder="48">
+<navLabel>
+<text>5.8. Template Compilation Model</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec8"/>
+</navPoint>
+<navPoint id="ch05lev1sec9" playOrder="49">
+<navLabel>
+<text>5.9. Advice</text>
+</navLabel>
+<content src="ch05.html#ch05lev1sec9"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch06" playOrder="50">
+<navLabel>
+<text>6. Library Overview</text>
+</navLabel>
+<content src="ch06.html"/>
+<navPoint id="ch06lev1sec1" playOrder="51">
+<navLabel>
+<text>6.1. Introduction</text>
+</navLabel>
+<content src="ch06.html#ch06lev1sec1"/>
+</navPoint>
+<navPoint id="ch06lev1sec2" playOrder="52">
+<navLabel>
+<text>6.2. Standard-Library Components</text>
+</navLabel>
+<content src="ch06.html#ch06lev1sec2"/>
+</navPoint>
+<navPoint id="ch06lev1sec3" playOrder="53">
+<navLabel>
+<text>6.3. Standard-Library Headers and Namespace</text>
+</navLabel>
+<content src="ch06.html#ch06lev1sec3"/>
+</navPoint>
+<navPoint id="ch06lev1sec4" playOrder="54">
+<navLabel>
+<text>6.4. Advice</text>
+</navLabel>
+<content src="ch06.html#ch06lev1sec4"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch07" playOrder="55">
+<navLabel>
+<text>7. Strings and Regular Expressions</text>
+</navLabel>
+<content src="ch07.html"/>
+<navPoint id="ch07lev1sec1" playOrder="56">
+<navLabel>
+<text>7.1. Introduction</text>
+</navLabel>
+<content src="ch07.html#ch07lev1sec1"/>
+</navPoint>
+<navPoint id="ch07lev1sec2" playOrder="57">
+<navLabel>
+<text>7.2. Strings</text>
+</navLabel>
+<content src="ch07.html#ch07lev1sec2"/>
+</navPoint>
+<navPoint id="ch07lev1sec3" playOrder="58">
+<navLabel>
+<text>7.3. Regular Expressions</text>
+</navLabel>
+<content src="ch07.html#ch07lev1sec3"/>
+</navPoint>
+<navPoint id="ch07lev1sec4" playOrder="59">
+<navLabel>
+<text>7.4. Advice</text>
+</navLabel>
+<content src="ch07.html#ch07lev1sec4"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch08" playOrder="60">
+<navLabel>
+<text>8. I/O Streams</text>
+</navLabel>
+<content src="ch08.html"/>
+<navPoint id="ch08lev1sec1" playOrder="61">
+<navLabel>
+<text>8.1. Introduction</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec1"/>
+</navPoint>
+<navPoint id="ch08lev1sec2" playOrder="62">
+<navLabel>
+<text>8.2. Output</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec2"/>
+</navPoint>
+<navPoint id="ch08lev1sec3" playOrder="63">
+<navLabel>
+<text>8.3. Input</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec3"/>
+</navPoint>
+<navPoint id="ch08lev1sec4" playOrder="64">
+<navLabel>
+<text>8.4. I/O State</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec4"/>
+</navPoint>
+<navPoint id="ch08lev1sec5" playOrder="65">
+<navLabel>
+<text>8.5. I/O of User-Defined Types</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec5"/>
+</navPoint>
+<navPoint id="ch08lev1sec6" playOrder="66">
+<navLabel>
+<text>8.6. Formatting</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec6"/>
+</navPoint>
+<navPoint id="ch08lev1sec7" playOrder="67">
+<navLabel>
+<text>8.7. File Streams</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec7"/>
+</navPoint>
+<navPoint id="ch08lev1sec8" playOrder="68">
+<navLabel>
+<text>8.8. String Streams</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec8"/>
+</navPoint>
+<navPoint id="ch08lev1sec9" playOrder="69">
+<navLabel>
+<text>8.9. Advice</text>
+</navLabel>
+<content src="ch08.html#ch08lev1sec9"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch09" playOrder="70">
+<navLabel>
+<text>9. Containers</text>
+</navLabel>
+<content src="ch09.html"/>
+<navPoint id="ch09lev1sec1" playOrder="71">
+<navLabel>
+<text>9.1. Introduction</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec1"/>
+</navPoint>
+<navPoint id="ch09lev1sec2" playOrder="72">
+<navLabel>
+<text>9.2. vector</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec2"/>
+</navPoint>
+<navPoint id="ch09lev1sec3" playOrder="73">
+<navLabel>
+<text>9.3. list</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec3"/>
+</navPoint>
+<navPoint id="ch09lev1sec4" playOrder="74">
+<navLabel>
+<text>9.4. map</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec4"/>
+</navPoint>
+<navPoint id="ch09lev1sec5" playOrder="75">
+<navLabel>
+<text>9.5. unordered_map</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec5"/>
+</navPoint>
+<navPoint id="ch09lev1sec6" playOrder="76">
+<navLabel>
+<text>9.6. Container Overview</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec6"/>
+</navPoint>
+<navPoint id="ch09lev1sec7" playOrder="77">
+<navLabel>
+<text>9.7. Advice</text>
+</navLabel>
+<content src="ch09.html#ch09lev1sec7"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch10" playOrder="78">
+<navLabel>
+<text>10. Algorithms</text>
+</navLabel>
+<content src="ch10.html"/>
+<navPoint id="ch10lev1sec1" playOrder="79">
+<navLabel>
+<text>10.1. Introduction</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec1"/>
+</navPoint>
+<navPoint id="ch10lev1sec2" playOrder="80">
+<navLabel>
+<text>10.2. Use of Iterators</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec2"/>
+</navPoint>
+<navPoint id="ch10lev1sec3" playOrder="81">
+<navLabel>
+<text>10.3. Iterator Types</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec3"/>
+</navPoint>
+<navPoint id="ch10lev1sec4" playOrder="82">
+<navLabel>
+<text>10.4. Stream Iterators</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec4"/>
+</navPoint>
+<navPoint id="ch10lev1sec5" playOrder="83">
+<navLabel>
+<text>10.5. Predicates</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec5"/>
+</navPoint>
+<navPoint id="ch10lev1sec6" playOrder="84">
+<navLabel>
+<text>10.6. Algorithm Overview</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec6"/>
+</navPoint>
+<navPoint id="ch10lev1sec7" playOrder="85">
+<navLabel>
+<text>10.7. Container Algorithms</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec7"/>
+</navPoint>
+<navPoint id="ch10lev1sec8" playOrder="86">
+<navLabel>
+<text>10.8. Advice</text>
+</navLabel>
+<content src="ch10.html#ch10lev1sec8"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch11" playOrder="87">
+<navLabel>
+<text>11. Utilities</text>
+</navLabel>
+<content src="ch11.html"/>
+<navPoint id="ch11lev1sec1" playOrder="88">
+<navLabel>
+<text>11.1. Introduction</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec1"/>
+</navPoint>
+<navPoint id="ch11lev1sec2" playOrder="89">
+<navLabel>
+<text>11.2. Resource Management</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec2"/>
+</navPoint>
+<navPoint id="ch11lev1sec3" playOrder="90">
+<navLabel>
+<text>11.3. Specialized Containers</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec3"/>
+</navPoint>
+<navPoint id="ch11lev1sec4" playOrder="91">
+<navLabel>
+<text>11.4. Time</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec4"/>
+</navPoint>
+<navPoint id="ch11lev1sec5" playOrder="92">
+<navLabel>
+<text>11.5. Function Adaptors</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec5"/>
+</navPoint>
+<navPoint id="ch11lev1sec6" playOrder="93">
+<navLabel>
+<text>11.6. Type Functions</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec6"/>
+</navPoint>
+<navPoint id="ch11lev1sec7" playOrder="94">
+<navLabel>
+<text>11.7. Advice</text>
+</navLabel>
+<content src="ch11.html#ch11lev1sec7"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch12" playOrder="95">
+<navLabel>
+<text>12. Numerics</text>
+</navLabel>
+<content src="ch12.html"/>
+<navPoint id="ch12lev1sec1" playOrder="96">
+<navLabel>
+<text>12.1. Introduction</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec1"/>
+</navPoint>
+<navPoint id="ch12lev1sec2" playOrder="97">
+<navLabel>
+<text>12.2. Mathematical Functions</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec2"/>
+</navPoint>
+<navPoint id="ch12lev1sec3" playOrder="98">
+<navLabel>
+<text>12.3. Numerical Algorithms</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec3"/>
+</navPoint>
+<navPoint id="ch12lev1sec4" playOrder="99">
+<navLabel>
+<text>12.4. Complex Numbers</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec4"/>
+</navPoint>
+<navPoint id="ch12lev1sec5" playOrder="100">
+<navLabel>
+<text>12.5. Random Numbers</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec5"/>
+</navPoint>
+<navPoint id="ch12lev1sec6" playOrder="101">
+<navLabel>
+<text>12.6. Vector Arithmetic</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec6"/>
+</navPoint>
+<navPoint id="ch12lev1sec7" playOrder="102">
+<navLabel>
+<text>12.7. Numeric Limits</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec7"/>
+</navPoint>
+<navPoint id="ch12lev1sec8" playOrder="103">
+<navLabel>
+<text>12.8. Advice</text>
+</navLabel>
+<content src="ch12.html#ch12lev1sec8"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch13" playOrder="104">
+<navLabel>
+<text>13. Concurrency</text>
+</navLabel>
+<content src="ch13.html"/>
+<navPoint id="ch13lev1sec1" playOrder="105">
+<navLabel>
+<text>13.1. Introduction</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec1"/>
+</navPoint>
+<navPoint id="ch13lev1sec2" playOrder="106">
+<navLabel>
+<text>13.2. Tasks and threads</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec2"/>
+</navPoint>
+<navPoint id="ch13lev1sec3" playOrder="107">
+<navLabel>
+<text>13.3. Passing Arguments</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec3"/>
+</navPoint>
+<navPoint id="ch13lev1sec4" playOrder="108">
+<navLabel>
+<text>13.4. Returning Results</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec4"/>
+</navPoint>
+<navPoint id="ch13lev1sec5" playOrder="109">
+<navLabel>
+<text>13.5. Sharing Data</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec5"/>
+</navPoint>
+<navPoint id="ch13lev1sec6" playOrder="110">
+<navLabel>
+<text>13.6. Waiting for Events</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec6"/>
+</navPoint>
+<navPoint id="ch13lev1sec7" playOrder="111">
+<navLabel>
+<text>13.7. Communicating Tasks</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec7"/>
+</navPoint>
+<navPoint id="ch13lev1sec8" playOrder="112">
+<navLabel>
+<text>13.8. Advice</text>
+</navLabel>
+<content src="ch13.html#ch13lev1sec8"/>
+</navPoint>
+</navPoint>
+<navPoint id="ch14" playOrder="113">
+<navLabel>
+<text>14. History and Compatibility</text>
+</navLabel>
+<content src="ch14.html"/>
+<navPoint id="ch14lev1sec1" playOrder="114">
+<navLabel>
+<text>14.1. History</text>
+</navLabel>
+<content src="ch14.html#ch14lev1sec1"/>
+</navPoint>
+<navPoint id="ch14lev1sec2" playOrder="115">
+<navLabel>
+<text>14.2. C++11 Extensions</text>
+</navLabel>
+<content src="ch14.html#ch14lev1sec2"/>
+</navPoint>
+<navPoint id="ch14lev1sec3" playOrder="116">
+<navLabel>
+<text>14.3. C/C++ Compatibility</text>
+</navLabel>
+<content src="ch14.html#ch14lev1sec3"/>
+</navPoint>
+<navPoint id="ch14lev1sec4" playOrder="117">
+<navLabel>
+<text>14.4. Bibliography</text>
+</navLabel>
+<content src="ch14.html#ch14lev1sec4"/>
+</navPoint>
+<navPoint id="ch14lev1sec5" playOrder="118">
+<navLabel>
+<text>14.5. Advice</text>
+</navLabel>
+<content src="ch14.html#ch14lev1sec5"/>
+</navPoint>
+</navPoint>
+<navPoint id="index" playOrder="119">
+<navLabel>
+<text>Index</text>
+</navLabel>
+<content src="index.html"/>
+</navPoint>
+</navMap>
+</ncx>

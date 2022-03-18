@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">10.4 UINavigationBar</h2>
+
+  <p class="calibre1">　　Homepwner的UINavigationBar对象目前没有显示任何内容。下面先让UINavigationBar对象针对栈顶的UIViewController对象显示一个具有描述性的标题。</p>
+
+  <p class="calibre1">　　UIViewController对象有一个名为navigationItem的属性，类型为UINavigationItem。和UINavigationBar不同，UINavigationItem不是UIView的子类，不能在屏幕上显示。UINavigationItem对象的作用是为UINavigationBar对象提供绘图所需的内容。当某个UIViewController对象成为UINavigationController的栈顶对象时，UINavigationBar对象就会访问该UIViewController对象的navigationItem，获取和界面显示有关的内容，如图10-14所示。</p>
+
+  <p class="calibre7"><img alt="tu10-14" src="../Images/image00511.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-14 UINavigationItem</p>
+
+  <p class="calibre1">　　UINavigationItem对象默认是“空”的。要让UINavigationBar对象能够显示最基本的信息，可以为UINavigationItem对象设置一个简单的标题（title属性）。当应用将某个UIViewController对象移至UINavigationController对象的栈顶时，UINavigationBar对象就会访问UIViewController对象的navigationItem属性，查看相应的title属性是否指向有效的NSString对象。如果是，就会在UINavigationBar对象的正中显示该字符串（见图10-15）。</p>
+
+  <p class="calibre7"><img alt="tu10-15" src="../Images/image00512.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-15 带标题的UINavigationItem对象</p>
+
+  <p class="calibre1">　　修改BNRItemsViewController.m中的init方法，将navigationItem的title属性设置为字符串Homepwner，代码如下：</p>
+
+  <p class="calibre1">　　- （instancetype）init</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super initWithStyle:UITableViewStylePlain];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1"><span class="calibre10">　　UINavigationItem *navItem = self.navigationItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　navItem.title = @“Homepwner”;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。UINavigationBar对象会显示标题Homepwner。添加一个新的表格行并选中，UINavigationBar对象的标题会消失，所以下面要为BNRDetailViewController对象也设置一个“导航栏标题”，使用的字符串是选中的BNRItem对象的name属性。和BNRItemsViewController不同的是，不能在BNRDetailViewController的init方法中设置标题，因为这时的item属性还没有赋值，是nil。</p>
+
+  <p class="calibre1">　　正确的做法是在设置BNRDetailViewController对象的item属性时，设置相应的导航栏标题。在BNRDetailViewController.m中实现setItem:，替换掉编译器为item属性合成的存方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）setItem:（BNRItem *）item</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_item = item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.navigationItem.title = _item.itemName;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用，添加一个新的表格行并选中。UINavigationBar对象会显示选中的BNRItem对象的name属性。</p>
+
+  <p class="calibre1">　　UINavigationItem对象除了可以设置标题字符串（title属性）外，还可以设置若干其他的界面属性，如图10-16所示。这些可以自定义的属性包括：leftBarButtonItem、rightBarButtonItem和titleView。其中leftBarButtonItem和rightBarButtonItem都是指向UIBarButtonItem对象的指针，该对象包含显示某种特殊按钮所需的信息，这种按钮只能在UINavigationBar对象或UIToolbar对象中使用。</p>
+
+  <p class="calibre7"><img alt="tu10-16" src="../Images/image00513.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-16 设置了各种界面属性的UINavigationItem对象</p>
+
+  <p class="calibre1">　　类似于UINavigationItem，UIBarButtonItem也不是UIView的子类。UINavigationItem对象封装了一些设置信息，以便UINavigationBar在运行时可以正确显示该对象。同样，UIBarButtonItem对象封装了关于如何在UINavigationBar显示单个按钮的信息，UINavigationBar对象会根据UIBarButtonItem对象中的信息显示相应的按钮。（UIToolbar与UINavigationBar一样，也是通过UIBarButtonItem对象来显示按钮的。）</p>
+
+  <p class="calibre1">　　除了leftBarButtonItem和rightBarButtonItem，UIBarButtonItem对象的第三个界面属性是titleView。UINavigationBar对象包含两种标题显示模式。第一种模式是前面介绍过的：显示一个简单的字符串。第二种模式是在UINavigationBar对象正中显示一个视图。两种模式不能共存。如果需要在UINavigationBar对象正中显示复杂的界面，就可以先创建拥有自定义视图（例如UIButton对象、UISlider对象、UIImageView对象甚至MKMapView对象）的视图控制器，然后为该对象的titleView赋值，并指向这个自定义视图。以图10-16中的UINavigationItem对象为例，该对象的titleView属性指向的就是一个自定义视图。通常情况下，使用第一种模式就可以了，本章使用的也是这种模式。</p>
+
+  <p class="calibre1">　　下面要让UINavigationBar对象显示一个按钮：当BNRItemsViewController对象位于栈顶时，在UINavigationBar对象的右端显示一个按钮。当用户点击这个按钮时，为UITableView对象添加一个新的表格行。</p>
+
+  <p class="calibre1">　　为了能在用户点击UINavigationBar对象中的按钮时触发指定的方法，必须为相应的UIBarButtonItem对象设置目标-动作对，其工作机制类似UIControl的目标-动作对。通过某个UIBarButtonItem对象的初始化方法和相应的存方法，都可以为该对象设置目标-动作对。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m的init方法中，创建UIBarButtonItem对象并设置目标对象和动作方法，代码如下：</p>
+
+  <p class="calibre1">　　- （instancetype）init</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super initWithStyle:UITableViewStylePlain];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　UINavigationItem *navItem = self.navigationItem;</p>
+
+  <p class="calibre1">　　navItem.title = @“Homepwner”;</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建新的UIBarButtonItem对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将其目标对象设置为当前对象，将其动作方法设置为addNewItem:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIBarButtonItem *bbi = [[UIBarButtonItem alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　initWithBarButtonSystemItem:UIBarButtonSystemItemAdd</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　target:self</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　action:@selector（addNewItem:）];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 为UINavigationItem对象的rightBarButtonItem属性赋值，</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 指向新创建的UIBarButtonItem对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　navItem.rightBarButtonItem = bbi;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　设置动作方法时，需要传入的参数类型是SEL。前文已经介绍过，SEL是指向选择器的指针，而选择器代表方法的整个方法名（包括所有的冒号）。@selector（）不关心方法的返回类型、参数类型及参数名。</p>
+
+  <p class="calibre1">　　构建并运行应用。点击+按钮，UITableView对象会添加一个新的表格行（除了本节使用的initWithBarButtonSystemItem:target:action:，UIBarButtonItem还有多个其他初始化方法。详细内容请读者自行查阅文档）。</p>
+
+  <p class="calibre1">　　下面再为UINavigationBar对象添加一个按钮，用于替换掉表头视图中的Edit按钮。编辑BNRItemsViewController.m中的init方法，代码如下：</p>
+
+  <p class="calibre1">　　- （instancetype）init</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super initWithStyle:UITableViewStylePlain];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　UINavigationItem *navItem = self.navigationItem;</p>
+
+  <p class="calibre1">　　navItem.title = @“Homepwner”;</p>
+
+  <p class="calibre1">　　// 创建新的UIBarButtonItem对象</p>
+
+  <p class="calibre1">　　// 将其目标对象设置为当前对象，将其动作方法设置为addNewItem:</p>
+
+  <p class="calibre1">　　UIBarButtonItem *bbi = [[UIBarButtonItem alloc]</p>
+
+  <p class="calibre1">　　initWithBarButtonSystemItem:UIBarButtonSystemItemAdd</p>
+
+  <p class="calibre1">　　target:self</p>
+
+  <p class="calibre1">　　action:@selector（addNewItem:）];</p>
+
+  <p class="calibre1">　　// 为UINavigationItem对象的rightBarButtonItem属性赋值，</p>
+
+  <p class="calibre1">　　// 指向新创建的UIBarButtonItem对象</p>
+
+  <p class="calibre1">　　navItem.rightBarButtonItem = bbi;</p>
+
+  <p class="calibre1"><span class="calibre10">　　navItem.leftBarButtonItem = self.editButtonItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　只需编写一行代码，向BNRItemsViewController对象发送editButtonItem消息，就能得到可以加入UINavigationBar对象的Edit（编辑）按钮。构建并运行应用，点击“编辑”按钮，UITableView对象会进入编辑模式。UIViewController对象有一个名为editButtonItem的属性，当该对象收到editButtonItem消息后，如果editButtonItem属性的值是nil，就会创建一个标题为“编辑”的UIBarButtonItem对象。此外，editButtonItem方法所返回的UIBarButtonItem对象默认已经设置好了目标-动作对。当用户点击对应的按钮时，包含该对象的UIViewController对象就会收到 setEditing:animated:消息。</p>
+
+  <p class="calibre1">　　为Homepwner的UINavigationBar对象添加“＋”按钮和“编辑”按钮后，可以删除之前加入的那些和表头视图有关的代码。删除BNRItemsViewController.m中的以下代码：</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">- （UIView *）headerView</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">{</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">if （！_headerView）{</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[[NSBundle mainBundle] loadNibNamed:@“HeaderView”</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">owner:self options:nil];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">}</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">return _headerView;</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">}</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">- （IBAction）toggleEditingMode:（id）sender</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">{</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">if （self.isEditing） {</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[sender setTitle:@“Edit” forState:UIControlStateNormal];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[self setEditing:NO animated:YES];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">} else {</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[sender setTitle:@“Done” forState:UIControlStateNormal];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[self setEditing:YES animated:YES];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">}</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">}</span></del></p>
+
+  <p class="calibre1">　　最后请读者删除不再需要使用的headerView属性和HeaderView.xib文件。</p>
+
+  <p class="calibre1">　　构建并运行应用。Homepwner不会再显示表头视图，取而代之的是带两个按钮的UINavigationBar对象（见图10-17）。</p>
+
+  <p class="calibre7"><img alt="tu10-17" src="../Images/image00514.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图10-17 使用UINavigationBar的Homepwner</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

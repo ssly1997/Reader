@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">14.2 Instruments</h2>
+
+  <p class="calibre1">　　从仪表和占用量报告中可以简要分析出应用的性能，但是，如果应用的CPU和内存占用量过高，需要从代码中查找性能问题，则可以使用Instruments，它提供了比仪表和占用量报告更详细的数据分析。</p>
+
+  <p class="calibre1">　　Instruments是一种与Xcode紧密集成的调试工具，可以实时监控并统计应用运行时的各项数据，生成详细的分析报告。它由若干组件组成，这些组件检查的事项包括：应用创建了哪些对象、每一个方法和函数的CPU占用量、文件I/O和网络I/O等。通过使用这些不同的组件，可以找出程序中的性能瓶颈，发现代码中的问题。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">Allocations组件</h3>
+
+  <p class="calibre1">　　Allocations组件可以列出应用创建过的全部对象，以及这些对象所占用的内存大小。</p>
+
+  <p class="calibre1">　　当监视某个应用时，Allocations组件会对这个应用进行性能分析（profiling）。虽然可以在模拟器上对某个应用进行性能分析，但是在真实的设备上进行可以得到更精确的数据。</p>
+
+  <p class="calibre1">　　要对当前打开的项目执行性能分析，可以按住位于工作空间左上角的Run按钮不放，然后在新出现的弹出窗口中选择Profile（见图14-4）。</p>
+
+  <p class="calibre7"><img alt="tu14-4" src="../Images/image00544.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-4 执行性能分析</p>
+
+  <p class="calibre1">　　Xcode会启动Instruments。Instruments会显示一个下拉窗口并列出所有可用的组件（图中只显示了8个组件，读者向下滚动可以看见其余组件）。选择Allocations并单击Profile按钮（见图14-5）。</p>
+
+  <p class="calibre7"><img alt="tu14-5" src="../Images/image00545.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-5 选择组件</p>
+
+  <p class="calibre1">　　单击Profile按钮后，Instruments会启动TouchTracker并打开Instruments的主窗口（见图14-6）。当读者第一次看到Instruments的主窗口界面时，可能会感觉比较复杂。但是和Xcode的工作空间一样，多使用几次便可熟悉。首先，打开主窗口的全部区域，确保可以看到所有的信息：找到位于窗口顶部的View控件，按下全部三个按钮，打开相应的三个主区域（见图14-6）。</p>
+
+  <p class="calibre7"><img alt="tu14-6" src="../Images/image00546.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-6 Allocations组件</p>
+
+  <p class="calibre1">　　Allocations组件会显示一张表格，列出应用执行过的所有内存分配。因为数据很多，所以要先过滤，只列出由我们自己编写的代码创建的对象。首先，在BNRDrawView对象上画若干根线条。然后，在窗口右上角的Category查询框中输入BNRLine。</p>
+
+  <p class="calibre1">　　Allocations组件会过滤Object Summary表格所显示的条目，只列出和BNRLine有关的内存分配，即已创建的BNRLine对象（见图14-7）。</p>
+
+  <p class="calibre7"><img alt="tu14-7" src="../Images/image00547.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-7 已创建的BNRLine对象</p>
+
+  <p class="calibre1">　　# Living列会显示某种对象的现存个数。Live Bytes列会显示这些现存对象占用了多少内存。# Overall列会显示应用运行至今共创建了多少个某种类型的对象（其中包括已经释放的）。</p>
+
+  <p class="calibre1">　　根据Allocations组件列出的表格可知，现存的BNRLine对象个数和总共创建的BNRLine对象个数暂时是相同的。连按屏幕，清除所有的线条。这时Allocations组件的表格不会再显示任何BNRLine对象。这是因为Allocations组件默认只会显示现存的对象。如果要显示所有创建过的对象，则可以找到位于左侧面板的Allocation Lifespan区域，然后勾选All Objects Created（见图14-8）。</p>
+
+  <p class="calibre7"><img alt="tu14-8" src="../Images/image00548.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-8 Allocations组件选项</p>
+
+  <p class="calibre1">　　在Allocations组件列出的表格中，选中某个BNRLine表格项。该组件会在该表格项的Category列中显示一个箭头按钮。单击这个按钮，该组件会显示该项内存分配的详细信息（见图14-9）。</p>
+
+  <p class="calibre7"><img alt="tu14-9" src="../Images/image00549.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-9 BNRLine对象内存分配一览</p>
+
+  <p class="calibre1">　　表格中的每一行都代表应用创建过的一个BNRLine对象。选中其中的某一行，Allocations组件会在Extended Detail区域（扩展详细区域）显示相应的栈跟踪（stack trace）信息。扩展详细区域位于Instruments窗口的右侧（见图14-10）。通过栈跟踪信息，可以知道当前选中的BNRLine对象是由哪一行代码创建的。栈跟踪信息中的灰色条目源自系统库的调用，黑色条目源自我们自己编写的代码。找到位置最靠近表格顶部的源自我们自己的代码（-[BNRDrawView touchesBegan:withEvent:]），然后双击相应的条目。</p>
+
+  <p class="calibre7"><img alt="tu14-10" src="../Images/image00550.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-10 栈跟踪信息</p>
+
+  <p class="calibre1">　　双击栈跟踪信息中的某项条目后，Allocations组件会显示相应的代码，并隐藏之前显示BNRLine对象的表格（见图14-11）。Allocations组件会在若干行代码的右侧显示一个百分比数字，这个数字代表某行代码所分配的内存大小占当前方法所分配的内存总量的比例。例如，图14-11中的0.2%代表新创建的BNRLine对象占整个touchesBegan:withEvent:所分配内存的比例。</p>
+
+  <p class="calibre7"><img alt="tu14-11" src="../Images/image00551.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-11 Instruments组件所显示的源代码</p>
+
+  <p class="calibre1">　　Allocations组件会在代码区域上方显示一个导航条，列出之前查看过的窗口记录（见图14-12）。单击代表某个窗口的按钮，Allocations组件会再次显示相应的窗口。</p>
+
+  <p class="calibre7"><img alt="tu14-12" src="../Images/image00552.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-12 位于代码区域上方的导航条</p>
+
+  <p class="calibre1">　　单击导航条中的BNRLine按钮，Allocations组件会重新显示过滤后的对象列表（只显示BNRLine对象）。单击表格中的某个BNRLine对象，然后单击该行的箭头按钮。Allocations组件会显示选中的BNRLine对象的“生存记录”，其中包括两个“事件”，即TouchTracker创建这个BNRLine对象的时刻及TouchTracker释放这个BNRLine对象的时刻。选中某个事件项，Allocations组件会在扩展详细区域显示相应的栈跟踪信息。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">Generation Analysis</h3>
+
+  <p class="calibre1">　　接下来介绍Allocations组件的Generation Analysis（阶段分析，也称为Heapshot Analysis）功能。首先清空查询框，不过滤任何结果。然后找到位于Instruments窗口左侧的Generation Analysis区域，单击Mark Generation（划分阶段），Instruments会在表格中显示Generation A（阶段A）；单击Generation A旁边的小三角按钮，Instrument会展开Generation A，列出该阶段发生的所有内存分配。再画若干线条，单击Mark Generation，Instruments会在表格中显示另一个阶段Generation B（阶段B）；单击Generation B边上的三角按钮（见图14-13）。</p>
+
+  <p class="calibre7"><img alt="tu14-13" src="../Images/image00553.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-13 Generation Analysis</p>
+
+  <p class="calibre1">　　Generation B会列出Generation A后发生的所有内存分配，其中包括刚创建的BNRLine对象，以及当时为了处理其他任务而创建的若干对象。Allocations组件没有限制可以添加的Generation数量。通过使用Generation，可以很方便地找出应用针对某个特定事件而创建的对象。在TouchTracker中连按屏幕，清除线条，Generation B中的相关对象应该会消失。</p>
+
+  <p class="calibre1">　　要让Instruments重新显示Object Summary表格，可以先找到表格上方的导航条，单击标题为Generations的按钮，然后在弹出菜单中选择Statistics。</p>
+
+  <p class="calibre1">　　Generation Analysis还可以用来跟踪内存占用趋势，查找内存泄漏问题。只要重复应用活动周期，并将每一个活动周期划分为一个阶段（Mark Generation），就可以监控应用中内存分配和回收的过程。例如，在TouchTracker中，首先用手指绘制几根线条，然后双击屏幕清除所有线条，这时点击Mark Generation按钮；继续绘制几根线条，双击清除，再次点击Mark Generation按钮……请读者重复以上操作并观察结果。</p>
+
+  <p class="calibre1">　　理想情况下，两个阶段之间所有分配的内存都应该被回收，因为第一阶段创建的对象在第二阶段开始时会被释放，但实际上两个阶段之间还存在系统框架创建的对象——读者只需要关注自己创建的对象。对于TouchTracker来说，如果两个阶段之间存在未被释放的BNRLine对象，说明代码中存在内存泄漏。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">Time Profiler组件</h3>
+
+  <p class="calibre1">　　Time Profiler组件提供了应用运行时的详细CPU占用量统计数据。为了介绍该组件，需要在BNRDrawView.m中的drawRect:末尾处加入以下代码，大幅提高CPU占用量：</p>
+
+  <p class="calibre1"><span class="calibre10">　　float f = 0.0;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　for （int i = 0; i &lt; 1000000; i++） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　f = f + sin（sin（sin（time（NULL） + i）））；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“f = %f”, f）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建应用并执行性能分析。当Instruments列出所有可选的组件时，选择Time Profiler（见图14-14）。等Instruments启动完TouchTracker并显示主窗口后，按下View控件中的全部按钮（按下后的按钮会显示为蓝色），打开所有的三个区域。</p>
+
+  <p class="calibre7"><img alt="tu14-14" src="../Images/image00554.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-14 Time Profiler组件</p>
+
+  <p class="calibre1">　　在TouchTracker中用手指在屏幕上滑动，这样BNRDrawView会不断收到touchesMoved: withEvent:消息并调用drawRect:重绘自己，导致无用的sin函数反复执行。</p>
+
+  <p class="calibre1">　　这时Time Profiler只显示了应用中各个线程的消耗时间，接下来需要具体了解各个方法和函数的执行时间。单击暂停按钮（位于Stop按钮左侧），然后在左侧面板中勾选标题为Invert Call Tree的选择框。现在查看表格中的内容，表格中的每一行都代表一个函数调用或方法调用。表格左列（Running Time）显示的是应用执行该函数所花费的时间（以毫秒为单位，还会显示占用全部运行时间的百分比，见图14-15）。通过这个表格，读者可以大致了解应用是如何分配执行时间的。</p>
+
+  <p class="calibre7"><img alt="tu14-15" src="../Images/image00555.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-15 Time Profiler组件显示的统计结果</p>
+
+  <p class="calibre1">　　要判断某个应用是否有效率问题，并没有一成不变的硬性规则，不能认为“如果应用在某个特定的函数上消耗了百分之X的CPU时间，就一定有问题”。正确的做法是从用户的角度进行测试，如果发现应用反应迟缓，就用Time Profiler来查找问题。以TouchTracker为例，为BNRDrawView加入无用的sin函数后，读者应该会在画线时察觉到反应迟缓的现象。</p>
+
+  <p class="calibre1">　　在TouchTracker中画线时，BNRDrawView对象会收到touchesMoved:withEvent:消息和drawRect:消息。通过Time Profiler组件，可以查看应用在这两个方法上花了多少时间，并能和其他的方法进行比较。如果应用在某个方法上花费了过多的时间，那么这个方法就可能有问题。</p>
+
+  <p class="calibre1">　　需要注意的是，有些任务本身就是很消耗时间的。以TouchTracker为例，用户每次移动手指就要刷新整个屏幕，这本身就是很消耗时间的操作。如果因此影响了用户体验，就应该想办法减少刷新屏幕的次数。例如，无论收到多少次触摸事件，都每隔1/10秒刷新一次屏幕。</p>
+
+  <p class="calibre1">　　Time Profiler组件会显示应用调用过的几乎所有的函数和方法。通过筛选显示结果，可以要求该组件只列出特定部分的代码。例如，mach_msg_trap（）函数有时会出现在表格的顶部。这是因为主线程会在等待输入时调用该函数。因为应用将大量的时间花在mach_msg_trap（）函数上是没有问题的，所以可以要求Time Profiler将这部分时间剔除出统计结果。</p>
+
+  <p class="calibre1">　　找到位于Instruments窗口右上角的查询框，输入mach_msg_trap（），然后选中表格中的mach_msg_trap（）条目。找到位于窗口左侧的Specific Data Mining区域，单击下方的Symbol按钮。该区域中的表格会显示mach_msg_trap（）函数，并在相应的表格项右侧显示一个标题为Charge的弹出按钮。单击Charge并将其改为Prune。清空搜索框中的文字，Time Profiler组件会更新表格并忽略mach_msg_trap（）所消耗的时间（见图14-16）。要将mach_msg_trap（）所消耗的时间加回总时间，可以选中Specific Data Mining表格中的mach_msg_trap（），然后单击Restore按钮。</p>
+
+  <p class="calibre7"><img alt="tu14-16" src="../Images/image00556.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-16 忽略mach_msg_trap所消耗的时间</p>
+
+  <p class="calibre1">　　除了忽略指定函数或方法所消耗的时间，还可以通过其他途径过滤Time Profiler组件的统计结果。这些途径包括：只显示Objective-C调用（showing only Objective-C calls）、隐藏系统库调用（hiding system libraries）和将调用时间计入调用方（charging calls to callers）。前两种途径很容易理解，下面详细介绍“将调用时间计入调用方”。选中统计结果中的mach_ absolute_time（）（或者其他以mach_absolute_time开头的方法），然后单击Symbol按钮。Time Profiler会将该函数移出统计结果，然后将其加入Specific Data Mining表格并设置为Charge（计算调用时间）状态，这意味着应用花在该函数上的时间都会被计入相应的调用方。</p>
+
+  <p class="calibre1">　　这时，Time Profiler会将统计结果中的mach_absolute_time（）替换成调用方gettimeofday（）。如果重复上述步骤，再计算（charge）gettimeofday（），则Time Profiler会将gettimeofday（）替换成调用方time（）。继续计算time（），Time Profiler会将time（）替换成调用方drawRect:。因为Time Profiler组件会将time（）、gettimeofday（）和mach_absolute_time（）的调用时间都计入drawRect:，所以drawRect:会出现在统计表格的顶部。</p>
+
+  <p class="calibre1">　　某些常规函数会占用大量的CPU时间。多数情况下，这些函数调用都是正常的，也是无法避免的。以objc_msgSend（）函数为例，它是Objective-C消息发送机制的主要派发函数。当某个应用在向对象发送大量消息时，objc_msgSend（）可能会出现在CPU统计列表的顶部，一般情况下这是正常的。但是，如果应用花在消息派发上的时间多于相应消息所触发的方法的实际工作时间，而且应用的性能不佳，就有问题。</p>
+
+  <p class="calibre1">　　举个实际的例子。如果将向量、点和矩形都封装成类，就需要为这些类实现方法，用来加上、减去和乘以其他同类对象。此外还要实现存取方法，用于获取和设置实例变量。当应用通过这些对象执行绘图任务时，即使是很简单的任务（例如创建两个向量并相加），也要向对象发送大量的消息。对这种情况，更好的解决方案是用C结构来描述这类数据类型，这样应用就可以直接存取内存（这也是为什么CGRect和CGPoint是C结构，而不是Objective-C类）。</p>
+
+  <p class="calibre1">　　最后，在drawRect:中删除之前添加的提高CPU占用量的代码。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">Leaks组件</h3>
+
+  <p class="calibre1">　　本节介绍Instruments的另一个很有用的组件：Leaks组件。虽然ARC降低了应用发生内存泄露的可能，但无法解决强引用循环问题。Leaks组件能帮助读者找出应用中的强引用循环问题。</p>
+
+  <p class="calibre1">　　首先，故意制造一处强引用循环，在BNRLine对象中添加一个属性，指向包含BNRLine对象的数组对象。在BNRLine.h中声明一个新属性，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） NSMutableArray *containingArray;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　更新BNRDrawView.m中的touchesEnded:withEvent:，为每个BNRLine对象设置containingArray：</p>
+
+  <p class="calibre1">　　- （void）touchesEnded:（NSSet *）touches withEvent:（UIEvent *）event</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// 从字典中删除UITouch对象</p>
+
+  <p class="calibre1">　　for （UITouch *t in touches） {</p>
+
+  <p class="calibre1">　　NSValue *key = [NSValue valueWithNonretainedObject:t];</p>
+
+  <p class="calibre1">　　BNRLine *line = self.linesInProgress[key];</p>
+
+  <p class="calibre1">　　[self.finishedLines addObject:line];</p>
+
+  <p class="calibre1">　　[self.linesInProgress removeObjectForKey:key];</p>
+
+  <p class="calibre1"><span class="calibre10">　　line.containingArray = self.finishedLines;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　// 重新绘制</p>
+
+  <p class="calibre1">　　[self setNeedsDisplay];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　最后更新BNRDrawView.m中的doubleTap:方法，注释掉清空self.finishedLines的那行代码，改为创建一个新的NSMutableArray对象。</p>
+
+  <p class="calibre1">　　- （void）doubleTap:（UIGestureRecognizer *）gr</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSLog（@“Recognized Double Tap”）；</p>
+
+  <p class="calibre1">　　[self.linesInProgress removeAllObjects];</p>
+
+  <p class="calibre1"><span class="calibre10">　　// [self.finishedLines removeAllObjects];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.finishedLines = [[NSMutableArray alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self setNeedsDisplay];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建应用并执行性能分析。当Instruments列出所有可选的组件时，选择Leaks。</p>
+
+  <p class="calibre1">　　先画出若干根线条，然后连按屏幕，清除所有的线条。选中位于窗口左侧上方的Leaks表格项，稍等几秒，Leaks组件就会在统计表格中显示三个表格项，分别代表一个NSMutableArray对象、若干BNRLine对象和一个大小为16个字节的内存块（Malloc 16 Bytes）。这些表格项代表的都是内存泄露。</p>
+
+  <p class="calibre1">　　找到表格上方的导航条，单击标题为Leaks的按钮，然后在弹出菜单中选择Cycles &amp; Roots（见图14-17）。这时Leaks组件会以图形的形式显示强引用循环：一个NSMutableArray对象（self.finishedLines）拥有其包含的每个BNRLine对象，每个BNRLine对象也都有一个指回该对象的引用。</p>
+
+  <p class="calibre7"><img alt="tu14-17" src="../Images/image00557.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-17 图形化的强引用循环对象图</p>
+
+  <p class="calibre1">　　要修正上述强引用循环问题，只需要将containingArray属性声明为弱引用，或者删除之前添加的代码，还原touchesEnded:withEvent:和doubleTap:。</p>
+
+  <p class="calibre1">　　通过上述介绍，读者应该对Instruments有一个大致的了解。熟能生巧，以后还要靠读者自己多使用、多尝试。假设读者打算在Instruments上花费大量的开发时间，请注意：如果应用没有性能问题，就不要太在意Instruments的输出结果。Instruments是诊断工具，是用来诊断现有问题的，而不是找出新的问题。先写出干净的能够工作的代码，当应用的性能不佳时，再通过Instruments查找并修正问题。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

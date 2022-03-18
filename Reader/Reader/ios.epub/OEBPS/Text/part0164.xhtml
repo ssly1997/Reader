@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">18.2 应用沙盒</h2>
+
+  <p class="calibre1">　　每个iOS应用都有自己专属的应用沙盒。应用沙盒就是文件系统中的目录，但是iOS系统会将每个应用的沙盒目录与文件系统的其他部分隔离（见图18-3）。应用必须“待”在自己的沙盒里，并只能访问自己的沙盒。</p>
+
+  <p class="calibre7"><img alt="tu18-3" src="../Images/image00603.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图18-3 应用沙盒</p>
+
+  <p class="calibre1">　　应用沙盒会包含以下多个目录：</p>
+
+  <p class="calibre7"><img alt="biao18" src="../Images/image00604.jpeg" class="calibre8"/></p>
+
+  <p class="calibre1">　　应用程序包 （application bundle）包含应用可执行文件和所有资源文件，例如NIB文件和图像文件。它是只读目录</p>
+
+  <p class="calibre1">　　Documents/存放应用运行时生成的并且需要保留的数据。iTunes或iCloud会在同步设备时备份该目录。当设备发生故障时，可以从iTunes或iCloud恢复该目录中的文件。例如，Homepwner应用可将用户所拥有的物品信息保存在Documents/中</p>
+
+  <p class="calibre1">　　Library/Caches/存放应用运行时生成的需要保留的数据。与Documents/目录不同的是，iTunes或iCloud不会在同步设备时备份该目录。不备份缓存数据的主要原因是相关数据的体积可能会很大，从而延长同步设备所需的时间。如果数据源是在别处（例如Web服务器），就可以将得到的数据保存在Library/Caches/目录。当用户需要恢复设备时，相关的应用只需要从数据源（例如Web服务器）再次获取数据即可</p>
+
+  <p class="calibre1">　　Library/Preferences/存放所有的偏好设置，iOS的设置（Settings）应用也会在该目录中查找应用的设置信息。使用NSUserDefaults类（第26章会介绍），可以通过Library/Preferences目录中的某个特定文件以键-值对的形式保存数据。iTunes或iCloud会在同步设备时备份该目录</p>
+
+  <p class="calibre1">　　tmp/存放应用运行时所需的临时数据。当某个应用没有运行时，iOS系统可能会清除该应用的tmp/目录下的文件，但是为了节约用户设备空间，不能依赖这种自动清除机制，而是当应用不再需要使用tmp/目录中的文件时，就及时手动删除这些文件。iTunes或iCloud不会在同步设备时备份tmp/目录。通过NSTemporaryDirectory函数可以得到应用沙盒中的tmp/目录的全路径</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">获取文件路径</h3>
+
+  <p class="calibre1">　　下面要为Homepwner增加保存和读取BNRItem对象的功能，具体要求是：将所有的BNRItem对象保存至Documents目录中的某个文件，并由BNRItemStore对象负责该文件的写入与读取。为此，BNRItemStore对象需要获取相应文件的全路径。</p>
+
+  <p class="calibre1">　　在BNRItemStore.m中编写一个新方法，实现上述功能：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （NSString *）itemArchivePath</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 注意第一个参数是NSDocumentDirectory而不是NSDocumentationDirectory</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *documentDirectories =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSSearchPathForDirectoriesInDomains（NSDocumentDirectory,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSUserDomainMask, YES）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 从documentDirectories数组获取第一个，也是唯一文档目录路径</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *documentDirectory = [documentDirectories firstObject];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [documentDirectory</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　stringByAppendingPathComponent:@“items.archive”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　通过C函数NSSearchPathForDirectoriesInDomains可以得到沙盒中的某种目录的全路径。该函数有三个实参，其中后两个实参需要传入固定的值（该函数源自Mac OS X，而在Mac OS X中，可以为后两个实参传入其他值）。第一个实参是NSSearchPathDirectory类型的常量，负责指定目录的类型。例如，传入NSCachesDirectory可以得到沙盒中的Caches目录的路径。</p>
+
+  <p class="calibre1">　　将某个NSSearchPathDirectory常量（例如NSDocumentDirectory）作为关键词查找文档，就能找到其他的常量。需要注意的是，这些常量不区分iOS或Mac OS X，其中的部分常量不能在iOS应用中使用。</p>
+
+  <p class="calibre1">　　NSSearchPathForDirectoriesInDomains函数的返回值是NSArray对象，包含的都是NSString对象。为什么该函数的返回值不是一个NSString对象？这是因为对Mac OS X，可能会有多个目录匹配某组指定的查询条件。但是在iOS上，一种目录类型只会有一个匹配的目录。所以上面这段代码会获取数组的第一个也是唯一的一个NSString对象，然后在该字符串的后面追加固化文件的文件名，并最终得到保存BNRItem对象的文件路径。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

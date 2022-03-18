@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h1 class="calibre3"><span class="calibre4">第16章 在代码中使用自动布局</span></h1>
+
+  <p class="calibre1">　　本章将介绍如何在代码中使用自动布局系统。第15章提到过，Apple建议开发者尽可能使用Interface Builder添加约束。但是，如果视图是在代码中创建的，就要通过代码添加约束。</p>
+
+  <p class="calibre1">　　下面就通过代码重新创建<span class="calibre10">UIImageView</span>对象，然后在<span class="calibre10">BNRDetailViewController</span>的<span class="calibre10">viewDidLoad</span>中为该对象添加约束。</p>
+
+  <p class="calibre1">　　本书第6章通过覆盖<span class="calibre10">loadView</span>方法，在代码中为<span class="calibre10">UIViewController</span>创建视图。通常，如果是创建整个视图层次结构及所有视图约束，就覆盖<span class="calibre10">loadView</span>方法；如果只是向通过NIB文件创建的视图层次结构中添加一个视图或约束，就覆盖<span class="calibre10">viewDidLoad</span>。</p>
+
+  <p class="calibre1">　　在BNRDetailViewController.m中覆盖<span class="calibre10">viewDidLoad</span>方法，创建一个<span class="calibre10">UIImageView</span>对象，并赋给imageView属性，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）viewDidLoad</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super viewDidLoad];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImageView *iv = [[UIImageView alloc] initWithImage:nil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 设置UIImageView对象的内容缩放模式</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　iv.contentMode = UIViewContentModeScaleAspectFit;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 告诉自动布局系统不要将自动缩放掩码转换为约束</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　iv.translatesAutoresizingMaskIntoConstraints = NO;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将UIImageView对象添加到view上</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.view addSubview:iv];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将UIImageView对象赋给imageView属性</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imageView = iv;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　设置translatesAutoresizingMaskIntoConstraints为NO的那行代码是为了解决约束与旧布局方式的冲突。在Apple引入自动布局系统之前，iOS一直根据自动缩放掩码（autoresizing masks）缩放视图，以适配不同大小的屏幕。</p>
+
+  <p class="calibre1">　　每一个视图对象都有自动缩放掩码，默认情况下，视图会将自动缩放掩码转换为对应的约束，这类约束经常会与手动添加的约束产生冲突。因此，必须手动禁用这类自动转换（本章最后一节会详细介绍自动布局系统与自动缩放掩码）。</p>
+
+  <p class="calibre1">　　下面请读者思考imageView的布局方式。首先，imageView的宽度应该与屏幕宽度相同；其次，该对象应该与位于其上方的dateLabel的距离保持标准间距8点；同样，该对象应该与位于其下方的toolbar的距离也保持8点。下面将以上布局方式翻译成约束：</p>
+
+  <p class="calibre1">　　•左边、右边与父视图的距离都是0点。</p>
+
+  <p class="calibre1">　　•顶边与dateLabel的距离是8点。</p>
+
+  <p class="calibre1">　　•底边与toolbar的距离是8点。</p>
+
+  <p class="calibre1">　　Apple建议使用一种特殊的语法在代码中创建约束，称为视觉化格式语言（visual format language，VFL）。下一节就会介绍如何使用视觉化格式语言为imageView添加约束。但是，并不是所有的约束都可以通过视觉化格式语言描述，添加这类约束需要通过另一种方式，本章最后会介绍这种方式。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">25.6 深入学习：不通过基础国际化对XIB文件实施本地化</h2>
+
+  <p class="calibre1">　　Xcode在具备基础国际化功能之前，无法对各个字符串实施本地化。为了避免为每一种语言创建独立的XIB文件，当时iOS开发者使用的是命令行工具ibtool，具体流程为：首先，通过ibtool，从原版语言的XIB文件中抽取字符串；然后，翻译这些字符串；最后，根据翻译后的字符串创建新的XIB文件。</p>
+
+  <p class="calibre1">　　下面介绍ibtool的具体用法。首先打开终端应用，然后将当前目录切换到en.lproj所在的目录。以作者的系统为例，相应的终端命令如下：</p>
+
+  <p class="calibre1">　　cd /Users/aaron/Homepwner/Homepwner/en.lproj</p>
+
+  <p class="calibre1">　　下面要用ibtool抽取BNRDetailViewController.xib文件中的字符串。在终端中输入以下指令（必须在同一行中输入，这里分行是为了方便排版）：</p>
+
+  <p class="calibre1">　　ibtool --export-strings-file ~/Desktop/BNRDetailViewController.strings</p>
+
+  <p class="calibre1">　　BNRDetailViewController.xib</p>
+
+  <p class="calibre1">　　执行完这条命令后，ibtool会在桌面上创建一个BNRDetailViewController.strings文件，其中包含BNRDetailViewController.xib文件中的所有字符串。打开西班牙语版的BNRDetailViewController.strings文件，该文件的内容与之前通过基础国际化创建的本地化字符串列表基本一致。根据之前介绍的步骤，将列表中的字符串翻译成西班牙语。</p>
+
+  <p class="calibre1">　　下面要用ibtool创建一个新的西班牙语版的XIB文件。该文件将以英文版的BNRDetailView- Controller.xib为模板，并将其中的字符串都替换为BNRDetailViewController.strings中的值。为此，需要得到（项目目录下的）“英文版的XIB文件的路径”和“西班牙语版的XIB文件的路径”。请读者在Finder中打开这两个目录。</p>
+
+  <p class="calibre1">　　在终端应用中输入以下命令，在末尾的单词write后输入一个空格（但是不要按回车）。</p>
+
+  <p class="calibre1">　　ibtool --import-strings-file ~/Desktop/BNRDetailViewController.strings</p>
+
+  <p class="calibre1">　　--write</p>
+
+  <p class="calibre1">　　先将es.lproj中的BNRDetailViewController.xib拖曳至终端窗口，再将en. lproj中的BNRDetailViewController.xib拖曳至终端窗口。这时的命令行示例如下：</p>
+
+  <p class="calibre1">　　ibtool --import-strings-file ~/Desktop/BNRDetailViewController.strings</p>
+
+  <p class="calibre1">　　--write</p>
+
+  <p class="calibre1">　　/iphone/Homepwner/Homepwner/es.lproj/BNRDetailViewController.xib</p>
+
+  <p class="calibre1">　　/iphone/Homepwner/Homepwner/en.lproj/BNRDetailViewController.xib</p>
+
+  <p class="calibre1">　　这条命令的作用是基于en.lproj中的BNRDetailViewController.xib，创建新的BNRDetailViewController.xib并存入es.lproj目录。然后用BNRDetailViewController. strings中的值替换新创建的BNRDetailViewController.xib中的字符串。</p>
+
+  <p class="calibre1">　　按下回车键（ibtool可能会向终端输出若干警告信息，可忽略）。</p>
+
+  <p class="calibre1">　　在项目导航面板中选中BNRDetailViewController.xib（Spanish），可以看到相应的字符串已经本地化了西班牙语，如图25-11所示。最后，根据之前介绍的步骤，修改三个UILabel对象的约束，调整界面布局。</p>
+
+  <p class="calibre7"><img alt="tu25-11" src="../Images/image00682.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-11 西班牙语版的BNRDetailViewController.xib</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

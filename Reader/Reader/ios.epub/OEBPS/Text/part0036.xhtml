@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">3.7 深入学习：Autorelease池与ARC历史</h2>
+
+  <p class="calibre1">　　在Objective-C支持ARC之前，只能用手动引用计数（manual reference counting）来管理内存。使用手动引用计数时，必须向某个对象发送特定的消息，才能改变该对象的拥有者个数。</p>
+
+  <p class="calibre1">　　[anObject release]; // anObject会失去一个拥有者</p>
+
+  <p class="calibre1">　　[anObject retain]; // anObject会得到一个拥有者</p>
+
+  <p class="calibre1">　　由此带来的问题：如果在修改某个指针变量的值，将其指向另一个对象前，忘记向该指针之前所指向的对象发送release消息，就一定会导致内存泄露。另一方面，向某个尚未收到retain消息的对象发送release消息，就会导致提前释放问题。使用手动引用计数管理内存时，程序员需要花费大量的时间来调试并修正这类问题。在大规模的项目中，因为手动引用计数而引发的问题会更复杂。</p>
+
+  <p class="calibre1">　　在只能使用手动引用计数的“黑暗时期”，Apple协助开发了一款名为Clang静态分析器（Clang static analyzer）的开源项目，并将其整合进了Xcode。简单地说，静态分析器可以分析代码并报告其能够发现的错误（第14章会对静态分析器做更多的介绍）。这些错误包括内存泄露和过早释放。有良好编程习惯的程序员会用静态分析器分析自己编写的代码，检查这类问题并做出相应的修正。</p>
+
+  <p class="calibre1">　　静态分析器的效果非常出色，以至于最后Apple考虑使用静态分析器来为代码自动插入所有的retain和release调用，并最终导致了ARC的诞生。ARC大大简化了内存管理工作。</p>
+
+  <p class="calibre1">　　使用手动引用计数管理内存时，还需要理解自动释放池（autorelease pool）。当对象收到autorelease消息时，某个自动释放池会成为该对象的临时拥有者。这样就可以解决这类问题：某个方法创建了一个新的对象，但是创建方又不需要成为该对象的拥有者。为了能返回新创建的对象，同时避免提前释放问题，就可以向新创建的对象发送autorelease消息。便捷方法借助自动释放池，将新创建的对象返回给调用方，又不产生内存管理问题。便捷方法的代码示例如下：</p>
+
+  <p class="calibre1">　　+ (BNRItem *)someItem</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　BNRItem *item = [[[BNRItem alloc] init] autorelease];</p>
+
+  <p class="calibre1">　　return item;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　程序必须向对象发送release消息，才能减少相应对象的所有方个数。因此，针对someItem返回的BNRItem对象，调用方必须清楚自己的所有权。但是这种所有权关系并不是一目了然的，代码如下：</p>
+
+  <p class="calibre1">　　BNRItem *item = [BNRItem someItem]; // item变量是否拥有someItem方法返回的对象？</p>
+
+  <p class="calibre1">　　NSString *string = [item itemName]; // string变量是否拥有itemName方法的返回对象？</p>
+
+  <p class="calibre1">　　因此，如果某个对象不是通过alloc方法或copy方法创建的，就很有可能在返回给调用方前收到过autorelease消息。调用方要根据具体的情况，保留该对象的所有权。否则，在自动释放池被销毁时，程序就会释放这个对象。</p>
+
+  <p class="calibre1">　　使用ARC管理内存时，编译器会自动处理上述任务（在某些情况下，还能优化代码，彻底去除这部分代码）。此外，@autoreleasepool指令后面跟一对花括号，可以创建一个自动释放池。在@autoreleasepool的花括号中，如果某个方法返回一个新创建的对象，而该方法的方法名不包含alloc和init，那么这个新创建的对象通常会被放入相应的自动释放池。在应用执行完某个@autoreleasepool中的程序段后，该自动释放池中的所有对象都会失去一个拥有者，代码如下：</p>
+
+  <p class="calibre1">　　@autoreleasepool {</p>
+
+  <p class="calibre1">　　// 从someItem方法得到一个BNRItem对象，该方法的方法名没有包含alloc或copy</p>
+
+  <p class="calibre1">　　BNRItem *item = [BNRItem someItem];</p>
+
+  <p class="calibre1">　　} // 自动释放池被销毁，item变量所指向的对象会被释放</p>
+
+  <p class="calibre1">　　ios应用会自动创建一个默认的自动释放池，所以读者无须关心这个问题，但是了解@autoreleasepool的作用有益无害。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

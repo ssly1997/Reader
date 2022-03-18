@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">19.7 深入练习：UICollectionView</h2>
+
+  <p class="calibre1">　　UICollectionView与UITableView非常相似：</p>
+
+  <p class="calibre1">　　•UICollectionView是UIScrollView的子类。</p>
+
+  <p class="calibre1">　　•与UITableViewCell类似，UICollectionView对象显示一组UICollection- ViewCell或其子类。</p>
+
+  <p class="calibre1">　　•UICollectionView具有数据源，负责提供UICollectionViewCell。</p>
+
+  <p class="calibre1">　　•UICollectionView具有委托，可以在委托方法中处理相关回调事件，例如选择了某一个UICollectionViewCell。</p>
+
+  <p class="calibre1">　　•UICollectionViewController与UITableViewController类似，UICollection- ViewController也是UIViewController的子类，其view是UICollectionView。</p>
+
+  <p class="calibre1">　　UICollectionView与UITableView的区别是，UITableView只能显示一列UITableViewCell，在大屏幕设备（如iPad）中有很大的局限性。UICollectionView则可以将UICollectionViewCell按任意方式布局，其中最常见的是网格布局（见图19-15）。</p>
+
+  <p class="calibre7"><img alt="tu19-15" src="../Images/image00629.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-15 使用UICollectionView的Homepwner</p>
+
+  <p class="calibre1">　　UICollectionView是如何布局UICollectionViewCell的？UICollectionView含有一个布局对象，负责控制每一个UICollectionViewCell的属性，包括位置和大小。UICollectionView的布局对象继承自一个名为UICollectionViewLayout的抽象类。如果需要将UICollectionViewCell按网格布局，则可以使用系统提供的UICollectionView- FlowLayout。但是，如果需要实现其他的布局方式，就必须创建UICollectionViewLayout的自定义子类。</p>
+
+  <p class="calibre7"><img alt="tu19-16" src="../Images/image00630.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-16 UICollectionView对象图示例</p>
+
+  <p class="calibre1">　　本书之前章节并没有子类化UITableViewCell，而是直接使用UITableViewCell。相反，UICollectionViewCell通常并不能满足需求——UICollectionViewCell也有contentView，但是与UITableViewCell不同，UICollectionViewCell的contentView在默认情况下没有任何子视图。因此，如果需要使用UICollectionView，通常还需要创建一个UICollectionViewCell子类。</p>
+
+  <p class="calibre1">　　了解了以上的内容后，读者就可以尝试使用UICollectionView了。最后，UICollectionViewCell也具有背景视图和选中状态下的背景视图（当UICollectionViewCell处于选中状态时，该视图会覆盖在背景视图上方）。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

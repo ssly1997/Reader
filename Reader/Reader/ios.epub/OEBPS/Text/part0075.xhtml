@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">8.4 UITableViewCell对象</h2>
+
+  <p class="calibre1">　　表视图所显示的每一行都是一个独立的视图，这些视图是UITableViewCell对象。本节将学习创建UITableViewCell对象并使用UITableViewCell对象填充表视图。在第19章中还会学习创建自定义的UITableViewCell子类。</p>
+
+  <p class="calibre1">　　UITableViewCell对象有一个子视图：contentView（见图8-8）。contentView也包含很多子视图，它的子视图构成UITableViewCell对象的主要外观。此外，UITableViewCell对象还可以显示一个辅助指示视图（accessory indicator）。辅助指示视图的作用是显示一个指定的图标，用于向用户提示UITableViewCell对象可以执行的动作。这些图标包括勾选标记、展开图标或中间有v形图案的蓝色圆点。为UITableViewCell对象设置不同的辅助指示视图类型，可以改变图标的外观。辅助指示视图的默认类型是UITableViewCellAccessoryNone，它也是本章将使用的类型。第19章会再次介绍辅助指示视图（读者也可自行参阅UITableViewCell的参考文档，以了解更多详细信息）。</p>
+
+  <p class="calibre7"><img alt="tu8-8" src="../Images/image00481.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图8-8 UITableViewCell布局</p>
+
+  <p class="calibre1">　　负责显示UITableViewCell对象所代表的数据，是contentView所包含的三个子视图。其中的两个视图是UILabel对象，分别为textLabel属性和detailTextLabel属性所指向的对象。第三个是UIImageView对象，即imageView属性所指向的对象（见图8-9）。本章只用到了textLabel属性。</p>
+
+  <p class="calibre7"><img alt="tu8-9" src="../Images/image00482.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图8-9 UITableViewCell的视图层次结构</p>
+
+  <p class="calibre1">　　此外，在创建UITableViewCell对象时，可以选择一种风格（UITableViewCellStyle）。这种风格决定UITableViewCell对象会显示上述三个子视图中的哪几个，以及这些视图在contentView中的位置。图8-10列出了所有的UITableViewCellStyle常量和相应的外观示例。</p>
+
+  <p class="calibre7"><img alt="tu8-10" src="../Images/image00483.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图8-10 UITableViewCellStyle常量</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">创建并获取UITableViewCell对象</h3>
+
+  <p class="calibre1">　　下面介绍如何通过UITableViewCell对象的textLabel属性显示BNRItem对象的描述信息。要完成这项任务，需要实现UITableViewDataSource协议的第二个必需方法——tableView:cellForRowAtIndexPath:。对于BNRItemsViewController类，tableView: cellForRowAtIndexPath:需要完成这些任务：创建一个UITableViewCell对象，获取UITableViewCell对象所代表的BNRItem对象，向BNRItem对象发送description消息并得到描述信息，将得到的描述信息赋给UITableViewCell对象的textLabel属性，最后返回UITableViewCell对象（见图8-11）。</p>
+
+  <p class="calibre7"><img alt="tu8-11" src="../Images/image00484.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图8-11 获取UITableViewCell对象的流程</p>
+
+  <p class="calibre1">　　如何确定BNRItem对象和UITableViewCell对象的对应关系？传入tableView: cellForRowAtIndexPath:的第二个实参是一个NSIndexPath对象。该对象包含两个属性：section（段）和row（行）。当UITableView对象向其数据源发送tableView: cellForRowAtIndexPath:消息时，其目的是获取用于显示第section个表格段、第row行数据的UITableViewCell对象。Homepwner只显示一个表格段，所以其UITableView对象只要用到row。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m中实现tableView:cellForRowAtIndexPath:，让第n行显示allItems数组中的第n个BNRItem对象，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (UITableViewCell *)tableView:(UITableView *)tableView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cellForRowAtIndexPath:(NSIndexPath *)indexPath</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建UITableViewCell对象，风格使用默认的UITableViewCellStyleDefault</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UITableViewCell *cell =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　　　　　　　　　reuseIdentifier:@"UITableViewCell"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 获取allItems的第n个BNRItem对象，</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 然后将该BNRItem对象的描述信息赋给UITableViewCell对象的textLabel</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 这里的n是该UITableViewCell对象所对应的表格行索引</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSArray *items = [[BNRItemStore sharedStore] allItems];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *item = items[indexPath.row];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.textLabel.text = [item description];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return cell;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用，Homepwner应该会显示一个UITableView对象，其中包含一组随机的BNRItem对象。</p>
+
+  <p class="calibre1">　　现在请读者回顾第3章的RandomItems。之前在RandomItems中创建了BNRItem类及其对象（属于MVC中的模型对象），并在控制台中打印了BNRItem对象的数据。</p>
+
+  <p class="calibre1">　　Homepwner则重用了BNRItem类，在不改动BNRItem的情况下，只需使用不同的视图对象和控制器对象就可以通过另一种完全不同的方式展示BNRItem的数据，这就是MVC设计模式的典型示例。如果按照MVC设计模式设计类的功能，以后就很容易将类用于其他应用中。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">重用UITableViewCell对象</h3>
+
+  <p class="calibre1">　　ios设备内存有限。如果某个UITableView对象要显示大量的记录，并且要针对每条记录创建相应的UITableViewCell对象，就会很快耗尽iOS设备的内存资源。</p>
+
+  <p class="calibre1">　　为了解决该问题，需要重用UITableViewCell对象（见图8-12）。当用户滚动UITableView对象时，部分UITableViewCell对象会移出窗口。UITableView对象会将移出窗口的UITableViewCell对象放入UITableViewCell对象池，等待重用。当UITableView对象要求数据源返回某个UITableViewCell对象时，数据源可以先查看对象池。如果有未使用的UITableViewCell对象，就可以用新的数据配置这个UITableViewCell对象，然后将其返回给UITableView对象，从而避免创建新对象。</p>
+
+  <p class="calibre1">　　这里还有一个问题：因为有时需要创建UITableViewCell的子类，用于实现特定的外观或特性，所以UITableView对象可能会拥有不同类型的UITableViewCell对象。如果UITableViewCell对象池中的对象创建自不同的子类，那么UITableView对象就有可能得到错误类型的UITableViewCell对象。鉴于上述原因，必须确保UITableView对象能够得到指定类型的UITableViewCell对象，这样才能确定返回的对象会拥有哪些属性和方法。</p>
+
+  <p class="calibre7"><img alt="tu8-12" src="../Images/image00485.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图8-12 重用UITableViewCell对象</p>
+
+  <p class="calibre1">　　从UITableViewCell对象池获取对象时，无须关心取回的是否是某个特定的对象。因为无论取回的是哪个对象，都要重新设置数据。真正要关心的是取回的对象是否是某个特定的类型。每个UITableViewCell对象都有一个类型为NSString的reuseIdentifier属性。当数据源向UITableView对象获取可重用的UITableViewCell对象时，可传入一个字符串并要求UITableView对象返回相应的UITableViewCell对象，这些UITableViewCell对象的reuseIdentifier属性必须和传入的字符串相同。按照约定，应该将UITableViewCell或者UITableViewCell子类的类名用作reuseIdentifier。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m中更新tableView:cellForRowAtIndexPath:，以便能够重用UITableViewCell对象，代码如下：</p>
+
+  <p class="calibre1">　　- (UITableViewCell *)tableView:(UITableView *)tableView</p>
+
+  <p class="calibre1">　　cellForRowAtIndexPath:(NSIndexPath *)indexPath</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">UITableViewCell *cell =</span></del></p>
+
+  <p class="calibre1">        <del class="calibre11"><span class="calibre10">[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault</span></del></p>
+
+  <p class="calibre1">    <del class="calibre11"><span class="calibre10">reuseIdentifier:@"UITableViewCell"];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建或重用UITableViewCell对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UITableViewCell *cell =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　[tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　　　　　forIndexPath:indexPath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　NSArray *items = [[BNRItemStore sharedStore] allItems];</p>
+
+  <p class="calibre1">　　BNRItem *item = items[indexPath.row];</p>
+
+  <p class="calibre1">　　cell.textLabel.text = [item description];</p>
+
+  <p class="calibre1">　　return cell;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　之前的代码都是手动创建UITableViewCell对象的。为了重用UITableViewCell对象，必须将创建的过程交由系统管理——需要告诉表视图，如果对象池中没有UITableViewCell对象，应该初始化哪种类型UITableViewCell对象。</p>
+
+  <p class="calibre1">　　在BNRItemsViewController.m中覆盖viewDidLoad方法，向表视图注册应该使用的UITableViewCell。</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)viewDidLoad</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super viewDidLoad];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.tableView registerClass:[UITableViewCell class]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　forCellReuseIdentifier:@"UITableViewCell"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　重用UITableViewCell对象，意味着UITableView对象只需要创建少量的UITableViewCell对象，从而减少内存的占用量，提升用户界面的流畅性。构建并运行应用，Homepwner的运行结果应该与之前相同。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

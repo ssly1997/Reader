@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">13.2 用UITapGestureRecognizer对象识别“按下”手势</h2>
+
+  <p class="calibre1">　　下面为TouchTracker添加第一个UIGestureRecognizer子类对象：UITapGesture- Recognizer，当用户双击屏幕时，会清除屏幕上的所有线条。打开在第12章中完成的TouchTracker.xcodeproj。</p>
+
+  <p class="calibre1">　　在BNRDrawView.m的initWithFrame:中创建一个UITapGestureRecognizer对象，设置点击次数为2，使BNRDrawView可以识别双击手势：</p>
+
+  <p class="calibre1">　　- （instancetype）initWithFrame:（CGRect）r</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super initWithFrame:r];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　self.linesInProgress = [[NSMutableDictionary alloc] init];</p>
+
+  <p class="calibre1">　　self.finishedLines = [[NSMutableArray alloc] init];</p>
+
+  <p class="calibre1">　　self.backgroundColor = [UIColor grayColor];</p>
+
+  <p class="calibre1">　　self.multipleTouchEnabled = YES;</p>
+
+  <p class="calibre1"><span class="calibre10">　　UITapGestureRecognizer *doubleTapRecognizer =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UITapGestureRecognizer alloc] initWithTarget:self</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　action:@selector（doubleTap:）];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　doubleTapRecognizer.numberOfTapsRequired = 2;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self addGestureRecognizer:doubleTapRecognizer];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　当用户在BNRDrawView上双击时，BNRDrawView会收到doubleTap:消息，在BNRDrawView.m中实现doubleTap:：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）doubleTap:（UIGestureRecognizer *）gr</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Recognized Double Tap”）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.linesInProgress removeAllObjects];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.finishedLines removeAllObjects];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self setNeedsDisplay];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　双击事件不需要处理消息中传入的UIGestureRecognizer参数，但是本章稍后在处理其他几种手势的动作消息时，会介绍如何从UIGestureRecognizer参数中获取相关信息。</p>
+
+  <p class="calibre1">　　构建并运行应用，在屏幕上画几根线条，然后双击屏幕，所画的线条应该会全部清除。</p>
+
+  <p class="calibre1">　　读者可能会注意到，双击屏幕时，BNRDrawView会在手指双击的位置画出一个红色圆点（在模拟器上看起来更明显）。这个圆点是由BNRDrawView画出的一根很短的线条（当用户点击屏幕时，BNRDrawView会收到touchesBegan:withEvent:消息）。检查控制台中的日志信息，可以看见触摸事件发生的顺序：</p>
+
+  <p class="calibre1">　　touchesBegan:withEvent:</p>
+
+  <p class="calibre1">　　Recognized Double Tap</p>
+
+  <p class="calibre1">　　touchesCancelled:withEvent:</p>
+
+  <p class="calibre1">　　由于UIGestureRecognizer对象会通过截取触摸事件来识别手势，因此，在UIGestureRecognizer对象识别出手势之前，UIView会收到所有UIResponder消息。对于UITapGestureRecognizer来说，在识别出点击手势（在屏幕中的一小块区域触摸并迅速抬起手指）之前，UIView会收到touchesBegan:withEvent:消息；在识别出点击手势之后，UITapGestureRecognizer会自行处理相关触摸事件，由这些触摸事件所引发的UIResponder消息将不会再发送给UIView。直到UITapGestureRecognizer检测出点击手势已经结束，UIView才会重新收到UIResponder消息（touchesCancelled:withEvent:）。</p>
+
+  <p class="calibre1">　　为了去掉红色圆点，需要在识别出点击手势之前避免向UIView发送touchesBegan: withEvent:消息。在BNRDrawView.m中，修改initWithFrame:方法，代码如下：</p>
+
+  <p class="calibre1">　　UITapGestureRecognizer *doubleTapRecognizer =</p>
+
+  <p class="calibre1">　　[[UITapGestureRecognizer alloc] initWithTarget:self</p>
+
+  <p class="calibre1">　　action:@selector（doubleTap:）];</p>
+
+  <p class="calibre1">　　doubleTapRecognizer.numberOfTapsRequired = 2;</p>
+
+  <p class="calibre1"><span class="calibre10">　　doubleTapRecognizer.delaysTouchesBegan = YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self addGestureRecognizer:doubleTapRecognizer];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用，绘制一些线条，然后双击屏幕清除所有线条，这次应该不会再出现红色圆点了。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

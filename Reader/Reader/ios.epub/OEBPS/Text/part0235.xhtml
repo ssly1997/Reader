@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">28.1 创建Storyboard文件</h2>
+
+  <p class="calibre1">　　通过Empty Application模板创建一个新的iOS应用项目，并将该项目命名为Colorboard（见图28-1）。</p>
+
+  <p class="calibre7"><img alt="tu28-1" src="../Images/image00690.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-1 创建Colorboard</p>
+
+  <p class="calibre1">　　选择New菜单中的New File…菜单项，在左侧的iOS区域选择User Interface，然后选择右侧的Storyboard模板，最后单击Next按钮（见图28-2）。</p>
+
+  <p class="calibre7"><img alt="tu28-2" src="../Images/image00691.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-2 创建storyboard文件</p>
+
+  <p class="calibre1">　　在新出现的面板中，找到标题为Device Family的下拉菜单，选择iPhone，单击Next按钮，然后将文件命名为Colorboard。</p>
+
+  <p class="calibre1">　　Xcode将创建一个名为Colorboard.storyboard的文件，并会在编辑器区域显示该文件。Storyboard文件和XIB文件类似，其不同点是，除了可以使用Storyboard文件构建界面，还可以使用Storyboard文件为多个视图控制器设置相互间的关系。Colorboard应用一共需要五个视图控制器，其中包括一个UINavigationController对象和一个UITableViewController对象。图28-3显示的是Colorboard的对象图。</p>
+
+  <p class="calibre7"><img alt="tu28-3" src="../Images/image00692.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-3 Colorboard的对象图</p>
+
+  <p class="calibre1">　　通过Storyboard文件，不用编写任何代码，就可以构建出如图28-3所示的对象关系。</p>
+
+  <p class="calibre1">　　打开工具区域，显示对象库面板，拖曳一个UINavigationController对象至画布（见图28-4）。</p>
+
+  <p class="calibre7"><img alt="tu28-4" src="../Images/image00693.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-4 Storyboard文件中的UINavigationController对象</p>
+
+  <p class="calibre1">　　将UINavigationController对象拖曳至Storyboard文件后，Xcode还会自动创建三个相关对象：一个UINavigationController对象的视图、一个UITableViewController对象和一个UITableViewController对象的视图。此外，Xcode还会将这个UITableViewController对象设置为UINavigationController对象的根视图控制器。</p>
+
+  <p class="calibre1">　　Xcode会用画布中的两个黑色工具条来分别代表UINavigationController对象和UIViewController对象。位于这两个工具条上方的是相应的视图，视图的设置方式和在XIB文件中设置视图的方式相同。如果要设置UIViewController对象，就应该先选中相应的黑色工具条。</p>
+
+  <p class="calibre1">　　在构建Storyboard文件前，先将Colorboard应用和新创建的Storyboard文件关联起来。选中位于项目导航面板顶部的Colorboard项目文件，然后在编辑区域选择Colorboard目标，再点击General标签。找到标题为Main Interface的文本框，输入Colorboard（见图28-5），或者选择下拉框中的Colorboard.storyboard文件。</p>
+
+  <p class="calibre7"><img alt="tu28-5" src="../Images/image00694.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-5 设置主Storyboard文件</p>
+
+  <p class="calibre1">　　如果为某个应用设置了主Storyboard文件，该应用就会在启动时载入相应的Storyboard文件。应用除了会载入Storyboard文件和其包含的UIViewController对象，还会创建一个UIWindow对象，并将Storyboard文件中的初始视图控制器（initial view controller）设置为UIWindow对象的根视图控制器。Xcode在画布中显示某个Storyboard文件时，会在初始视图控制器的左侧显示一个灰色的箭头，指向该对象。</p>
+
+  <p class="calibre1">　　因为Storyboard文件会为应用提供UIWindow对象，所以应用委托方法中不需要再创建UIWindow对象了。</p>
+
+  <p class="calibre1">　　更新BNRAppDelegate.m中的application:didFinishLaunchingWithOptions:，删除创建UIWindow对象的那部分代码，如下：</p>
+
+  <p class="calibre1">　　- （BOOL）application:（UIApplication *）application</p>
+
+  <p class="calibre1">　　didFinishLaunchingWithOptions:（NSDictionary *）launchOptions</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window = [[UIWindow alloc] initWithFrame:</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[[UIScreen mainScreen] bounds]];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.window.backgroundColor = [UIColor whiteColor];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[self.window makeKeyAndVisible]</span></del>;</p>
+
+  <p class="calibre1">　　return YES;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用，Colorboard应该会显示一个空白视图，以及一个标题为Root View Controller的UINavigationBar对象（见图28-6）。这些界面元素都源自之前创建的Storyboard文件，而且无须为此编写一行代码。</p>
+
+  <p class="calibre7"><img alt="tu28-6" src="../Images/image00695.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图28-6 Colorboard的初始界面</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

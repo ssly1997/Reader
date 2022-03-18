@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">15.3 在Interface Builder中添加约束</h2>
+
+  <p class="calibre1">　　首先打开BNRDetailViewController.xib文件，选中画布中的UIImageView对象并将其删除。第16章会使用代码重新创建该对象并为其添加约束。</p>
+
+  <p class="calibre1">　　然后选中UIToolbar对象，并找到画布右下角的自动布局约束菜单（Auto Layout Constraint Menu），如图15-7所示。</p>
+
+  <p class="calibre7"><img alt="tu15-7" src="../Images/image00573.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-7 自动布局约束菜单</p>
+
+  <p class="calibre1">　　点击图标（左边第二个），显示Pin菜单。Pin菜单显示了UIToolbar对象的大小和位置，可以在菜单中为UIToolbar对象添加需要的约束（见图15-8）。</p>
+
+  <p class="calibre7"><img alt="tu15-8" src="../Images/image00574.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-8 为UIToolbar对象添加四个约束</p>
+
+  <p class="calibre1">　　Pin菜单的顶部显示了UIToolbar对象在四个方向上与最近相邻视图的距离，如前所述，这里需要设置左边、右边、底边与最近相邻视图的距离都是0点。UIToolbar对象在左边、右边、底边方向上都没有兄弟视图，因此这三个方向上的最近相邻视图都是BNRDetailViewController的view。</p>
+
+  <p class="calibre1">　　点击输入框和中间小矩形之间的橘红色虚线，虚线会变成实线。这样就可以将输入框中的值添加为视图的约束。</p>
+
+  <p class="calibre1">　　在Pin菜单的中间位置找到UIToolbar对象的高度（Height），可以发现Height的默认值就是44点，直接勾选Height旁边的选择框，为UIToolbar对象添加高度约束。现在Pin菜单底部的按钮会显示“Add 4 Constraints（添加四个约束）”，点击该按钮完成添加约束。</p>
+
+  <p class="calibre1">　　在iPad模拟器上构建并运行应用，创建一个BNRItem对象，然后点击该对象进入详细界面。UIToolbar对象会显示在屏幕底部，而且宽度与屏幕宽度相同，如图15-9所示。</p>
+
+  <p class="calibre7"><img alt="tu15-9" src="../Images/image00575.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-9 布局正确的UIToolbar对象</p>
+
+  <p class="calibre1">　　可以在画布左侧的Dock中看到为UIToolbar对象添加的约束。找到Constraints并点击左侧三角形的展开按钮，可以发现，其中只有三个约束。第四个约束是限定UIToolbar对象的高度，它包含在UIToolbar对象中。点击Toolbar，找到Toolbar下方的Constraints，展开就可以看到第四个约束（见图15-10）。</p>
+
+  <p class="calibre7"><img alt="tu15-10" src="../Images/image00576.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-10 布局正确的UIToolbar对象</p>
+
+  <p class="calibre1">　　读者可能会问，这四个约束都是加在UIToolbar对象上的，为什么只有第四个约束包含在UIToolbar对象中？这是因为，前三个约束涉及与父视图布局属性的关系。如果约束同时作用于某个视图及其父视图，那么Interface Builder会将约束加在父视图上。所以，前三个约束实际上是加在UIToolbar对象的父视图Control上的，也就是BNRDetailViewController的view（请读者回忆第11章，为了可以通过点击视图关闭键盘，第11章将该视图的类由UIView改为了UIControl）。相反，第四个约束用于限定UIToolbar对象的高度，只作用于UIToolbar对象，所以Interface Builder会将约束加在UIToolbar对象上。</p>
+
+  <p class="calibre1">　　如果使用Interface Builder，约束会自动添加到恰当的视图上。而代码中创建和添加约束的步骤与使用Interface Builder的不同，第16章会介绍在代码中如何判定约束应该添加到哪个视图上。</p>
+
+  <p class="calibre1">　　在画布中，约束表现为蓝色的直线。例如，如果在Dock中选中某个约束，画布中就会显示相应的蓝色直线表示该约束处于选中状态；如果在画布中选中某个视图，则会显示所有表示该视图约束的蓝色直线。（有时这条直线位于视图边缘，不容易发现。）</p>
+
+  <p class="calibre1">　　删除约束也非常简单，只需要在Dock中选中某个约束，或者在画布中选中表示某个约束的蓝色直线，然后按下删除（Delete）键即可。请读者尝试删除UIToolbar对象的高度约束，然后在Pin菜单中重新为UIToolbar对象添加高度约束。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">添加更多约束</h3>
+
+  <p class="calibre1">　　下面为Name标签添加约束。目前Name标签在iPad上显示效果很好，但是，由于本书第25章会为Homepwner添加多语言支持，而第27章会让Homepwner动态调整字体，因此仍然需要为Name标签添加约束。</p>
+
+  <p class="calibre1">　　如果不考虑语言、字体和屏幕尺寸，Name标签应该始终处于屏幕左上角而且大小始终保持不变。在画布中选中Name标签，然后点击Pin菜单。</p>
+
+  <p class="calibre1">　　在Pin菜单顶部选择左边和顶边，Name标签在这两个方向上的最近相邻视图是其父视图（BNRDetailViewController的view）。然后，勾选Width和Height旁边的选择框，限定Name标签的大小是固定值。</p>
+
+  <p class="calibre1">　　现在Pin菜单应该如图15-11所示。请注意，约束的值是根据视图在画布上的位置计算出来的，读者的Name标签位置可能与图中不同，所以约束的值也可能不同。如果读者的Pin菜单中输入框的值与图中不一致，不需要将其修改成图中的值，否则Name标签的约束与其画布上的位置不一致，会出现Misplaced Views（视图位置错误）警告。本章稍后会介绍如何处理Misplaced Views警告。</p>
+
+  <p class="calibre7"><img alt="tu15-11" src="../Images/image00577.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-11 为Name标签添加约束</p>
+
+  <p class="calibre1">　　在Pin菜单底部点击Add 4 Constraints，为Name标签添加约束。</p>
+
+  <p class="calibre1">　　现在考虑Name标签右边的文本框。如果不考虑屏幕尺寸，文本框应该位于Name标签右侧，并且填充大部分屏幕。</p>
+
+  <p class="calibre1">　　选中文本框，然后打开Pin菜单。在菜单顶部选择左边和右边，添加这两个方向上的约束，使文本框的左边与Name标签保持当前距离，右边与屏幕保持20点的距离。这样文本框的宽度会从Name标签右侧延伸到距离屏幕右侧20点的位置。</p>
+
+  <p class="calibre1">　　现在文本框的约束出现了问题。画布中表示文本框约束的直线在正常情况下是蓝色的，但是现在变成了橘红色。这表示文本框缺少约束，自动布局系统无法根据当前约束确定所有布局属性的值，也就无法为文本框定义对齐矩形。</p>
+
+  <p class="calibre1">　　为了知道问题的详细信息，可以在Dock中点击Control旁边的红色图标进入约束问题列表（见图15-12）。</p>
+
+  <p class="calibre7"><img alt="tu15-12" src="../Images/image00578.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-12 缺少约束的文本框</p>
+
+  <p class="calibre1">　　列表中的问题会按照类型分组，文本框的约束问题属于Missing Constraints（缺少约束）。根据问题描述可以知道，目前文本框缺少Y轴（垂直）方向上的位置约束（Need Constraints for: Y position）。解决方法是，打开Pin菜单，在菜单顶部选择顶边，限制文本框的顶边与其父视图的距离始终保持不变，然后点击Add 1 Constraint添加约束。</p>
+
+  <p class="calibre1">　　在Interface Builder中，还可以将多个视图按照某个布局属性对齐。因此上述问题还有另一种更好的解决方案：将文本框与Name标签沿基准线对齐。这样当用户输入文字时，文本框中的文字会与Name标签中的文字位于同一基准线上，看起来会非常整齐。</p>
+
+  <p class="calibre1">　　在画布中选中文本框，然后按住Shift键不放，选中Name标签。这样可以同时选中文本框和Name标签。接下来在约束菜单中点击图标，显示Align（对齐）菜单，再勾选标题为Baselines的选择框，最后点击Add 1 Constraint添加约束（见图15-13）。</p>
+
+  <p class="calibre7"><img alt="tu15-13" src="../Images/image00579.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-13 让Name标签和文本框按基准线对齐</p>
+
+  <p class="calibre1">　　现在文本框中表示约束的直线会由橘红色变为蓝色，同时Control旁边的红色图标也消失了——自动布局系统已经可以根据文本框的约束确定文本框的大小和位置了。</p>
+
+  <p class="calibre1">　　除缺少约束之外，还有另外两类约束问题：约束冲突和视图位置错误。本章稍后会介绍如何调试这些约束问题。</p>
+
+  <p class="calibre1">　　在iPad上构建并运行应用，选中某个BNRItem对象进入详细界面。可以看到，顶部的文本框位于Name标签右边，并且填充了大部分屏幕（见图15-14）。</p>
+
+  <p class="calibre7"><img alt="tu15-14" src="../Images/image00580.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-14 文本框填充了大部分屏幕</p>
+
+  <p class="calibre1">　　为其余视图添加约束</p>
+
+  <p class="calibre1">　　下面继续为其余视图添加约束。首先使用约束菜单为Serial标签添加以下约束：</p>
+
+  <p class="calibre1">　　•顶边与Name标签保持当前距离。</p>
+
+  <p class="calibre1">　　•左边与Name标签的左边对齐。</p>
+
+  <p class="calibre1">　　•宽度和高度保持当前值不变。</p>
+
+  <p class="calibre1">　　接下来介绍一种新方法：与设置插座变量和动作方法类似，通过在画布中拖曳为视图添加约束。在画布中选中Serial标签，按住Control键，然后将其拖曳到Name标签并释放鼠标。这时Interface Builder会弹出一个约束列表，如图15-15所示。（列表中显示的约束与拖曳方向、源视图（from view）和目标视图（to view）有关。Interface Builder会自动判断可以为视图添加哪些约束。）</p>
+
+  <p class="calibre7"><img alt="tu15-15" src="../Images/image00581.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图15-15 通过拖曳为视图添加约束</p>
+
+  <p class="calibre1">　　在约束列表中选择Vertical Spacing（垂直距离），使Serial标签和Name标签的垂直距离保持当前值不变——等同于在Pin菜单中选择顶边。</p>
+
+  <p class="calibre1">　　再次将其拖曳到Name标签，这次选择Left（左边）——等同于在Align菜单中选择左对齐。</p>
+
+  <p class="calibre1">　　最后需要固定Serial标签的宽度和高度。因为宽度和高度约束只对Serial标签自身有影响，所以需要将Serial标签拖曳到自身。按住Control键，将Serial标签沿倾斜方向拖曳到自身，然后按住Shift键，在约束列表中同时选择Width（宽度）和Height（高度）。（如果读者没有同时看见Width和Height选项，是因为没有沿倾斜方向拖曳。如果沿垂直方向拖曳，则不会出现Width；相反，如果沿水平方向拖曳，则不会出现Height。）</p>
+
+  <p class="calibre1">　　现在为Serial标签右边的文本框添加以下约束：</p>
+
+  <p class="calibre1">　　•左边与Serial标签保持当前距离。</p>
+
+  <p class="calibre1">　　•基准线与Serial标签的基准线对齐。</p>
+
+  <p class="calibre1">　　•右边与父视图保持当前距离。</p>
+
+  <p class="calibre1">　　选中文本框并将其拖曳到Serial标签，在约束列表中同时选择Horizontal Spacing（水平距离）和Baseline（基准线）。再将其向右拖曳到父视图，选择Trailing Space to Container（右边与父视图保持当前距离）。</p>
+
+  <p class="calibre1">　　请读者通过约束菜单或拖曳为其余三个视图添加约束。</p>
+
+  <p class="calibre1">　　Value标签：</p>
+
+  <p class="calibre1">　　•顶边与Serial标签保持当前距离。</p>
+
+  <p class="calibre1">　　•左边与Serial标签的左边对齐。</p>
+
+  <p class="calibre1">　　•宽度和高度保持当前值不变。</p>
+
+  <p class="calibre1">　　Value标签右侧的文本框：</p>
+
+  <p class="calibre1">　　•左边与Value标签保持当前距离。</p>
+
+  <p class="calibre1">　　•基准线与Value标签的基准线对齐。</p>
+
+  <p class="calibre1">　　•右边与父视图保持当前距离。</p>
+
+  <p class="calibre1">　　date标签：</p>
+
+  <p class="calibre1">　　•顶边与Value标签右侧的文本框保持当前距离。</p>
+
+  <p class="calibre1">　　•左边和右边与父视图保持当前距离。</p>
+
+  <p class="calibre1">　　•高度保持当前值不变。</p>
+
+  <p class="calibre1">　　在iPad上构建并运行应用。可以发现，添加约束后，BNRDetailViewController的界面效果看起来好多了。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">优先级</h3>
+
+  <p class="calibre1">　　每个约束都具有优先级（priority level），如果多个约束之间有冲突，自动布局系统会根据优先级决定使用哪些约束。优先级的取值范围是1到1000，默认值是1000，表示约束是必需（required constraint）的。因此，之前添加的约束都是必需的，优先级都是1000，如果这些约束之间存在冲突，优先级无法帮助自动布局系统解决约束冲突。自动布局系统在这种情况下会提示约束问题，下一节就来介绍如何调试约束问题。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

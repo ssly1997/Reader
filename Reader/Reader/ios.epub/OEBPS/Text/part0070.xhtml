@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">7.8 中级练习：捏合-缩放</h2>
+
+  <p class="calibre1">　　为第5章创建的Hypnosister应用添加捏合-缩放功能。</p>
+
+  <p class="calibre1">　　首先需要为UIScrollView对象设置委托：</p>
+
+  <p class="calibre1">　　•BNRAppDelegate需要遵守UIScrollViewDelegate协议。</p>
+
+  <p class="calibre1">　　•在application:didFinishLaunchingWithOptions:方法中，将BNRAppDelegate对象自身设置为UIScrollView对象的委托。</p>
+
+  <p class="calibre1">　　为了实现UIScrollView对象的委托方法，需要为BNRAppDelegate添加一个属性，指向BNRHypnosisView对象。请读者在BNRAppDelegate.m的类扩展中添加一个BNRHypnosisView属性，然后修改其余代码，将BNRHypnosisView实例变量改为属性。</p>
+
+  <p class="calibre1">　　接下来需要设置UIScrollView对象：将BNRHypnosisView对象作为子视图添加到该对象中；将其pagingEnabled属性设置为NO；设置contentSize属性（决定缩放区域大小）。还可以根据需要设置其他属性，请读者在UIScrollView的类参考手册中查找感兴趣的属性。</p>
+
+  <p class="calibre1">　　最后，实现UIScrollView对象的委托方法viewForZoomingInScrollView:，返回BNRHypnosisView对象。</p>
+
+  <p class="calibre1">　　如果读者遇到了问题，可以在UIScrollView的类参考手册中查找相关信息，还可以查看UIScrollViewDelegate协议中的各个委托方法说明。</p>
+
+  <p class="calibre1">　　提示：在模拟器中，为了模拟双指捏合手势，可以在按住Option键的同时拖曳鼠标。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">6.4 视图控制器的初始化方法</h2>
+
+  <p class="calibre1">　　之前在创建BNRHypnosisViewController的标签项时覆盖了initWithNibName: bundle:，但是，在BNRAppDelegate.m中是使用init方法来初始化BNRHypnosis- ViewController对象的。这是由于initWithNibName:bundle:是UIViewController的指定初始化方法，向视图控制器发送init消息会调用initWithNibName:bundle:方法并为两个参数都传入nil，因此使用init初始化BNRHypnosisViewController对象也可以正确设置视图控制器的标签项。</p>
+
+  <p class="calibre1">　　BNRHypnosisViewController在创建view属性时没有加载NIB文件，因此不需要指定NIB文件的文件名。那么，如果向一个需要使用NIB文件的视图控制器发送init消息，会发生什么情况？下面就来编写代码测试。</p>
+
+  <p class="calibre1">　　在BNRAppDelegate.m中，修改代码，使用init初始化BNRReminderViewController：</p>
+
+  <p class="calibre1">　　BNRHypnosisViewController *hvc = [[BNRHypnosisViewController alloc] init];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">// 获取指向NSBundle对象的指针，该对象代表应用的主程序包</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">NSBundle *appBundle = [NSBundle mainBundle];</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">// 告诉初始化方法在appBundle中查找BNRReminderViewController.xib文件</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">BNRReminderViewController *rvc = [[BNRReminderViewController alloc]</span></del></p>
+
+  <p class="calibre1">    　　<del class="calibre11"><span class="calibre10">initWithNibName:@"BNRReminderViewController"</span></del></p>
+
+  <p class="calibre1">              <del class="calibre11"><span class="calibre10">bundle:appBundle];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRReminderViewController *rvc = [[BNRReminderViewController alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　UITabBarController *tabBarController = [[UITabBarController alloc] init];</p>
+
+  <p class="calibre1">　　构建并运行应用，运行结果会和之前的完全一样。当init调用initWithNibName:bundle:时，虽然为两个参数都传入了nil，但是UIViewController对象仍然会在应用程序包中查找和当前UIViewController子类同名的XIB文件。因此，当BNRReminderViewController需要创建view时，仍然会载入应用程序包中的BNRReminderViewController.xib。</p>
+
+  <p class="calibre1">　　所以之前的章节中建议读者为UIViewController子类和该子类需要载入的NIB文件取相同的名称。这样当视图控制器需要加载视图时，会自动载入正确的XIB文件。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

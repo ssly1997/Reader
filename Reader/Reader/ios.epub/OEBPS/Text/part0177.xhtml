@@ -1,0 +1,263 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">19.3 由UITableViewCell对象转发动作消息</h2>
+
+  <p class="calibre1">　　开发iOS应用时，可能需要将UIControl对象（或UIControl子类对象，例如UIButton对象）加入某个UITableViewCell对象。以BNRItemCell为例，假设要添加如下功能：点击某个BNRItemCell中的缩略图时，显示相应BNRItem的全尺寸的图片。为了完成上述功能，本节将在UIImageView对象上添加一个透明的UIButton对象。此外，如果在iPad中点击UIButton对象，Homepwner需要使用UIPopoverController显示全尺寸图片。</p>
+
+  <p class="calibre1">　　打开BNRItemCell.m，添加一个空的动作方法，用于显示全尺寸图片：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （IBAction）showImage:（id）sender</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　打开BNRItemCell.xib，拖曳一个UIButton对象至UIImageView对象，再删除UIButton对象的标题。同时选中UIImageView对象和UIButton对象，然后打开Align菜单，勾选Leading Edges、Trailing Edges、Top Edges和Bottom Edges四个选项。接下来在标题为Update Frames的下拉菜单中选择Items of New Constraints（匹配新约束），最后单击Add 4 Constraints添加约束（见图19-11）。</p>
+
+  <p class="calibre7"><img alt="tu19-11" src="../Images/image00625.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-11 UIButton对象的约束</p>
+
+  <p class="calibre1">　　最后需要将UIButton对象的动作方法设置为showImage:。在辅助编辑器中打开BNRItemCell.xib和BNRItemCell.m，然后按住Control，将UIButton对象拖曳至showImage:（见图19-12）。</p>
+
+  <p class="calibre7"><img alt="tu19-12" src="../Images/image00626.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-12 设置UIButton对象的动作方法</p>
+
+  <p class="calibre1">　　现在，点击按钮就可以将showImage:消息发送给BNRItemCell对象。下面需要实现showImage:——这里有一个问题：UIButton对象会将动作消息发送给相应的BNRItemCell对象，但是BNRItemCell对象不是控制器，无法访问全尺寸图片，甚至无法访问其当前显示的BNRItem对象。</p>
+
+  <p class="calibre1">　　虽然可以为BNRItemCell添加一个属性，指向其当前显示的BNRItem对象，但是BNRItemCell对象是视图对象，不应该直接访问模型对象，也不应该负责显示视图控制器（例如UIPopoverController）。</p>
+
+  <p class="calibre1">　　更好的解决方案是：通过BNRItemsViewController为BNRItemCell添加一个Block对象，当用户点击UIButton对象时，在Block对象中显示全尺寸图片。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">为BNRItemCell添加Block对象</h3>
+
+  <p class="calibre1">　　本书第17章曾简要介绍过Block对象，本章将深入学习Block对象。</p>
+
+  <p class="calibre1">　　打开<span class="calibre10">BNRItemCell.h</span>，添加一个Block属性，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRItemCell : UITableViewCell</p>
+
+  <p class="calibre1">　　@property （nonatomic, weak） IBOutlet UIImageView *thumbnailView;</p>
+
+  <p class="calibre1">　　@property （nonatomic, weak） IBOutlet UILabel *nameLabel;</p>
+
+  <p class="calibre1">　　@property （nonatomic, weak） IBOutlet UILabel *serialNumberLabel;</p>
+
+  <p class="calibre1">　　@property （nonatomic, weak） IBOutlet UILabel *valueLabel;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, copy） void （^actionBlock）（void）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　读者可能会觉得语法有些奇怪，Block对象类似函数，有名称、参数和返回值，图19-13列出了Block对象的语法格式。</p>
+
+  <p class="calibre7"><img alt="tu19-13" src="../Images/image00627.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图19-13 Block对象的语法</p>
+
+  <p class="calibre1">　　请注意，actionBlock被声明为copy。系统对Block对象和其他对象的内存管理方式不同，Block对象是在栈中创建的，而其他对象是在堆中创建的。这意味着，即使应用针对新创建的Block对象保留了强引用类型的指针，一旦创建该对象的方法返回，那么与方法内部的其他局部变量相同，新创建的Block对象也会被立即释放。为了在声明Block对象的方法返回后仍然保留该对象，必须向其发送copy消息。拷贝某个Block对象时，应用会在堆中创建该对象的备份。这样，即使应用释放了当前方法的栈，堆中的Block对象也不会被释放。</p>
+
+  <p class="calibre1">　　在BNRItemCell.m的showImage:中调用Block对象，代码如下：</p>
+
+  <p class="calibre1">　　- （IBAction）showImage:（id）sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 调用Block对象之前要检查Block对象是否存在</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （self.actionBlock） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.actionBlock（）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　下面更新BNRItemsViewController.m中的tableView: cellForRowAtIndex- Path:，向控制台输出传入的NSIndexPath对象，测试是否可以正确执行Block对象：</p>
+
+  <p class="calibre1">　　- （UITableViewCell *）tableView:（UITableView *）tableView</p>
+
+  <p class="calibre1">　　cellForRowAtIndexPath:（NSIndexPath *）indexPath</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　BNRItem *item = [[BNRItemStore sharedStore] allItems][indexPath.row];</p>
+
+  <p class="calibre1">　　// 获取BNRItemCell对象，返回的可能是现有的对象，也可能是新创建的对象</p>
+
+  <p class="calibre1">　　BNRItemCell *cell =</p>
+
+  <p class="calibre1">　　[tableView dequeueReusableCellWithIdentifier:@“BNRItemCell”</p>
+
+  <p class="calibre1">　　forIndexPath:indexPath];</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 根据BNRItem对象设置BNRItemCell对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　cell.nameLabel.text = item.itemName;</p>
+
+  <p class="calibre1">　　cell.serialNumberLabel.text = item.serialNumber;</p>
+
+  <p class="calibre1">　　cell.valueLabel.text =</p>
+
+  <p class="calibre1">　　[NSString stringWithFormat:@“$%i”, item.valueInDollars];</p>
+
+  <p class="calibre1">　　cell.thumbnailView.image = item.thumbnail;</p>
+
+  <p class="calibre1"><span class="calibre10">　　cell.actionBlock = ^{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Going to show image for %@”, item）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　};</p>
+
+  <p class="calibre1">　　return cell;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。点击某个缩略图（准确地说，是位于UIImageView对象上的透明UIButton对象），应该能在控制台看到相应的输出信息。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">通过UIPopoverController显示图片</h3>
+
+  <p class="calibre1">　　下面在BNRItemsViewController中修改BNRItemCell的actionBlock，根据UIButton对象所在的BNRItemCell对象，获取相应的BNRItem对象，然后在UIPopoverController中显示该BNRItem对象的图片。</p>
+
+  <p class="calibre1">　　要在UIPopoverController中显示图片，需要先准备好一个能够显示图片的UIViewController对象。使用Objective-C class文件模板创建一个名为BNRImage- ViewController的UIViewController子类，请注意不要勾选Also create XIB file。</p>
+
+  <p class="calibre1">　　BNRImageViewController只有一个视图，下面将通过代码创建视图。在BNRImageViewController.m中实现loadView，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）loadView</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImageView *imageView = [[UIImageView alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　imageView.contentMode = UIViewContentModeScaleAspectFit;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.view = imageView;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　这里不需要为<span class="calibre10">UIImageView</span>对象添加任何约束。<span class="calibre10">BNRImageViewController</span>显示在UIPopoverController中，UIPopoverController会自动将<span class="calibre10">UIImageView</span>对象（<span class="calibre10">BNRImageViewController</span>的view）的大小调整为与自身一致。</p>
+
+  <p class="calibre1">　　下面在BNRImageViewController.h中添加一个属性，用来保存需要显示的UIImage对象：</p>
+
+  <p class="calibre1">　　@interface BNRImageViewController : UIViewController</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） UIImage *image;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　创建BNRImageViewController对象后，要将相应的UIImage对象赋给image属性。在BNRImageViewController.m中实现viewWillAppear:，将image显示到UIImageView中：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）viewWillAppear:（BOOL）animated</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[super viewWillAppear:animated];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 必须将view转换为UIImageView对象，以便向其发送setImage:消息</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImageView *imageView = （UIImageView *）self.view;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　imageView.image = self.image;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　现在可以完成actionBlock了。在BNRItemsViewController.m中，首先添加一个属性，用于保存UIPopoverController，然后将BNRItemsViewController声明为遵守UIPopoverControllerDelegate协议，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRItemsViewController （） <span class="calibre10">&lt;UIPopoverControllerDelegate&gt;</span></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, strong） UIPopoverController *imagePopover;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　接下来在BNRItemsViewController.m顶部导入需要的头文件：</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRImageStore.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRImageViewController.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　最后在actionBlock中显示UIPopoverController：</p>
+
+  <p class="calibre1">　　cell.actionBlock = ^{</p>
+
+  <p class="calibre1">　　NSLog（@“Going to show the image for %@”, item）；</p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[UIDevice currentDevice] userInterfaceIdiom == UIUserInterfaceIdiomPad） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *itemKey = item.itemKey;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果BNRItem对象没有图片，就直接返回</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIImage *img = [[BNRImageStore sharedStore] imageForKey:imageKey];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！img）</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 根据UITableView对象的坐标系获取UIImageView对象的位置和大小</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 注意：这里也许会出现警告信息，下面很快就会讨论到</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGRect rect = [self.viewconvertRect:cell.thumbnailView.bounds</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　fromView:cell.thumbnailView];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建BNRImageViewController对象并为image属性赋值</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRImageViewController *ivc = [[BNRImageViewController alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　ivc.image = img;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 根据UIImageView对象的位置和大小</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 显示一个大小为600x600点的UIPopoverController对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imagePopover = [[UIPopoverController alloc]</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　initWithContentViewController:ivc];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imagePopover.delegate = self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imagePopover.PopoverContentSize = CGSizeMake（600, 600）];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self.imagePopover presentPopoverFromRect:rect</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　inView:self.view</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　permittedArrowDirections:UIPopoverArrowDirectionAny</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　animated:YES];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　};</p>
+
+  <p class="calibre1">　　最后，在BNRItemsViewController.m中实现popoverControllerDidDismissPopover:，当用户关闭UIPopoverController时，将UIPopoverController设置为nil：</p>
+
+  <p class="calibre1"><span class="calibre10">　　-（void）popoverControllerDidDismissPopover:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（UIPopoverController *）popoverController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.imagePopover = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在iPad模拟器中构建并运行应用。点击某个BNRItemCell对象中的缩略图，Homepwner应该会弹出一个UIPopoverController对象，并显示相应BNRItem对象的全尺寸图片。点击其他区域可以关闭UIPopoverController对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

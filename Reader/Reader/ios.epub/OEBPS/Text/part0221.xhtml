@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">25.3 NSLocalizedString（）与字符串对照表</h2>
+
+  <p class="calibre1">　　编写iOS应用时，往往需要动态地创建NSString对象，或者在界面中显示字符串常量。为了能显示这些字符串的多语言版本，需要创建一个字符串对照表（strings table）。字符串对照表其实就是文本格式的文件，其中包含一组键-值对。这里的键是需要支持多语言的字符串，值是相应的翻译。字符串对照表是一种需要加入程序包的资源文件，而且在编写iOS应用时，不需要编写复杂的代码就能得到字符串对照表中的数据。</p>
+
+  <p class="calibre1">　　代码中的字符串示例如下：</p>
+
+  <p class="calibre1">　　NSString *greeting = @“Hello!”</p>
+
+  <p class="calibre1">　　为了能够本地化代码中的字符串，需要用NSLocalizedString（）宏（macro）替换字符串常量。</p>
+
+  <p class="calibre1">　　NSString *greeting =</p>
+
+  <p class="calibre1">　　NSLocalizedString（@“Hello!”, @“The greeting for the user”）；</p>
+
+  <p class="calibre1">　　使用NSLocalizedString（）宏时需要传入两个实参：第一个实参是键（必需），第二个实参是注释（可选）。键是字符串对照表的查询值（lookup value）。运行时，NSLocalizedString（）会先遍历程序包中的所有字符串对照表，找出和设备当前的语言设置相匹配的那个。然后在该文件中找出和相应的键匹配的字符串翻译。</p>
+
+  <p class="calibre1">　　Homepwner的导航条会显示字符串“Homepwner”，下面要本地化该字符串。更新BNRItemsViewController.m中的init方法，修改设置navigationItem标题的那行代码。</p>
+
+  <p class="calibre1">　　- （instancetype）init</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　// 调用父类的指定初始化方法</p>
+
+  <p class="calibre1">　　self = [super initWithStyle:UITableViewStylePlain];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　UINavigationItem *navItem = [self navigationItem];</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">navItem.title = @“Homepwner”;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　navItem.title = NSLocalizedString（@“Homepwner”, @“Name of application”）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　还有两个视图控制器包含硬编码的字符串，需要实施国际化：<span class="calibre10">BNRDetailViewController</span>工具栏中用于显示资产类型的assetTypeButton标题和<span class="calibre10">BNRAssetTypeViewController</span>导航栏的标题。</p>
+
+  <p class="calibre1">　　在BNRDetailViewController.m中更新<span class="calibre10">viewWillAppear:</span>方法，代码如下：</p>
+
+  <p class="calibre1">　　NSString *typeLabel = [self.item.assetType valueForKey:@“label”];</p>
+
+  <p class="calibre1">　　if （！typeLabel） {</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">typeLabel = @“None”;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　typeLabel = NSLocalizedString（@“None”, @“Type label None”）；</span></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.assetTypeButton.title =</span></del></p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">[NSString stringWithFormat:@“Type: %@”, typeLabel];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.assetTypeButton.title = [NSString stringWithFormat:</span></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLocalizedString（@“Type: %@”, @“Asset type button”）， typeLabel];</span></p>
+
+  <p class="calibre1">　　[self updateFonts];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　在BNRAssetTypeViewController.m中更新<span class="calibre10">init</span>方法，代码如下：</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">self.navigationItem.title = @“Asset Type”;</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.navigationItem.title =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLocalizedString（@“Asset Type”,</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@“BNRAssetTypeViewController title”）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　用NSLocalizedString本地化某个实现文件后，就可以通过命令行程序genstrings自动生成相应的字符串对照表。</p>
+
+  <p class="calibre1">　　打开终端应用（Terminal.app）——也许读者之前从未使用过终端应用。终端应用其实就是一个Unix终端（OS X本质上是一个Unix操作系统），用于运行命令行工具。请读者将当前目录切换至BNRItemsViewController.m所在的目录。如果读者不熟悉Unix终端命令，可以按照以下步骤切换当前目录：首先在终端应用的窗口中输入cd，然后输入一个空格（注意此时不要按下回车键）：</p>
+
+  <p class="calibre1">　　cd</p>
+
+  <p class="calibre1">　　接下来打开Finder，前往包含BNRItemsViewController.m的目录，将该目录的图标（蓝色的文件夹）从Finder拖曳至终端应用。松开鼠标后，终端应用会自动填入该目录的文件系统路径。现在按下回车键。</p>
+
+  <p class="calibre1">　　这样，终端应用的当前目录就已经切换至BNRItemsViewController.m所在的目录。以作者的BNRItemsViewController.m目录为例，相应的终端命令如下：</p>
+
+  <p class="calibre1">　　cd /Users/aaron/Homepwner/Homepwner/</p>
+
+  <p class="calibre1">　　切换当前目录后，可以使用ls命令输出目录下的内容列表，请读者确认列表中是否包含BNRItemsViewController.m。</p>
+
+  <p class="calibre1">　　如果列表中确实包含BNRItemsViewController.m，就可以在终端应用中输入以下命令并按回车键，生成字符串对照表：</p>
+
+  <p class="calibre1">　　genstrings BNRItemsViewController.m</p>
+
+  <p class="calibre1">　　genstrings会在BNRItemsViewController.m所在的目录中创建一个名为Localizable. strings的文件。使用同样的方法，可以为另外两个视图控制器生成字符串。注意，由于Localizable.strings文件已经存在，因此需要将新的字符串附加到该文件，而不是创建新的Localizable.strings文件。在终端应用中输入以下命令（不要忘记添加-a选项），每行命令之后都需要按下回车键：</p>
+
+  <p class="calibre1">　　genstrings -a BNRDetailViewController.m</p>
+
+  <p class="calibre1">　　genstrings -a BNRAssetTypeViewController.m</p>
+
+  <p class="calibre1">　　现在Localizable.strings文件包含以上三个视图控制器中的国际化字符串。接下来将该文件从Finder中拖曳至项目导航面板并加入项目（或者右击项目文件，选择Add Files to “Homepwner” …菜单项，再选择Localizable.strings文件）。Xcode会在构建应用时将该文件复制到应用程序包中。</p>
+
+  <p class="calibre1">　　Xcode偶尔会无法正确显示字符串对照表。在项目导航面板中选中Localizable. strings，Xcode会在编辑器区域显示Localizable.strings。如果读者看到的是乱码，就要让Xcode以Unicode（UTF-16）编码重新解析（reinterpret）该文件。打开工具区域，选择文件检视面板，找到Text Settings（文本设置）区域，将标签为Text Encoding（文本编码）的弹出菜单设置为Unicode（UTF-16）（见图25-10）。Xcode会弹出对话框，并询问是reinterpret（重新解析）还是convert（转换），选择reinterpret。</p>
+
+  <p class="calibre7"><img alt="tu25-10" src="../Images/image00681.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图25-10 修改文件编码</p>
+
+  <p class="calibre1">　　编辑器区域中的Localizable.strings应该显示如下内容：</p>
+
+  <p class="calibre1">　　/* Name of application */</p>
+
+  <p class="calibre1">　　“Homepwner” = “Homepwner”;</p>
+
+  <p class="calibre1">　　/* BNRAssetTypeViewController title */</p>
+
+  <p class="calibre1">　　“Asset Type” = “Asset Type”;</p>
+
+  <p class="calibre1">　　/* Type label None */</p>
+
+  <p class="calibre1">　　“None” = “None”;</p>
+
+  <p class="calibre1">　　/* Asset type button */</p>
+
+  <p class="calibre1">　　“Type: %@” = “Type: %@”;</p>
+
+  <p class="calibre1">　　字符串对照表中的注释源自传入NSLocalizedString的第二个实参。虽然第二个实参不会对NSLocalizedString起任何作用，但是这些注释能在稍后的翻译阶段起辅助提示的作用。</p>
+
+  <p class="calibre1">　　前面介绍了如何为XIB文件创建其他语言的版本，Localizable.strings也一样。在项目导航面板中选中Localizable.strings，点击工具区域的Localize…按钮，加入西班牙语版本的Localizable.strings。选中新创建的Localizable.strings，Xcode会在编辑器区域显示该文件，位于编辑器区域左侧的字符串是键（即传入NSLocalizedString的第一个实参），位于右侧的是等待翻译的字符串（即NSLocalizedString的返回值）。将右侧的文字翻译成西班牙语（“n?”的输入方法是按下Option键的同时按下“n”），内容如下：</p>
+
+  <p class="calibre1">　　/* Name of application */</p>
+
+  <p class="calibre1">　　“Homepwner” = “Duen?o de casa”</p>
+
+  <p class="calibre1">　　/* AssetTypePicker title */</p>
+
+  <p class="calibre1">　　“Asset Type” = “Tipo de activo”;</p>
+
+  <p class="calibre1">　　/* Type label None */</p>
+
+  <p class="calibre1">　　“None” = “Nada”;</p>
+
+  <p class="calibre1">　　/* Asset type button */</p>
+
+  <p class="calibre1">　　“Type: %@” = “Tipo: %@”;</p>
+
+  <p class="calibre1">　　构建并运行应用，此时所有字符串都应该会以西班牙语显示。如果不是，则可以尝试删除应用，对项目执行清理（clean）操作并重新构建（或检查系统的语言设置）。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

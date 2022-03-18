@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">14.1 仪表</h2>
+
+  <p class="calibre1">　　Xcode 5引入了调试仪表（debug gauges），通过仪表可以直观地看出应用的CPU和内存占用量。</p>
+
+  <p class="calibre1">　　在iOS设备中构建并运行TouchTracker（分析应用性能时应该使用真实设备，用户不会在模拟器上打开应用），然后在导航面板选择条中点击，打开调试导航面板（debug navigator），如图14-1所示。</p>
+
+  <p class="calibre7"><img alt="tu14-1" src="../Images/image00541.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-1 仪表</p>
+
+  <p class="calibre1">　　当应用处于运行状态时，调试导航面板会以柱状图显示CPU和内存占用量，并随着应用运行实时更新占用量数据。请读者注意，调试导航面板中的数据是根据运行应用的硬件计算出来的，苹果电脑的CPU比iOS设备更快，如果在iOS模拟器上运行应用，调试导航面板中显示的CPU占用量可能会非常低，不利于分析性能问题。</p>
+
+  <p class="calibre1">　　点击CPU可以在编辑区域打开CPU占用量报告（CPU Report），如图14-2所示。</p>
+
+  <p class="calibre7"><img alt="tu14-2" src="../Images/image00542.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-2 CPU占用量报告</p>
+
+  <p class="calibre1">　　占用量报告包括以下四部分：</p>
+
+  <p class="calibre1">　　•占用百分比（Percentage Utilized）</p>
+
+  <p class="calibre1">　　根据运行应用设备的CPU核心数显示CPU占用比。例如，单核设备中最大CPU占用量是100%，而双核设备中是200%，所以应用在单核设备中的CPU占用量通常比双核设备更高。如果应用处于空闲状态（进入后台或没有操作），CPU占用量会显示0%。</p>
+
+  <p class="calibre1">　　•占用环比（Utilization Comparison）</p>
+
+  <p class="calibre1">　　使用环形图比较应用与系统中其他进程（Process）的CPU占用百分比。如果应用的CPU占用百分比不高，但是运行不流畅，那么可以从该环形图中查看Other Processes的占用百分比。如果设备中后台运行的其他应用太多，就可能导致Other Processes的占用百分比很高，应用运行速度变慢。</p>
+
+  <p class="calibre1">　　•时间-占用比（Utilization over Time）</p>
+
+  <p class="calibre1">　　使用折线图显示应用CPU占用量随运行时间变化的过程，以及占用量在运行时间内的峰值和谷值。</p>
+
+  <p class="calibre1">　　•线程（Threads）</p>
+
+  <p class="calibre1">　　显示应用中每一个线程的时间-占用比。本书不会深入介绍多线程编程，如果读者遇到了多线程问题，可以查看各个线程的CPU占用比，并针对异常线程着重分析。</p>
+
+  <p class="calibre1">　　接下来用手指在TouchTracker中绘制线条，手指不要离开屏幕，持续绘制大量线条，可以发现TouchTracker的CPU占用比迅速升高——手指在屏幕上移动时，BNRDrawView会不断收到touchesMoved:withEvent:消息并调用drawRect:重绘自己。绘制的线条越多，drawRect:的工作量就越大，CPU占用比就越高。</p>
+
+  <p class="calibre1">　　回到调试导航面板，点击Memory，打开内存占用量报告（Memory Report），如图14-3所示。</p>
+
+  <p class="calibre7"><img alt="tu14-3" src="../Images/image00543.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图14-3 内存占用量报告</p>
+
+  <p class="calibre1">　　和CPU占用量报告类似，内存占用量报告直观地显示了应用内存占用的情况，但是Memory部分（位于最下方）显示的折线图可能会让读者产生误解：应用似乎始终占用了100%的内存。实际上，图中将运行时间内的占用峰值作为100%显示，因此图中y轴的最大值与左侧High栏中显示的数值相同，都是9.2 MB。</p>
+
+  <p class="calibre1">　　无论开发何种类型的应用，都应该尽可能降低CPU和内存占用量，提高应用的流畅度和用户体验。建议读者在编写代码的过程中随时观察调试仪表，尽早发现应用的性能问题，如果发现异常情况，需要及时查找代码中的问题，尝试编写性能更好的代码。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">1.7 创建模型对象</h2>
+
+  <p class="calibre1">　　视图对象构成了用户界面，开发者通常在Interface Builder中创建、设置和关联视图对象。而模型对象则是通过编写代码创建的。</p>
+
+  <p class="calibre1">　　在项目导航面板中选择BNRQuizViewController.m文件。添加以下代码，声明一个整型变量和两个数组对象：</p>
+
+  <p class="calibre1">　　@interface BNRQuizViewController ()</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property (nonatomic) int currentQuestionIndex;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property (nonatomic, copy) NSArray *questions;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property (nonatomic, copy) NSArray *answers;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@property (nonatomic, weak) IBOutlet UILabel *questionLabel;</p>
+
+  <p class="calibre1">　　@property (nonatomic, weak) IBOutlet UILabel *answerLabel;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRQuizViewController</p>
+
+  <p class="calibre1">　　- (IBAction)showQuestion:(id)sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　- (IBAction)showAnswer:(id)sender</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　两个数组用于存储一系列问题和答案，而整型变量用于跟踪用户正在回答的问题。</p>
+
+  <p class="calibre1">　　为了确保用户在看到应用界面时，数组已经存储了所需的问题和答案，必须在BNRQuizViewController对象创建完毕之后立即创建数组。</p>
+
+  <p class="calibre1">　　BNRQuizViewController对象创建完毕之后会收到消息：initWithNibName:bundle:。请读者在BNRQuizViewController.m文件中实现initWithNibName: bundle:方法。</p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　@property (nonatomic, weak) IBOutlet UILabel *answerLabel;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRQuizViewController</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (instancetype)initWithNibName:(NSString *)nibNameOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　bundle:(NSBundle *)nibBundleOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 调用父类实现的初始化方法</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self = [super initWithNibName:nibNameOrNil</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　bundle:nibBundleOrNil];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if (self) {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建两个数组对象，存储所需的问题和答案</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 同时，将questions和answers分别指向问题数组和答案数组</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.questions = @[@"From what is cognac made?",</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@"What is 7+7?",</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@"What is the capital of Vermont?"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.answers = @[@"Grapes",</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@"14",</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@"Montpelier"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　 // 返回新对象的地址</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　...</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　（现在读者不用理解代码，第2章将介绍更多关于Objective-C语言的知识。）</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">使用代码补全功能</h3>
+
+  <p class="calibre1">　　读者在阅读本书的过程中，需要输入大量的代码。Xcode会在读者输入代码时，自动填入部分代码。例如，输入initWithNibName:bundle:的前几个字符，Xcode会显示相应的提示并将其列为备选项。按回车键，就可以将这个备选项写入代码，也可以在Xcode显示的下拉列表中选择其他的备选项。</p>
+
+  <p class="calibre1">　　如果选中的备选项对应的是带实参的方法，那么Xcode会在实参的位置放置占位符。（请读者注意，这里的占位符和之前XIB文件中介绍的占位符对象完全不是一回事。）</p>
+
+  <p class="calibre1">　　占位符不是真正的代码，必须将其替换成实际的代码。因为占位符的名称通常会和实参的名称相同，所以初学者很容易产生混淆：代码看上去完全正确，但是编译时会出错。</p>
+
+  <p class="calibre1">　　图1-21显示的是读者在输入上述代码时，可能会碰到的两个占位符。</p>
+
+  <p class="calibre7"><img alt="tu1-21" src="../Images/image00376.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图1-21 代码补全时的占位符示例和错误示例</p>
+
+  <p class="calibre1">　　在图1-21中，initWithNibName:bundle:的第一行实现中的nibNameOrNil和nibBundleOrNil都是占位符。Xcode在显示占位符时，会将带特殊颜色的圆角矩形作为其背景，所以很容易辨认。要修正这类错误，需要选择占位符，输入真正的实参。这样，之前的圆角矩形背景就会消失，代码也能通过编译。</p>
+
+  <p class="calibre1">　　读者在这里可以直接使用占位符的名称作为实参名称。只要选中占位符再按下回车键就可以了，Xcode会自动填入相同的实参名称。</p>
+
+  <p class="calibre1">　　在使用代码补全功能时，Xcode经常会给出和实际需要不同的代码但又很类似的备选项。Cocoa Touch所使用的命名约定（naming convention）会导致不同的方法、类型和变量拥有类似的名称。因此，请读者一定要注意检查，不要不经确认就选择Xcode给出的第一个备选项。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

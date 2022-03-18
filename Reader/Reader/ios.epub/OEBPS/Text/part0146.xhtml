@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">16.1 视觉化格式语言</h2>
+
+  <p class="calibre1">　　视觉化格式语言定义了一系列使用字符串描述约束的象形语法，而这类字符串称为视觉化格式字符串（visual format string）。一个视觉化格式字符串无法同时描述不同方向上的约束，但是可以描述一个方向上的多个约束。因此，为imageView添加约束时，需要使用两个视觉化格式字符串，分别用于描述垂直和水平两个方向上的约束。</p>
+
+  <p class="calibre1">　　首先是描述水平间距的视觉化格式字符串：</p>
+
+  <p class="calibre1">　　@“H:|-0-[imageView]-0-|”</p>
+
+  <p class="calibre1">　　“H:”表示约束的方向是水平（horizontal）；视图需要写在方括号中（“[]”）；“|”表示其父视图。以上字符串描述的约束是：imageView的左边和右边与父视图的距离都是0点。</p>
+
+  <p class="calibre1">　　在视觉化格式语言中，0及其连接符可以省略不写，例如，上述字符串也可以写成：</p>
+
+  <p class="calibre1">　　@“H:|[imageView]|”</p>
+
+  <p class="calibre1">　　与水平约束类似，imageView的垂直约束可以写成：</p>
+
+  <p class="calibre1">　　@“V:[dateLabel]-8-[imageView]-8-[toolbar]”</p>
+
+  <p class="calibre1">　　注意，为了将垂直方向上的约束写在水平排列的字符串中，视觉化格式语言规定，在垂直方向上，字符串的左边表示顶边、右边表示底边。因此，以上字符串描述的约束是：imageView的顶边与dateLabel的距离是8点，其底边与toolbar的距离也是8点。</p>
+
+  <p class="calibre1">　　下面介绍使用视觉化格式字符串描述更复杂的约束。假设有两个<span class="calibre10">UIImageView</span>对象，需要在水平方向添加以下约束：</p>
+
+  <p class="calibre1">　　•两个<span class="calibre10">UIImageView</span>对象的水平间距始终保持10点。</p>
+
+  <p class="calibre1">　　•左边的<span class="calibre10">UIImageView</span>对象与父视图的左边距始终保持20点。</p>
+
+  <p class="calibre1">　　•右边的<span class="calibre10">UIImageView</span>对象与父视图的右边距始终保持20点。</p>
+
+  <p class="calibre1">　　相应的视觉化格式字符串如下：</p>
+
+  <p class="calibre1">　　@“H:|-20-[imageViewLeft]-10-[imageViewRight]-20-|”</p>
+
+  <p class="calibre1">　　如果要限定视图尺寸，则可以在视图后面添加一个括号，然后在括号中填入等号和需要限定的数值。注意，如果是水平约束，则该数值表示宽度；如果是垂直约束则表示高度。例如，以下视觉化格式字符串会限定someView的高度是50点。</p>
+
+  <p class="calibre1">　　@“V:[someView（==50）]”</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

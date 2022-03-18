@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">7.2 委托</h2>
+
+  <p class="calibre1">　　之前章节介绍过目标-动作（Target-Action）设计模式。目标-动作是UIKit中常用的设计模式之一，第1章在编写Quiz应用时，曾经针对UIButton对象使用过这种设计模式。目标-动作的工作方式为：当某个特定的事件发生时（例如按下按钮），发生事件的一方会向指定的目标对象发送一个之前设定好的动作消息。</p>
+
+  <p class="calibre1">　　在目标-动作中，针对不同的事件，需要创建不同的动作消息。<span class="calibre10">UIButton</span>对象的事件比较简单，通常只需要处理点击事件；相反，像<span class="calibre10">UITextField</span>这类事件复杂的对象，Apple使用委托设计模式。<span class="calibre10">UITextField</span>对象具有一个委托属性，通过为<span class="calibre10">UITextField</span>对象设置委托，<span class="calibre10">UITextField</span>对象会在发生事件时向委托发送相应的消息，由委托处理该事件。例如，对于编辑<span class="calibre10">UITextField</span>对象文本内容的事件，有以下两个对应的委托方法：</p>
+
+  <p class="calibre1">　　- (void)<span class="calibre10">textFieldDidEndEditing:</span>(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (void)<span class="calibre10">textFieldDidBeginEditing:</span>(UITextField *)textField;</p>
+
+  <p class="calibre1">　　还有一类带有返回值的委托方法，用于从委托中查询需要的信息，例如，</p>
+
+  <p class="calibre1">　　- (BOOL)<span class="calibre10">textFieldShouldEndEditing:</span>(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (BOOL)<span class="calibre10">textFieldShouldBeginEditing:</span>(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (BOOL)<span class="calibre10">textFieldShouldClear:</span>(UITextField *)textField;</p>
+
+  <p class="calibre1">　　- (BOOL)<span class="calibre10">textFieldShouldReturn:</span>(UITextField *)textField;</p>
+
+  <p class="calibre1">　　注意，在委托方法中，通常应该将对象自身作为第一个参数。多个对象可能具有相同的委托，当委托收到消息时，需要根据该参数判断发送该消息的对象。例如，如果某个视图控制器中包含多个<span class="calibre10">UITextField</span>对象，它们的委托都是该视图控制器，那么视图控制器就需要根据textField参数获取相应的<span class="calibre10">UITextField</span>对象并执行不同的操作。</p>
+
+  <p class="calibre1">　　下面就将<span class="calibre10">UITextField</span>对象所位于的视图控制器——<span class="calibre10">BNRHypnosisViewController</span>设置为它的委托，并实现<span class="calibre10">textFieldShouldReturn:</span>委托方法，当用户点击Done按钮时，<span class="calibre10">UITextField</span>对象就会调用该方法。</p>
+
+  <p class="calibre1">　　打开BNRHypnosisViewController.m，修改<span class="calibre10">loadView</span>方法，将<span class="calibre10">UITextField</span>对象的委托属性设置为<span class="calibre10">BNRHypnosisViewController</span>自身。</p>
+
+  <p class="calibre1">　　- (void)loadView</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　CGRect frame = [UIScreen mainScreen].bounds;</p>
+
+  <p class="calibre1">　　BNRHypnosisView *backgroundView =</p>
+
+  <p class="calibre1">　　[[BNRHypnosisView alloc] initWithFrame:frame];</p>
+
+  <p class="calibre1">　　CGRect textFieldRect = CGRectMake(40, 70, 240, 30);</p>
+
+  <p class="calibre1">　　UITextField *textField = [[UITextField alloc] initWithFrame:textFieldRect];</p>
+
+  <p class="calibre1">　　// 设置UITextField对象的边框样式，便于查看它在屏幕上的位置</p>
+
+  <p class="calibre1">　　textField.borderStyle = UITextBorderStyleRoundedRect;</p>
+
+  <p class="calibre1">　　textField.placeholder = @"Hypnotize me";</p>
+
+  <p class="calibre1">　　textField.returnKeyType = UIReturnKeyDone;</p>
+
+  <p class="calibre1"><span class="calibre10">　　// 这里Xcode会提示一处警告信息，下一节将介绍原因并消除该警告</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　textField.delegate = self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[backgroundView addSubview:textField];</p>
+
+  <p class="calibre1">　　self.view = backgroundView;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　<span class="calibre10">textFieldShouldReturn:</span>只有一个参数，就是用户点击换行键的相应<span class="calibre10">UITextField</span>对象。目前，应用只会向控制台输出<span class="calibre10">UITextField</span>对象的文本内容。</p>
+
+  <p class="calibre1">　　接下来在BNRHypnosisViewController.m中实现<span class="calibre10">textFieldShouldReturn:</span>方法。建议读者从书中复制方法声明，确保方法与<span class="calibre10">UITextField</span>对象的委托方法完全一致，否则<span class="calibre10">UITextField</span>对象不会调用该方法。</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (BOOL)textFieldShouldReturn:(UITextField *)textField</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog(@"%@", textField.text);</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用，在<span class="calibre10">UITextField</span>对象中输入一些文字，然后点击Done，这时控制台中会输出这些文字。</p>
+
+  <p class="calibre1">　　请注意，<span class="calibre10">BNRHypnosisViewController</span>不需要实现<span class="calibre10">UITextField</span>对象的所有委托方法，<span class="calibre10">UITextField</span>对象会在运行时检查委托是否实现了某个方法，如果没有实现，<span class="calibre10">UITextField</span>对象就不会调用该方法。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

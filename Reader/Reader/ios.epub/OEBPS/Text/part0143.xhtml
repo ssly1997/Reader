@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">15.7 深入学习：使用_autolayoutTrace方法调试约束问题</h2>
+
+  <p class="calibre1">　　本章之前通过遍历并依次发送hasAmbiguousLayout消息的方式来查找有歧义布局的视图。如果这些视图都是视图控制器view的一级子视图，那么遍历一次就可以找出全部视图，但是，如果这些视图中又包含复杂的视图层次结构，就应该使用另一种方法。</p>
+
+  <p class="calibre1">　　UIWindow有一个名为_autolayoutTrace的私有实例方法，该方法返回一个表示UIWindow中整个视图层次结构的字符串。对于有歧义布局的视图，_autolayoutTrace会使用AMBIGUOUS LAYOUT（有歧义的布局）标记出来。</p>
+
+  <p class="calibre1">　　使用该方法的最好方式是在显示视图的代码（如视图控制器的viewWillAppear:方法）中设置一个断点，当程序在断点处停下来之后，在控制台中输入以下代码，然后按下Enter键：</p>
+
+  <p class="calibre1">　　（lldb） po [[UIWindow keyWindow] _autolayoutTrace]</p>
+
+  <p class="calibre1">　　如果应用界面与期望的布局方式不一致，同时也无法确定问题原因，就可以使用该方法找出有歧义布局的视图。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

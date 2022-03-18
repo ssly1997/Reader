@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">1.6 创建关联</h2>
+
+  <p class="calibre1">　　通过关联（connection），一个对象可以知道另一个对象在内存中的位置，从而使这两个对象可以协同工作。在Interface Builder中可以创建两种关联：插座变量（outlets）和动作（actions）。插座变量是一种指向对象的指针（将在第2章中介绍指针）；动作是一种方法，这种方法在视图对象和用户发生交互时会被调用，例如点击按钮、拖曳滑动条、滚动选择器等。</p>
+
+  <p class="calibre1">　　现在请读者离开可视化的Interface Builder，开始尝试编写一些代码。首先，创建插座变量指向两个UILabel对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">声明插座变量</h3>
+
+  <p class="calibre1">　　在项目导航面板中选择BNRQuizViewController.m文件，编辑区域会自动从Interface Builder切换到Xcode代码编辑器。</p>
+
+  <p class="calibre1">　　在BNRQuizViewController.m文件中，删除@implementation和@end之间所有应用模板自动生成的代码，这时文件看起来应该是这样：</p>
+
+  <p class="calibre1">　　#import "BNRQuizViewController.h"</p>
+
+  <p class="calibre1">　　@interface BNRQuizViewController ()</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRQuizViewController</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　现在添加以下代码。读者可能看不懂这些代码，不用担心，请先输入代码。</p>
+
+  <p class="calibre1">　　#import "BNRQuizViewController.h"</p>
+
+  <p class="calibre1">　　@interface BNRQuizViewController ()</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property (nonatomic, weak) IBOutlet UILabel *questionLabel;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　@property (nonatomic, weak) IBOutlet UILabel *answerLabel;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　@implementation BNRQuizViewController</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　请读者注意粗体的代码。本书会以加粗的字体显示需要读者输入的代码。其他非粗体的代码是为了提示读者应该插入新代码的位置。</p>
+
+  <p class="calibre1">　　新添加的代码中声明了两个属性（properties）。读者将在第3章中学习属性。现在请关注第一行代码的后半部分。</p>
+
+  <p class="calibre1">　　@property (nonatomic, weak) IBOutlet UILabel *questionLabel;</p>
+
+  <p class="calibre1">　　粗体代码为BNRQuizViewController对象声明了一个插座变量，名叫questionLabel，它可以指向一个UILabel对象。IBOutlet关键字告诉Xcode之后会使用Interface Builder关联该插座变量。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">设置插座变量</h3>
+
+  <p class="calibre1">　　在项目导航面板中选择BNRQuizViewController.xib，Xcode会重新打开Interface Builder。</p>
+
+  <p class="calibre1">　　下面将插座变量questionLabel指向视图上方的UILabel对象。</p>
+
+  <p class="calibre1">　　在dock中找到Placeholders模块中的File's Owner对象。占位符对象（placeholder）在程序运行时会表示其他对象。对于File's Owner对象来说，它表示BNRQuizViewController对象。BNRQuizViewController对象负责管理BNRQuizViewController.xib文件中定义的对象。右击（或者按住Control-单击）File's Owner，打开关联面板（见图1-17）。按住questionLabel右侧的圆圈，然后拖曳至视图上方的标签，当标签处于高亮状态时松开鼠标左键。这样插座变量就设置好了。</p>
+
+  <p class="calibre7"><img alt="tu1-17" src="../Images/image00372.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图1-17 设置questionLabel</p>
+
+  <p class="calibre1">　　（如果读者的关联面板没有显示questionLabel，请打开BNRQuizViewController.m文件仔细检查是否输错了代码。）</p>
+
+  <p class="calibre1">　　现在当应用载入NIB文件时，BNRQuizViewController对象的questionLabel插座变量会自动指向位于视图上方的UILabel对象。通过这个关联，BNRQuizViewController对象就能在应用运行时管理该标签显示的问题。</p>
+
+  <p class="calibre1">　　请读者使用同样的方式创建另一个关联。按住answerLabel右侧的圆圈，将其拖曳至下方的标签（见图1-18）。</p>
+
+  <p class="calibre7"><img alt="tu1-18" src="../Images/image00373.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图1-18 设置answerLabel</p>
+
+  <p class="calibre1">　　注意，这里的起点是“拥有插座变量的对象”，终点是“插座变量需要指向的对象”。</p>
+
+  <p class="calibre1">　　所有的插座变量都已经设置好了，下一步是关联两个按钮，让它们可以响应用户点击。</p>
+
+  <p class="calibre1">　　点击UIButton对象时，该按钮可以向某个对象发送指定的消息（message）。这里接收消息的对象称为目标（target）。消息本身称为动作（action），并且消息的名称就是点击按钮时应该触发的方法名称。</p>
+
+  <p class="calibre1">　　在Quiz应用中，两个按钮的目标都是BNRQuizViewController对象，但是每个按钮的动作不一样，首先请读者定义两个动作方法：showQuestion:和showAnswer:。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">声明动作方法</h3>
+
+  <p class="calibre1">　　请读者打开BNRQuizViewController.m文件，在@implementation和@end之间加入以下代码。</p>
+
+  <p class="calibre1">　　@implementation BNRQuizViewController</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (IBAction)showQuestion:(id)sender</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (IBAction)showAnswer:(id)sender</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　方法的具体实现代码将在关联动作之后添加。IBAction关键字告诉Xcode之后会使用Interface Builder关联该动作。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">设置目标和动作</h3>
+
+  <p class="calibre1">　　要设置某个对象的目标，可以按住Control，拖曳该对象至相应的目标，然后松开鼠标左键，目标就设置好了。这时Xcode会弹出新菜单，提示读者选择动作。</p>
+
+  <p class="calibre1">　　首先请读者设置Show Answer按钮的目标是BNRQuizViewController对象，动作是showQuestion:。</p>
+
+  <p class="calibre1">　　重新打开BNRQuizViewController.xib，在画布中选择Show Question按钮，按住Control并拖曳（或者右键拖曳）至File's Owner。当Xcode高亮显示File's Owner时，松开鼠标左键，选择弹出菜单中的showQuestion:，如图1-19所示。</p>
+
+  <p class="calibre7"><img alt="tu1-19" src="../Images/image00374.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图1-19 设置Show Question按钮的目标/动作</p>
+
+  <p class="calibre1">　　下面设置Show Answer按钮的目标和动作。选中Show Answer按钮，按住Control并拖曳至File's Owner，选择弹出菜单中的showAnswer:。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+
+  <h3 class="sigil_not_in_toc">Quiz中的关联</h3>
+
+  <p class="calibre1">　　现在BNRQuizViewController对象和视图对象之间一共有五个关联。BNRQuizViewController对象的两个指针——answerLabel和questionLabel指向相应的UILabel对象；视图上的两个UIButton对象，其目标都是BNRQuizViewController对象；项目模板创建的一个额外的关联，即名为view的插座变量，指向作为应用背景的UIView对象。</p>
+
+  <p class="calibre1">　　读者可以通过关联检视面板（connections inspector）查看这些关联。选中大纲视图中的File's Owner，在检视面板中选择图标，打开关联检视面板（见图1-20）。</p>
+
+  <p class="calibre7"><img alt="tu1-20" src="../Images/image00375.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图1-20 通过检视面板查看关联</p>
+
+  <p class="calibre1">　　以上完成了Quiz应用的XIB文件。读者创建并设置了应用所需的视图对象，并为视图对象和控制器对象创建了所有必需的关联。下面开始创建模型对象。</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

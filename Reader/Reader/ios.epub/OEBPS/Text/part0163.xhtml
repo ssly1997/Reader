@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">18.1 固化</h2>
+
+  <p class="calibre1">　　对大多数iOS应用，可以将其功能总结为：提供一套界面，帮助用户管理特定的数据。在这一过程中，不同类型的对象要各司其职：模型对象负责保存数据，视图对象负责显示数据，控制器对象负责在模型对象与视图对象之间同步数据。因此，当某个应用要保存和读取数据时，通常要完成的任务是保存和读取相应的模型对象。</p>
+
+  <p class="calibre1">　　对Homepwner，用户可以管理的模型对象是BNRItem对象。目前Homepwner不能保存BNRItem对象，所以，当用户重新运行Homepwner时，之前创建的BNRItem对象都会消失。本章将介绍如何通过固化来保存和读取BNRItem对象。</p>
+
+  <p class="calibre1">　　固化是由iOS SDK提供的一种保存和读取对象的机制，使用非常广泛。当应用固化某个对象时，会将该对象的所有属性存入指定的文件。当应用解固（unarchive）某个对象时，会从指定的文件读取相应的数据，然后根据数据还原对象。</p>
+
+  <p class="calibre1">　　为了能够固化或解固某个对象，相应对象的类必须遵守NSCoding协议，并且实现两个必需方法：encodeWithCoder:和initWithCoder:，代码如下：</p>
+
+  <p class="calibre1">　　@protocol NSCoding</p>
+
+  <p class="calibre1">　　- （void）encodeWithCoder:（NSCoder *）aCoder;</p>
+
+  <p class="calibre1">　　- （instancetype）initWithCoder:（NSCoder *）aDecoder;</p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　打开Homepwner.xcodeproj，在BNRItem.h中将BNRItem声明为遵守NSCoding协议，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRItem : NSObject <span class="calibre10">&lt;NSCoding&gt;</span></p>
+
+  <p class="calibre1">　　下面为BNRItem实现NSCoding协议的两个必需方法。先实现encodeWithCoder:，它有一个类型为NSCoder的参数，BNRItem的encodeWithCoder:方法要将所有的属性都编码至该参数。在固化过程中，NSCoder会将BNRItem转换为键-值对形式的数据并写入指定的文件。</p>
+
+  <p class="calibre1">　　在BNRItem.m中实现encodeWithCoder:，将BNRItem中所有属性的名称和值加入NSCoder对象，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）encodeWithCoder:（NSCoder *）aCoder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[aCoder encodeObject:self.itemName forKey:@“itemName”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[aCoder encodeObject:self.serialNumber forKey:@“serialNumber”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[aCoder encodeObject:self.dateCreated forKey:@“dateCreated”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[aCoder encodeObject:self.itemKey forKey:@“itemKey”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[aCoder encodeInt:self.valueInDollars forKey:@“valueInDollars”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在这段代码中，凡是指向对象的指针都会用encodeObject:forKey:编码，而valueInDollars是用encodeInt:forKey:编码的。请读者查阅NSCoder的文档了解编码的数据类型。无论编码哪种类型的数据，必须有相应的键才能存入NSCoder对象。这个键是字符串，负责标识相应的属性。按照约定，编码某个属性时要使用的键就是该属性的名称。</p>
+
+  <p class="calibre1">　　当应用需要编码某个对象时（encodeObject:forKey:中的第一个参数），会向该对象发送encodeWithCoder:消息。收到该消息的对象需要编码自己的属性，所以也会向这些属性发送encodeWithCoder:消息（见图18-1）。因此，对象的编码过程是一个递归过程：编码中的对象会再编码其他对象。</p>
+
+  <p class="calibre7"><img alt="tu18-1" src="../Images/image00601.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图18-1 编码BNRItem对象</p>
+
+  <p class="calibre1">　　为了能够编码BNRItem对象，BNRItem的所有属性也必需遵守NSCoding协议（除了valueInDollars）。现在请读者在开发文档中查看类参考手册，检查NSString和NSDate是否遵守NSCoding协议。除了打开文档浏览器外，还有一种更快捷的方式可以直接在代码中查看类参考手册。</p>
+
+  <p class="calibre1">　　在BNRItem.m中，按住Option键，点击代码中任意一个NSString，Xcode会弹出一个提示框，显示类的简要说明、头文件链接和参考手册链接（见图18-2）。</p>
+
+  <p class="calibre7"><img alt="tu18-2" src="../Images/image00602.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图18-2 按住Option键，点击NSString</p>
+
+  <p class="calibre1">　　点击NSString Class Reference，在参考手册顶部可以看到NSString遵守的所有协议，其中并没有NSCoding协议，但是包含一个NSSecureCoding协议，点击NSSecureCoding，可以发现该协议遵守NSCoding，因此NSString也遵守NSCoding。</p>
+
+  <p class="calibre1">　　使用同样的方法查看NSDate的类参考手册，可以发现NSDate也遵守NSCoding。</p>
+
+  <p class="calibre1">　　按住Option键，点击方法、类型定义、协议等都可以打开相应的开发文档，读者可以使用这种方式在编写代码的过程中快速查阅需要的信息，以了解它们的使用方法。</p>
+
+  <p class="calibre1">　　现在继续讨论编码。编码BNRItem对象时，需要针对每个属性指定相应的键。当Homepwner从文件读取相应的数据并重新创建BNRItem对象时，会根据键来设置属性。当应用需要根据编码后的数据初始化某个对象时，会向该对象发送initWithCoder:消息。initWithCoder:应该还原之前通过encodeWithCoder:编码的所有对象，然后将这些对象赋给相应的属性。在BNRItem.m中实现initWithCoder:，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （instancetype）initWithCoder:（NSCoder *）aDecoder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self = [super init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （self） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_itemName = [aDecoder decodeObjectForKey:@“itemName”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_serialNumber = [aDecoder decodeObjectForKey:@“serialNumber”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_dateCreated = [aDecoder decodeObjectForKey:@“dateCreated”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_itemKey = [aDecoder decodeObjectForKey:@“itemKey”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_valueInDollars = [aDecoder decodeIntForKey:@“valueInDollars”];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　initWithCoder:也有一个类型为NSCoder的参数，和encodeWithCoder:不同，该参数的作用是为初始化BNRItem对象提供数据。这段代码通过向NSCoder对象发送decodeObjectForKey:重新设置相应的属性。valueInDollars是一个例外，它是整数类型的属性，需要使用decodeIntForKey:创建。</p>
+
+  <p class="calibre1">　　第2章介绍过初始化链和指定初始化方法。initWithCoder:是一个特例，和第2章介绍的这些初始化方法无关。BNRItem需要保留原有的指定初始化方法，initWithCoder:也不会调用指定初始化方法。</p>
+
+  <p class="calibre1">　　XIB文件也是基于固化机制的。当读者在Xcode中将某个视图拖曳至画布时，Xcode会创建相应的对象。保存XIB文件时，Xcode会将这些视图固化至指定的文件（UIView遵守NSCoding协议）。当应用需要载入XIB文件时，就会解固XIB文件中的视图。和普通的固化文件相比，XIB文件会略有差别，但是两者保存和载入的流程大致相同。</p>
+
+  <p class="calibre1">　　修改后的BNRItem对象遵守NSCoding协议，可以通过固化机制来保存和读取它。构建应用，确保没有语法错误。下一个需要解决的问题是，应该将BNRItem对象保存在哪里？</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

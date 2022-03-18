@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">13.3 同时添加多种触摸手势</h2>
+
+  <p class="calibre1">　　接下来为BNRDrawView添加单击手势，让用户可以选择屏幕上的线条（后面章节会添加删除选中线条的功能）。这次仍然使用UITapGestureRecognizer对象，但是点击次数需要改为1。（UITapGestureRecognizer的numberOfTapsRequired属性默认值就是1，不需要在代码中设置。）</p>
+
+  <p class="calibre1">　　在BNRDrawView.m中，修改initWithFrame:方法，代码如下：</p>
+
+  <p class="calibre1">　　[self addGestureRecognizer:doubleTapRecognizer];</p>
+
+  <p class="calibre1"><span class="calibre10">　　UITapGestureRecognizer *tapRecognizer =</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UITapGestureRecognizer alloc] initWithTarget:self</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　action:@selector（tap:）];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　tapRecognizer.delaysTouchesBegan = YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self addGestureRecognizer:tapRecognizer];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　然后实现tap:方法，当UITapGestureRecognizer识别出单击手势时，会向控制台输出一条日志信息。</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）tap:（UIGestureRecognizer *）gr</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Recognized tap”）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用。可以发现，点击一次可以正确识别出单击手势，控制台会输出tap:中的日志信息；但是，如果点击两次，BNRDrawView无法区分单击手势和双击手势，tap:和doubleTap:都会执行。</p>
+
+  <p class="calibre1">　　如果需要为视图添加多种手势，就需要考虑这些手势之间的关系。双击手势包含两次单击，为了避免UITapGestureRecognizer将双击事件分拆为两个单击事件，可以设置UITapGestureRecognizer在单击后暂时不进行识别，直到确定不是双击手势后再识别为单击手势。</p>
+
+  <p class="calibre1">　　在initWithFrame:中添加以下代码：</p>
+
+  <p class="calibre1">　　UITapGestureRecognizer *tapRecognizer =</p>
+
+  <p class="calibre1">　　[[UITapGestureRecognizer alloc] initWithTarget:self</p>
+
+  <p class="calibre1">　　action:@selector（tap:）];</p>
+
+  <p class="calibre1">　　tapRecognizer.delaysTouchesBegan = YES;</p>
+
+  <p class="calibre1"><span class="calibre10">　　[tapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self addGestureRecognizer:tapRecognizer];</p>
+
+  <p class="calibre1">　　构建并运行应用，单击屏幕，UITapGestureRecognizer会稍作停顿，确定是单击手势后再执行tap:方法；而双击屏幕不会再执行tap:方法了。</p>
+
+  <p class="calibre1">　　现在为BNRDrawView添加单击选择线条功能。首先在BNRDrawView.m的类扩展中添加一个属性，用于保存选中的线条，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRDrawView （）</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSMutableDictionary *linesInProgress;</p>
+
+  <p class="calibre1">　　@property （nonatomic, strong） NSMutableArray *finishedLines;</p>
+
+  <p class="calibre1"><span class="calibre10">　　@property （nonatomic, weak） BNRLine *selectedLine;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　（请读者注意，以上代码将selectedLine设置为弱引用，原因是：首先，finishedLines数组会保存selectedLine，是强引用；其次，如果用户清除所有线条，finishedLines会移除selectedLine，这时BNRDrawView会自动将selectedLine设置为nil。）</p>
+
+  <p class="calibre1">　　下面在drawRect:中添加代码，用绿色绘制选中的线条：</p>
+
+  <p class="calibre1">　　[[UIColor redColor] set];</p>
+
+  <p class="calibre1">　　for （NSValue *key in self.linesInProgress） {</p>
+
+  <p class="calibre1">　　[self strokeLine:self.linesInProgress[key]];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1"><span class="calibre10">　　if （self.selectedLine） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[[UIColor greenColor] set];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　[self strokeLine:self.selectedLine];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　然后在BNRDrawView.m中实现lineAtPoint:，根据传入的位置找出距离最近的那个BNRLine对象，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （BNRLine *）lineAtPoint:（CGPoint）p</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 找出离p最近的BNRLine对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　for （BNRLine *l in self.finishedLines） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGPoint start = l.begin;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　CGPoint end = l.end;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 检查线条的若干点</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　for （float t = 0.0; t &lt;= 1.0; t += 0.05） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　float x = start.x + t * （end.x - start.x）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　float y = start.y + t * （end.y - start.y）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果线条的某个点和p的距离在20点以内，就返回相应的BNRLine对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （hypot（x - p.x, y - p.y） &lt; 20.0） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return l;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果没能找到符合条件的线条，就返回nil，代表不选择任何线条</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　（要找到距离某个点最近的线条，还有更好的算法，以上的lineAtPoint:只是一个简化的实现。）</p>
+
+  <p class="calibre1">　　运行TouchTracker时，需要向lineAtPoint:传入手势点击的位置。通过UIGestureRecognizer对象，可以很容易地获取该信息。UIGestureRecognizer对象有一个名为locationInView:的方法，该方法会根据传入的UIView对象的坐标系返回手势发生时的位置信息。</p>
+
+  <p class="calibre1">　　在BNRDrawView.m的tap:中先调用UIGestureRecognizer对象的<span class="calibre10">locationInView:</span>，然后将得到的位置信息作为实参传给<span class="calibre10">lineAtPoint:</span>，最后将返回的<span class="calibre10">BNRLine</span>对象赋给<span class="calibre10">selectedLine</span>。</p>
+
+  <p class="calibre1">　　- （void）tap:（UIGestureRecognizer *）gr</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSLog（@“Recognized tap”）；</p>
+
+  <p class="calibre1"><span class="calibre10">　　CGPoint point = [gr locationInView:self];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.setSelectedLine = [self lineAtPoint:point];</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　[self setNeedsDisplay];</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　构建并运行应用。先画一些线条，然后点击其中的某根线条，TouchTracker应该会用绿色重绘这根线条。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

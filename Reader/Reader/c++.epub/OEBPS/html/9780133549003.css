@@ -1,0 +1,323 @@
+@font-face { font-family: "Courier New"; src: url(fonts/cour.ttf); }
+@font-face { font-family: "Courier New Bold"; src: url(fonts/courbd.ttf); }
+@font-face { font-family: "Courier New Italic"; src: url(fonts/couri.ttf); }
+@font-face { font-family: "Courier New Bold Italic"; src: url(fonts/courbi.ttf); }
+
+body
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-right: 15pt;
+}
+h1
+{
+	margin-top: 15pt;
+	margin-bottom: 12pt;
+	text-align: center;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+h2
+{
+	margin-top: 7pt;
+	margin-bottom: 25pt;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+h3
+{
+	margin-top: 9pt;
+	margin-bottom: 8pt;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+h4
+{
+	margin-top: 9pt;
+	margin-bottom: 6pt;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+h5
+{
+	margin-top: 9pt;
+	margin-bottom: 6pt;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+h6
+{
+	margin-top: 9pt;
+	margin-bottom: 6pt;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+.cover
+{
+	margin-top: 2pt;
+	margin-bottom: 2pt;
+	text-align: center;
+}
+.indent
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	text-indent: 15pt;
+}
+.noindent
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	text-indent: 0.002pt;
+}
+.publisher
+{
+	margin-top: 70pt;
+	margin-bottom: 2pt;
+	text-align: center;
+}
+.address
+{
+	margin-top: 2pt;
+	margin-bottom: 2pt;
+	text-align: center;
+}
+.copy
+{
+	margin-top: 8pt;
+	margin-bottom: 8pt;
+	text-indent: 0.024pt;
+}
+.author
+{
+	margin-top: 80pt;
+	font-weight: bold;
+	text-align: center;
+}
+.attribution
+{
+	margin-top: 2pt;
+	margin-bottom: 14pt;
+	text-align: right;
+}
+.blockquote
+{
+	margin-top: 7pt;
+	margin-bottom: 2pt;
+	text-align: right;
+}
+div.image, img
+{
+	max-width: 99%;
+	max-height: 99%;
+}
+.image
+{
+	margin-top: 5pt;
+	text-align: center;
+}
+.toc-preface
+{
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+	margin-left: 15pt;
+	text-align: left;
+}
+.toc-chapter
+{
+	margin-top: 10pt;
+	margin-bottom: 5pt;
+	margin-left: 15pt;
+	text-align: left;
+}
+.toc-section
+{
+	margin-top: 5pt;
+	margin-bottom: 4pt;
+	margin-left: 45pt;
+	text-align: left;
+}
+.toc-index
+{
+	margin-top: 20pt;
+	margin-bottom: 5pt;
+	margin-left: 10pt;
+	text-align: left;
+}
+.indenthangingB
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 35pt;
+	text-indent: -7.5pt;
+	text-align: left;
+}
+.indenthangingBP
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 50pt;
+	text-align: left;
+}
+.indenthangingN
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 35pt;
+	text-indent: -12pt;
+	text-align: left;
+}
+.codelink
+{
+	font-size: small;
+	margin-top: 6pt;
+	margin-bottom: 6pt;
+	font-weight: bold;
+	page-break-after: avoid;
+}
+div.image-p, img
+{
+	max-width: 99%;
+	max-height: 99%;
+}
+.image-p
+{
+	text-align: center;
+	page-break-before: always;
+}
+.pre
+{
+	font-family: "Courier New";
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+	color: #0000FF;
+	margin-left: 20pt;
+	text-align: left;
+}
+.pre1
+{
+	font-family: "Courier New";
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+	color: #0000FF;
+	text-align: left;
+	margin-left: 45pt;
+}
+.EmpStrong
+{
+	font-family: "Courier New Bold";
+	font-weight: bold;
+	color: #0000FF;
+}
+.EmpItalic
+{
+	font-family: "Courier New Italic";
+	font-style: italic;
+	color: #0000FF;
+}
+code
+{
+	font-family: "Courier New";
+	color: #0000FF;
+}
+.ref
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 35pt;
+	text-indent: -19pt;
+	text-align: left;
+}
+.refP
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 35pt;
+	text-align: left;
+}
+.refa
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 55pt;
+	text-indent: -19pt;
+	text-align: left;
+}
+.ref1
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 35pt;
+	text-indent: -25pt;
+	text-align: left;
+}
+.refa1
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 55pt;
+	text-indent: -25pt;
+	text-align: left;
+}
+.uln-indent
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 25pt;
+}
+.indexmain
+{
+	margin-top: 2pt;
+	margin-bottom: 2pt;
+	text-align: left;
+}
+.indexsub
+{
+	margin-top: 2pt;
+	margin-bottom: 2pt;
+	margin-left: 30pt;
+	text-indent: -15pt;
+	text-align: left;
+}
+.pd_blue
+{
+	color: #0000FF;
+}
+.heading
+{
+	page-break-inside: avoid;
+}
+.blockquote1
+{
+	margin-top: 7pt;
+	margin-bottom: 2pt;
+	margin-left: 10pt;
+}
+.attribution1
+{
+	margin-top: 2pt;
+	margin-bottom: 14pt;
+	margin-left: 10pt;
+}
+.bib
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 1pt;
+}
+.bib1
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 20pt;
+}
+.author1
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	text-indent: 0.002pt;
+}
+.right
+{
+	text-align: right;
+}

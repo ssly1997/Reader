@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">24.5 恢复视图控制器</h2>
+
+  <p class="calibre1">　　之前为Homepwner中的两个视图控制器设置了恢复类，恢复类将负责创建相应的视图控制器。在BNRItemsViewController.h中使BNRItemsViewController遵守UIViewController- Restoration协议，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRItemsViewController : UITableViewController</p>
+
+  <p class="calibre1">　　<span class="calibre10">&lt;UIViewControllerRestoration&gt;</span></p>
+
+  <p class="calibre1">　　@end</p>
+
+  <p class="calibre1">　　然后打开BNRItemsViewController.m，实现UIViewControllerRestoration协议中唯一的方法，该方法返回一个新的视图控制器。代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　+ （UIViewController *）viewControllerWithRestorationIdentifierPath:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（NSArray *）path coder:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [[self alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　同样，BNRDetailViewController也需要遵守UIViewControllerRestoration协议，修改BNRDetailViewController.h，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRDetailViewController : UIViewController</p>
+
+  <p class="calibre1">　　<span class="calibre10">&lt;UIViewControllerRestoration&gt;</span></p>
+
+  <p class="calibre1">　　下面有个问题：为了实现UIViewControllerRestoration协议的方法，需要使用initForNewItem:方法创建BNRDetailViewController对象，而initForNewItem:方法有一个BOOL类型的参数，如何知道是传入YES还是NO呢？答案是通过恢复标识路径（restoration identifier path）。</p>
+
+  <p class="calibre1">　　恢复标识路径其实是一个恢复标识数组，存储了该视图控制器及其所有祖先视图控制器的恢复标识。图24-4是Homepwner应用中各个视图控制器的恢复标识路径。</p>
+
+  <p class="calibre7"><img alt="tu24-4" src="../Images/image00670.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图24-4 恢复标识路径</p>
+
+  <p class="calibre1">　　图中大部分视图控制器的恢复标识路径都非常直观，唯独需要注意以模态形式推入的UINavigationController对象。</p>
+
+  <p class="calibre1">　　实际上，UINavigationController对象并不是由BNRItemsViewController对象推入的，而是BNRItemsViewController对象的父视图控制器——应用的根视图控制器（图24-4中顶层UINavigationController对象）。因此，该UINavigationController对象及其子视图控制器BNRDetailViewController的恢复标识路径中并不包括BNRItemsViewController。</p>
+
+  <p class="calibre1">　　由此可知，如果是查看已经存在的BNRItem对象，那么恢复标识数组的元素数量为2；如果是创建新的BNRItem对象，则元素数量为3。</p>
+
+  <p class="calibre1">　　打开BNRDetailViewController.m，实现UIViewControllerRestoration协议的方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　+ （UIViewController *）viewControllerWithRestorationIdentifierPath:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（NSArray *）path coder:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BOOL isNew = NO;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[path count] == 3） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　isNew = YES;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [[self alloc] initForNewItem:isNew];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　现在，BNRDetailViewController也可以正确恢复状态了，如果是创建新BNRItem对象，其导航栏会显示Cancel和Done两个按钮；否则只显示返回按钮。</p>
+
+  <p class="calibre1">　　接下来还需要为两个UINavigationController对象添加状态恢复功能，之前为它们设置了恢复标识，但是没有设置恢复类。如果某个需要恢复的对象没有恢复类，系统会要求应用程序委托创建该对象。打开BNRAppDelegate.m，实现UIApplicationDelegate协议中的application:viewControllerWithRestorationIdentifierPath:coder:方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （UIViewController *）application:（UIApplication *）application</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　viewControllerWithRestorationIdentifierPath:</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　（NSArray *）identifierComponents coder:（NSCoder *）coder</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 创建一个新的UINavigationController对象</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　UIViewController *vc = [[UINavigationController alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 恢复标识路径中的最后一个对象就是UINavigationController对象的恢复标识</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　vc.restorationIdentifier = [identifierComponents lastObject];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果恢复标识路径中只有一个对象，</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 就将UINavigationController对象设置为UIWindow的rootViewController</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （[identifierComponents count] == 1） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　self.window.rootViewController = vc;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return vc;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　构建并运行应用，创建一个新的BNRItem对象，进入其详细界面，然后触发状态恢复。这时Homepwner可以正确回到BNRDetailViewController界面，但是界面上并没有显示BNRItem对象的任何信息。虽然Homepwner可以正确保存视图控制器的层级结构，但是还没有保存相应的模型对象（BNRItem对象）。下一节将介绍如何保存并恢复BNRDetailView- Controller显示的BNRItem对象。</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

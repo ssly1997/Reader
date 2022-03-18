@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">3.4 强引用与弱引用</h2>
+
+  <p class="calibre1">　　之前介绍过，只要指针变量指向了某个对象，那么相应的对象就会多一个拥有者，并且不会被程序释放。这种指针特性（attribute）称为强引用（strong reference）。</p>
+
+  <p class="calibre1">　　程序也可以选择让指针变量不影响其指向对象的拥有者个数。这种不会改变对象拥有者个数的指针特性称为弱引用（weak reference）。</p>
+
+  <p class="calibre1">　　弱引用非常适合解决一种称为强引用循环（strong reference cycle，有时也称为保留循环）的内存管理问题。当两个或两个以上的对象相互之间有强引用特性的指针关联时，就会产生强引用循环。强引用循环会导致内存泄露。当两个对象互相拥有时，将无法通过ARC机制来释放。即使应用中的其他对象都释放了针对这两个对象的所有权，这两个对象及其拥有的所有对象也无法被释放。</p>
+
+  <p class="calibre1">　　因此在编写应用时，程序员必须自己做一些额外的工作，才能帮助ARC解决强引用循环所导致的内存泄露问题。解决强引用循环的途径是将某个指针的特性设置为弱引用。</p>
+
+  <p class="calibre1">　　下面为RandomItems加入一处强引用循环，借以向读者介绍如何解决此类问题。首先，让BNRItem对象能够保存另外一个BNRItem对象（这样就能表现背包和钱包这样的物品关系）。此外，BNRItem对象会有一个指针实例变量，指回包含该对象的BNRItem对象。</p>
+
+  <p class="calibre1">　　在BNRItem.h中，增加两个实例变量和相应的存取方法，代码如下：</p>
+
+  <p class="calibre1">　　@interface BNRItem : NSObject</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　NSString *_itemName;</p>
+
+  <p class="calibre1">　　NSString *_serialNumber;</p>
+
+  <p class="calibre1">　　int _valueInDollars;</p>
+
+  <p class="calibre1">　　NSDate *_dateCreated;</p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *_containedItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *_container;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　+ (instancetype)randomItem;</p>
+
+  <p class="calibre1">　　- (instancetype)initWithItemName:(NSString *)name</p>
+
+  <p class="calibre1">　　　　　valueInDollars:(int)value</p>
+
+  <p class="calibre1">　　　　　serialNumber:(NSString *)sNumber;</p>
+
+  <p class="calibre1">　　- (instancetype)initWithItemName:(NSString *)name;</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)setContainedItem:(BNRItem *)item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (BNRItem *)containedItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)setContainer:(BNRItem *)item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (BNRItem *)container;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在BNRItem.m中实现新加入的存取方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)setContainedItem:(BNRItem *)item</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_containedItem = item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 将item加入容纳它的BNRItem对象时，</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 会将它的container实例变量指向容纳它的对象。</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　item.container = self;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (BNRItem *)containedItem</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return _containedItem;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (void)setContainer:(BNRItem *)item</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_container = item;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　- (BNRItem *)container</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return _container;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在main.m中，首先删除创建并枚举多个随机BNRItem对象的代码。然后创建两个新的BNRItem对象并加入items数组。最后将这两个对象用指针关联起来，代码如下：</p>
+
+  <p class="calibre1">　　int main (int argc, const char * argv[])</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　@autoreleasepool {</p>
+
+  <p class="calibre1">　　　　NSMutableArray *items = [[NSMutableArray alloc] init];</p>
+
+  <p class="calibre1">　　　　<del class="calibre11"><span class="calibre10">for (int i = 0; i &lt; 10; i++) {</span></del></p>
+
+  <p class="calibre1">　　　　　　<del class="calibre11"><span class="calibre10">BNRItem *item = [BNRItem randomItem];</span></del></p>
+
+  <p class="calibre1">　　　　　　<del class="calibre11"><span class="calibre10">[items addObject:item];</span></del></p>
+
+  <p class="calibre1">　　　　<del class="calibre11"><span class="calibre10">}</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　BNRItem *backpack = [[BNRItem alloc] initWithItemName:@"Backpack"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　[items addObject:backpack];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　BNRItem *calculator = [[BNRItem alloc] initWithItemName:@"Calculator"];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　[items addObject:calculator];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　backpack.containedItem = calculator;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　backpack = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　　　calculator = nil;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　　　for (BNRItem *item in items)</p>
+
+  <p class="calibre1">　　　　　　NSLog(@"%@", item);</p>
+
+  <p class="calibre1">　　　　NSLog(@"Setting items to nil...");</p>
+
+  <p class="calibre1">　　　　items = nil;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return 0;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　修改后的RandomItems的对象图如图3-4所示。</p>
+
+  <p class="calibre7"><img alt="tu3-4" src="../Images/image00410.jpeg" class="calibre8"/>&gt;</p>
+
+  <p class="calibre7">图3-4 　存在强引用循环问题的RondomItems</p>
+
+  <p class="calibre1">　　构建并运行应用，检查控制台输出，会发现应用并没有输出释放这些对象的提示信息。</p>
+
+  <p class="calibre1">　　RondomItems无法正确地释放对象是由强引用循环引起的：backpack变量指向的对象和calculator变量指向的对象都有强引用特性的指针，并指向彼此。图3-5显示的是在应用将items设置为nil后，没有被释放并继续占用内存的所有对象。</p>
+
+  <p class="calibre7"><img alt="tu3-5" src="../Images/image00411.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图3-5 　对象没有被释放，造成内存泄露</p>
+
+  <p class="calibre1">　　在RandomItems将items设置为nil后，除了新创建的两个对象自身外，应用的其余部分（例如这段代码中的main函数）都将无法使用这两个对象，并且这两个无法被使用的对象会一直占用应用的内存。此外，因为应用不会释放这两个对象，所以，如果这些对象的实例变量还指向了其他对象，那么这些被指向的对象也不会被释放。</p>
+
+  <p class="calibre1">　　要解决RandomItems的强引用循环问题，需要将新创建的两个BNRItem对象之间的某个指针改为弱引用特性。在决定将哪个指针改为弱引用前，可以先为存在强引用循环问题的多个对象决定相应的父-子关系（parent-child relationship）。确定父-子关系后，就可以让父对象拥有子对象，并确保子对象不会拥有父对象。以RandomItems的强引用循环为例，backpack是父对象，calculator是子对象。根据以上规则，可以将backpack指向calculator（_containedItem）的指针保留为强引用特性，并将calculator指向backpack（_container）的指针改为弱引用特性。</p>
+
+  <p class="calibre1">　　使用__weak关键字，可以将某个变量声明为具有弱引用特性。在BNRItem.h中，为实例变量container增加弱引用特性，代码如下：</p>
+
+  <p class="calibre1">　　_ _weak BNRItem *_container;</p>
+
+  <p class="calibre1">　　构建并运行应用，修改后的RandomItems能正确地释放新创建的两个BNRItem对象。</p>
+
+  <p class="calibre1">　　大部分强引用循环问题都可以为其确定一个父-子关系。通常情况下，父对象应该使用具有强引用特性的指针，指向子对象。而子对象则应该使用具有弱引用特性的指针，指回父对象。这样就可以避免强引用循环问题。</p>
+
+  <p class="calibre1">　　如果某个子对象具有一个强引用特性的指针，指向父对象的父对象，一样也会导致强引用循环。所以上述规则也适用于：如果某个子对象需要有一个指针，指向父对象的父对象（或者是父对象的父对象的父对象，等等），那么该指针必须具有弱引用特性。</p>
+
+  <p class="calibre1">　　Xcode的Leaks工具可以帮助我们找出强引用循环问题。第14章会介绍如何使用Leaks工具。</p>
+
+  <p class="calibre1">　　具有弱引用特性的指针指向的对象被释放后，指针会自动设置为nil。以RandomItems为例，当应用释放backpack后，会自动地将calculator的实例变量_container设置为nil。这就是弱引用的好处：如果_container没有被设置为nil，backpack对象被释放后会留下一个空指针，访问该指针就会引起程序崩溃。</p>
+
+  <p class="calibre1">　　修正强引用循环问题后，RandomItems的新对象图如图3-6所示。注意，图中代表指针变量_container的箭头已经改为虚线。虚线代表具有弱引用特性的指针。强引用特性的指针变量仍然用实线表示。</p>
+
+  <p class="calibre7"><img alt="tu3-6" src="../Images/image00412.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图3-6 　解决强引用循环问题后的RondomItems</p>
+
+  <p class="calibre1"><br class="calibre2"/></p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>

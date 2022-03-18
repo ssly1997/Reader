@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>未知</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="calibre9">18.3 NSKeyedArchiver与NSKeyedUnarchiver</h2>
+
+  <p class="calibre1">　　18.2节修改了BNRItem类，能使Homepwner固化BNRItem对象。此外，还介绍了保存数据所需的目录。最后要解决的两个问题是：①如何保存或读取数据？②何时保存或读取数据？下面先解决“保存”问题。Homepwner应该在退出（exit）时，通过NSKeyedArchiver类保存BNRItem对象。</p>
+
+  <p class="calibre1">　　在BNRItemStore.h中声明一个新方法，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （BOOL）saveChanges;</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　在BNRItemStore.m中实现该方法，向NSKeyedArchiver类发送archiveRootObject: toFile:消息，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （BOOL）saveChanges</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *path = [self itemArchivePath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果固化成功就返回YES</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　return [NSKeyedArchiver archiveRootObject:self.privateItems</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　toFile:path];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　这段代码中的archiveRootObject:toFile:会将privateItems中的所有BNRItem对象都保存至路径为itemArchivePath的文件。代码本身很简单，其工作原理如下：</p>
+
+  <p class="calibre1">　　•archiveRootObject:toFile:会先创建一个NSKeyedArchiver对象。（NSKeyed- Archiver是抽象类NSCoder的具体实现子类。）</p>
+
+  <p class="calibre1">　　•然后，archiveRootObject:toFile:会向privateItems发送encodeWithCoder:消息，并传入NSKeyedArchiver对象作为第一个参数。</p>
+
+  <p class="calibre1">　　•privateItems的encodeWithCoder:方法会向其包含的所有BNRItem对象发送encodeWithCoder:消息，并传入同一个NSKeyedArchiver对象。这些BNRItem对象都会将其属性编码至同一个NSKeyedArchiver对象（见图18-4）。</p>
+
+  <p class="calibre1">　　•当所有的对象都完成编码后，NSKeyedArchiver对象就会将数据写入指定的文件。</p>
+
+  <p class="calibre7"><img alt="tu18-4" src="../Images/image00605.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图18-4 固化privateItems中包含的BNRItem对象</p>
+
+  <p class="calibre1">　　在用户按下设备的主屏幕按钮后，BNRAppDelegate对象会收到application- DidEnterBackground:消息。Homepwner应该在applicationDidEnterBackground:中向BNRItemStore对象发送saveChanges消息。</p>
+
+  <p class="calibre1">　　在BNRAppDelegate.m顶部导入BNRItemStore.h，然后实现applicationDid- EnterBackground:，保存所有的BNRItem对象，代码如下：</p>
+
+  <p class="calibre1"><span class="calibre10">　　#import “BNRItemStore.h”</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　@implementation HomepwnerAppDelegate</p>
+
+  <p class="calibre1"><span class="calibre10">　　- （void）applicationDidEnterBackground:（UIApplication *）application</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　{</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　BOOL success = [[BNRItemStore sharedStore] saveChanges];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （success） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Saved all of the BNRItems”）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　} else {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSLog（@“Could not save any of the BNRItems”）；</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　（Xcode在创建Homepwner项目时，可能已经通过模板为BNRAppDelegate实现了applicationDidEnterBackground:。如果BNRAppDelegate.m已经有了一个名为applicationDidEnterBackground:的方法，就应该在已有方法的尾部增加上述代码，而不是重复加入同一个方法。）</p>
+
+  <p class="calibre1">　　针对模拟器构建并运行应用。增加若干BNRItem对象，然后按下主屏幕按钮，退出至主屏幕。Homepwner应该会在控制台输出相应的提示信息，表示已经保存了全部BNRItem对象。</p>
+
+  <p class="calibre1">　　虽然Homepwner现在还不能读取之前保存的文件并还原BNRItem对象，但是可以验证应用是否将某些数据保存至了指定的文件。在Finder中，使用快捷键Command-Shift-G，然后在文本框中输入~/Library/ApplicationSupport/iPhoneSimulator，最后单击“前往”（Go）按钮。Finder会打开指定的目录，模拟器会在该目录中保存所有已安装的应用和相应的程序包。</p>
+
+  <p class="calibre1">　　根据构建并运行应用时所指定的iOS版本（这里以iOS 7.0为例），打开相应的目录（7.0）。打开Applications目录，应该可以看到安装至模拟器的全部应用。因为这些目录的目录名并没有包含应用的名称，所以只能逐个打开查找，直到找到包含Homepwner应用的那个。</p>
+
+  <p class="calibre1">　　在包含Homepwner的目录中，打开Documents目录（见图18-5）。Finder应该会显示一个名为items.archive的文件。建议读者为iPhone Simulator目录创建一个“快捷方式”（alias），方便将来再次访问。</p>
+
+  <p class="calibre7"><img alt="tu18-5" src="../Images/image00606.jpeg" class="calibre8"/></p>
+
+  <p class="calibre7">图18-5 Homepwner的沙盒</p>
+
+  <p class="calibre1">　　下面继续为Homepwner添加功能，使之能够读取前面保存的文件。为了能在Homepwner启动时载入之前保存的全部BNRItem对象，需要在创建BNRItemStore对象时使用NSKeyedUnarchiver类。在BNRItemStore.m中，将以下代码加入initPrivate。</p>
+
+  <p class="calibre1">　　- （instancetype）initPrivate</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　self = [super init];</p>
+
+  <p class="calibre1">　　if （self） {</p>
+
+  <p class="calibre1">　　_<del class="calibre11"><span class="calibre10">privateItems = [[NSMutableArray alloc] init];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　NSString *path = [self itemArchivePath];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_privateItems = [NSKeyedUnarchiver unarchiveObjectWithFile:path];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　// 如果之前没有保存过privateItems，就创建一个新的</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　if （！_privateItems） {</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　_privateItems = [[NSMutableArray alloc] init];</span><br class="calibre2"/></p>
+
+  <p class="calibre1"><span class="calibre10">　　}</span><br class="calibre2"/></p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　return self;</p>
+
+  <p class="calibre1">　　}</p>
+
+  <p class="calibre1">　　这段代码中的unarchiveObjectWithFile:类方法会创建一个NSKeyedUnarchiver对象，然后根据指定的路径载入固化文件。接着，NSKeyedUnarchiver类会查看固化文件中的根对象，然后根据根对象的类型创建相应的对象。Homepwner在创建固化文件时，使用的根对象是NSMutableArray对象，所以解固时的根对象也是NSMutableArray（如果根对象是BNRItem对象，那么unarchiveObjectWithFile:也会返回BNRItem对象）。</p>
+
+  <p class="calibre1">　　创建完NSMutableArray对象后，NSKeyedUnarchiver的unarchiveObjectWithFile:方法会向新创建的NSMutableArray对象发送initWithCoder:消息，并将NSKeyedUnarchiver对象作为实参传入。NSMutableArray对象会通过NSKeyedUnarchiver对象解码相关的对象（BNRItem对象），向所有解固后的对象发送initWithCoder:消息，传入同一个NSKeyedUnarchiver对象。</p>
+
+  <p class="calibre1">　　构建并运行应用，增加若干BNRItem对象，然后终止Homepwner。再次运行Homepwner，应该会看到之前创建的BNRItem对象。测试Homepwner的保存与读取功能时要注意：如果是通过单击Xcode的Stop按钮来终止Homepwner的，那么Homepwner将没有机会保存BNRItem对象。所以读者必须先按下主屏幕按钮，然后再单击Xcode的Stop按钮。</p>
+
+  <p class="calibre1">　　之前因为无法保存BNRItem对象，所以Homepwner创建的都是随机的BNRItem对象，以方便测试。更新后的Homepwner已经支持保存并读取BNRItem对象，所以没有必要再创建随机的BNRItem对象。更新BNRItemStore.m中的createItem方法，修改为创建空的BNRItem对象，代码如下：</p>
+
+  <p class="calibre1">　　- （BNRItem *）createItem</p>
+
+  <p class="calibre1">　　{</p>
+
+  <p class="calibre1">　　<del class="calibre11"><span class="calibre10">BNRItem *item = [BNRItem randomItem];</span></del></p>
+
+  <p class="calibre1"><span class="calibre10">　　BNRItem *item = [[BNRItem alloc] init];</span></p>
+
+  <p class="calibre1">　　[self.privateItems addObject:item];</p>
+
+  <p class="calibre1">　　return item;</p>
+
+  <p class="calibre1">　　}</p>
+<div class="calibre5">本书由「<a href="https://epubw.com" class="calibre6">ePUBw.COM</a>」整理，<a href="https://epubw.com" class="calibre6">ePUBw.COM</a> 提供最新最全的优质电子书下载！！！</div></body></html>
