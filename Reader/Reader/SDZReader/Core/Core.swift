@@ -74,9 +74,6 @@ class SDZReadParser {
 
 class SDZReadUtilites {
     
-    // 此处缓存逻辑已废弃
-    static let useCache = false
-    
     class func separateTxtChapters(chapters:inout [SDZChapterModel], content:String, key:String?) {
         chapters.removeAll()
         let total = Double(content.count)
@@ -163,7 +160,7 @@ class SDZReadUtilites {
             unzipPath = try SDZFileUtilites.unzipEpubFile(form: url)
         }
         catch {
-            unzipPath = SDZFileUtilites.cachePath()+"/"+"okok"
+            unzipPath = SDZFileUtilites.cachePath()+"/"+"del"
             var pointer = ObjCBool.init(false)
             let ex = FileManager.default.fileExists(atPath: unzipPath, isDirectory: &pointer)
             if !(ex && pointer.boolValue) {
@@ -200,51 +197,6 @@ class SDZReadUtilites {
         return content
     }
     
-    // MARK: 缓存相关 (此方法已废弃,下同)
-    class private func loadCache(chapters:inout [SDZChapterModel], content:String, key:String) {
-        let fileManager = FileManager.default
-        let path = filePath(key: key)!
-        if fileManager.fileExists(atPath: path) {
-            let data:Data = fileManager.contents(atPath: path)!
-            do {
-                let res = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSDictionary.self, from: data)
-                let keys = res?.allKeys.sorted(by: { a, b in
-                    return (a as! Int) < (b as! Int)
-                })
-                let nsString = content as NSString
-                for i in 0..<keys!.count-1 {
-                    let range = NSRange.init(location: keys![i] as! Int, length: (keys![i+1] as! Int)-(keys![i] as! Int))
-                    let content = nsString.substring(with: range)
-                    let title = res![keys![i]]
-                    let chapter = SDZChapterModel.init(index: i, title: title as! String, content: content)
-                    chapters.append(chapter)
-                }
-                let range = NSRange.init(location: keys!.last as! Int, length: nsString.length - (keys!.last as! Int))
-                let title = res![keys!.last!]
-                let content = nsString.substring(with: range)
-                let chapter = SDZChapterModel.init(index: keys!.count-1, title: title as! String, content: content)
-                chapters.append(chapter)
-            }
-            catch {
-                assert(false, "error")
-            }
-            return
-        }
-    }
-    
-    class private func saveCacheAsync(data:[Int:String], key:String) {
-        DispatchQueue.init(label: "com.page.sdz").async {
-            let filePath = filePath(key: key)!
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: data, requiringSecureCoding: true)
-                try data.write(to: URL.init(fileURLWithPath: filePath))
-            }
-            catch {
-                assert(false, "error")
-            }
-        }
-    }
-    
     class private func filePath(key:String?) -> String? {
         let cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last
         let filePath = cachePath!+"/\(key ?? "").archiver"
@@ -255,7 +207,6 @@ class SDZReadUtilites {
     class fileprivate func changeAttStrFont(att:NSAttributedString, fontSize:CGFloat) -> NSAttributedString {
         let res = NSMutableAttributedString.init(attributedString: att)
         var range = NSRange.init(location: 0, length: att.length)
-    
         var index = 0
         let standard:CGFloat = 18.0
         while index < att.length {
@@ -267,7 +218,24 @@ class SDZReadUtilites {
             index = range.upperBound
             range = NSRange.init(location: range.upperBound, length: att.length - range.length)
         }
-        return res
+        return res as NSAttributedString
+    }
+    
+    // 必须将CTParagraphStyle转为NSParagraphStyle 才能进行序列化
+    class fileprivate func changeParagraphStyle(att:NSAttributedString) -> NSAttributedString {
+        let res = NSMutableAttributedString.init(attributedString: att)
+        var range = NSRange.init(location: 0, length: att.length)
+        var index = 0
+        
+        while index < att.length {
+            let style = att.attribute(.paragraphStyle, at: index, effectiveRange: &range) as! CTParagraphStyle
+            let new = NSParagraphStyle.yy_style(withCTStyle: style)!
+            res.addAttribute(.paragraphStyle, value: new, range: range)
+            index = range.upperBound
+            range = NSRange.init(location: range.upperBound, length: att.length - range.length)
+        }
+        
+        return res as NSAttributedString
     }
 }
 
@@ -352,13 +320,6 @@ class SDZFileUtilites {
         if !FileManager.default.fileExists(atPath: url.path) {
             throw ReadModelError.fileExistsError("文件不存在")
         }
-//        let read = FileManager.default.isReadableFile(atPath: url.path)
-//        let write = FileManager.default.isWritableFile(atPath: url.path)
-//        let ex = FileManager.default.isExecutableFile(atPath: url.path)
-//        let data = FileManager.default.contents(atPath: url.path)
-//
-//        let readHandler = try FileHandle(forReadingFrom: url)
-//        let data2 = readHandler.readDataToEndOfFile()
         
         let desPath = cachePath()+"/Epub/"+url.lastPathComponent.replacingOccurrences(of: ".epub", with: "")
         if FileManager.default.fileExists(atPath: desPath) {
@@ -399,8 +360,15 @@ class SDZFileUtilites {
             throw ReadModelError.fileExistsError("opf文件不存在")
         }
         let document = try CXMLDocument.init(data: opfData, options: 0)
+        //opf文件的命名空间 xmlns="http://www.idpf.org/2007/opf" 需要取到某个节点设置命名空间的键为opf 用opf:节点来获取节点
         let items = try document.nodes(forXPath: "//opf:item", namespaceMappings: ["opf":"http://www.idpf.org/2007/opf"])
     
+        // todo info
+//        let title = readDCValueFromOPF(key: "title", document: document)
+//        let creator = readDCValueFromOPF(key: "creator", document: document)
+//
+//        let cover = readCoverImage(document: document)
+        
         var itemDic = [String:String]()
         var ncxFile:String?
         for item in items {
@@ -434,8 +402,9 @@ class SDZFileUtilites {
                 throw ReadModelError.epubError("opf解析错误5")
             }
             let href = element.attribute(forName: "href").stringValue() ?? ""
-            print(href)
+            print("🇨🇳sz", href)
             let xPath = String.init(format: "//ncx:content[@src='%@']/../ncx:navLabel/ncx:text", href)
+            //根据opf文件的href获取到ncx文件中的中对应的目录名称
             let navPoints = try ncxDocument.nodes(forXPath: xPath, namespaceMappings: ["ncx":"http://www.daisy.org/z3986/2005/ncx/"])
             if !navPoints.isEmpty {
                 guard let titleElement = navPoints.first! as? CXMLElement else {
@@ -453,22 +422,75 @@ class SDZFileUtilites {
                 throw ReadModelError.epubError("opf解析错误7")
             }
             let chapHref = itemDic[item.attribute(forName: "idref").stringValue()]
-            let html = String.init(data: try Data.init(contentsOf: URL.init(fileURLWithPath: absolutePath+"/"+(chapHref ?? ""))), encoding: .utf8) ?? ""
-            let news = html.removingPercentEncoding ?? ""
-            guard let data = news.data(using: .unicode) else {
-                throw ReadModelError.epubError("opf解析错误8")
-            }
-            let att = [NSAttributedString.DocumentReadingOptionKey.documentType:NSAttributedString.DocumentType.html]
-            guard let attStr = try? NSAttributedString(data: data, options: att, documentAttributes: nil) else {
+            let path = absolutePath+(chapHref ?? "")
+            let html = String.init(data: try Data.init(contentsOf: URL.init(fileURLWithPath: path)), encoding: .utf8) ?? ""
+//            let news = html.removingPercentEncoding ?? ""
+//            guard let data = html.data(using: .utf8) else {
+//                throw ReadModelError.epubError("opf解析错误8")
+//            }
+//
+//            let options = [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html]
+//            guard let attStr = try? NSAttributedString(data: data, options: options, documentAttributes: nil) else {
+//                throw ReadModelError.epubError("opf解析错误9")
+//            }
+            let opebs = (absolutePath as NSString).substring(to: absolutePath.count - 1)
+            guard let newAtt = handleHtml(html: html, oepbsUrl: opebs, chapterUrl: chapHref ?? "") else {
                 throw ReadModelError.epubError("opf解析错误9")
             }
             
-            let chapterModel = SDZChapterModel.init(index: index, title: (titleDic[chapHref ?? ""] ?? ""), attContent: attStr)
-            chapterModel.attContent = SDZReadUtilites.changeAttStrFont(att: attStr, fontSize: SDZReadConfig.shared.font.pointSize)
+            let chapterModel = SDZChapterModel.init(index: index, title: (titleDic[chapHref ?? ""] ?? ""), attContent: newAtt)
+            chapterModel.attContent = SDZReadUtilites.changeAttStrFont(att: chapterModel.attContent!, fontSize: SDZReadConfig.shared.font.pointSize)
+            chapterModel.attContent = SDZReadUtilites.changeParagraphStyle(att: chapterModel.attContent!)
             readModel.chapters.append(chapterModel)
             index += 1
         }
         readModel.type = .epub
         return readModel
     }
+    
+    fileprivate class func handleHtml(html:String, oepbsUrl:String, chapterUrl:String) -> NSAttributedString? {
+        var html = html
+        html = html.replacingOccurrences(of: "\r", with: "\n")
+        html = html.replacingOccurrences(of: "\n", with: "<p></p>")
+        let imagePath = "src=\"" + oepbsUrl
+        html = html.replacingOccurrences(of: "src=\"..", with: imagePath)
+        html = html.replacingOccurrences(of: "<p></p>", with: "")
+        
+        let data = html.data(using: .utf8)
+        
+        let maxImageSize = CGSize.init(width: 200, height: 200)
+        
+        let dic = [NSTextSizeMultiplierDocumentOption : NSNumber.init(value: 1),
+                        DTDefaultLineHeightMultiplier : NSNumber.init(value: 1.5),
+                                       DTMaxImageSize : maxImageSize,
+                                   DTDefaultLinkColor : "purple",
+                          DTDefaultLinkHighlightColor : "red",
+                                   DTDefaultTextColor : UIColor.black,
+                               DTDefaultTextAlignment : NSNumber.init(value: NSTextAlignment.justified.rawValue),
+                              NSBaseURLDocumentOption : NSURL.fileURL(withPath: oepbsUrl+"/"+chapterUrl)
+        ] as [String : Any]
+        
+        let att = NSAttributedString.init(htmlData: data, options: dic, documentAttributes: nil)
+        
+        return att
+    }
+    
+    fileprivate class func readDCValueFromOPF(key:String, document:CXMLDocument) -> String? {
+        let xPath = String.init(format: "//dc:%@[1]", key)
+        do{
+            let node = try document.nodes(forXPath: xPath, namespaceMappings: ["dc":"http://purl.org/dc/elements/1.1/"]).first as? CXMLNode
+            return node?.stringValue()
+        }
+        catch {
+            return nil
+        }
+    }
+    
+    fileprivate class func readCoverImage(document:CXMLDocument) -> String? {
+        let element = try? document.nodes(forXPath: "//opf:meta[@name='cover']", namespaceMappings: ["opf":"http://www.idpf.org/2007/opf"]).first as? CXMLElement
+        let cover = element?.attribute(forName: "content").stringValue()
+        return cover
+    }
+    
 }
+

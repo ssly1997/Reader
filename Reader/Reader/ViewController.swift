@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     }
     
     func testFunc() {
-        let url = Bundle.main.url(forResource: "雪中悍刀行", withExtension: "txt")!
+        let url = Bundle.main.url(forResource: "zoubianzhongguo", withExtension: "epub")!
         DispatchQueue.init(label: "com.sdz").async {
             do {
                 let readModel = try SDZReadModel.getReadModel(url: url)

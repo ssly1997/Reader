@@ -150,7 +150,7 @@ class MenuView:UIView, UIGestureRecognizerDelegate, SettingsViewDelegate {
         title = title.replacingOccurrences(of: ".txt", with: "")
         title = title.replacingOccurrences(of: " ", with: "")
         if title.count > 5 {
-            title = String(title.prefix(5))
+            title = String(title.prefix(5))+"..."
         }
         titleLabel.text = title
     }

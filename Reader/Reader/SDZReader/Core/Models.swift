@@ -22,7 +22,7 @@ enum ReadModelType:String {
     case epub
 }
 
-class SDZReadModel:NSObject, NSCoding, NSSecureCoding {
+class SDZReadModel:NSObject, NSSecureCoding {
     
     var name:String? = nil
     var readHash:String? = nil
@@ -117,9 +117,10 @@ class SDZReadModel:NSObject, NSCoding, NSSecureCoding {
     }
     
     class private func saveArchiverReadModelAsync(readModel:SDZReadModel) {
-        DispatchQueue.init(label: "com.save.sdz").sync {
+        DispatchQueue.init(label: "com.save.sdz").async {
             do {
                 let data = try NSKeyedArchiver.archivedData(withRootObject: readModel, requiringSecureCoding: true)
+                
                 SDZFileUtilites.saveDataAsync(data: data, fileName: readModel.name!) { success in
                     if success {
                         print("🇨🇳 保存成功")
@@ -169,13 +170,14 @@ class SDZReadModel:NSObject, NSCoding, NSSecureCoding {
     
 }
 
-class SDZChapterModel:NSObject, NSCoding, NSSecureCoding {
+class SDZChapterModel:NSObject, NSSecureCoding {
     static var supportsSecureCoding: Bool = true
     var index:Int = 0
     var progress:Double = 0.0
     var title:String = ""
     var content:String = ""
     var attContent:NSAttributedString? = nil
+    var attData:Data? = nil
     var type:ReadModelType = .unknown
     var pages:[SDZPageModel] = [SDZPageModel]()
     
@@ -200,7 +202,12 @@ class SDZChapterModel:NSObject, NSCoding, NSSecureCoding {
         coder.encode(pages as NSArray, forKey: "pages")
         coder.encode(progress, forKey: "progress")
         coder.encode(type.rawValue, forKey: "type")
-        coder.encode(attContent, forKey: "attContent")
+        // 富文本的归档利用yyText来作处理
+        attData = attContent?.yy_archiveToData()
+        if attData == nil {
+            assert(false, "data!")
+        }
+        coder.encode(attData, forKey: "attData")
     }
     
     required init?(coder: NSCoder) {
@@ -211,7 +218,12 @@ class SDZChapterModel:NSObject, NSCoding, NSSecureCoding {
         content = coder.decodeObject(forKey: "content") as? String ?? ""
         pages = coder.decodeObject(forKey: "pages") as? [SDZPageModel] ?? [SDZPageModel]()
         type = ReadModelType.init(rawValue: coder.decodeObject(forKey: "type") as? String ?? "unknown") ?? .unknown
-        attContent = coder.decodeObject(forKey: "attContent") as? NSAttributedString ?? NSAttributedString()
+        attData = coder.decodeObject(forKey: "attData") as? Data
+        if attData == nil {
+            assert(false, "data!")
+        }
+        attContent = attData == nil ? nil : NSAttributedString.yy_unarchive(from: attData!)
+
     }
 
 }
@@ -247,3 +259,4 @@ class SDZPageModel {
         self.chapter = chapter
     }
 }
+

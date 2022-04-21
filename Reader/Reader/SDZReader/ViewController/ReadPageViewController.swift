@@ -165,7 +165,13 @@ class ReadPageViewController:UIViewController & UIPageViewControllerDelegate & U
                 }
             }
         } else {
-            self.currentPage?.content = self.readModel?.chapters[chapter].pages.first?.content
+            if self.readModel!.type == .txt {
+                self.currentPage?.content = self.readModel?.chapters[chapter].pages.first?.content
+            } else if self.readModel!.type == .epub {
+                self.currentPage?.attContent = self.readModel?.chapters[chapter].pages.first?.attContent
+            } else {
+                assert(false, "error")
+            }
             self.currentChapterIndex = chapter
             self.currentPageIndex = 0
             saveReadProgress(chapter: currentChapterIndex, page: currentPageIndex)

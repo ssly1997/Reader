@@ -10,6 +10,8 @@
 
 #import "SSZipArchive.h"
 #import "TouchXML.h"
+#import "DTCoreText.h"
+#import "YYText.h"
 
 #endif /* SwiftOC_Header_h */
 
